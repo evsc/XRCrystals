@@ -1,12 +1,10 @@
-*.so
-
 
 #################
 ## openFrameworks
 #################
   
 
-[Bb]in/*
+[Bb]in/
 ![Bb]in/data/
 [Bb]uild/
 [Oo]bj/
@@ -54,3 +52,7 @@ xcshareddata
 build
 *.app
 *.a
+
+
+
+*.so
