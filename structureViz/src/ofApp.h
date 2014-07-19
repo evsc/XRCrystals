@@ -22,5 +22,18 @@ class ofApp : public ofBaseApp{
 
 
 		scaData sca;
+
+		ofPoint spaceDim;
+		ofPoint spaceO;	// origin 
+
+		float scale;
+
+		bool useEasyCam;
+		bool drawAxis;
+
+		ofEasyCam cam;
+
+		ofCamera camera[1];
+		int camToView;
 		
 };
