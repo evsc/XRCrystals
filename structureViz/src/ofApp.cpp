@@ -4,7 +4,10 @@
 void ofApp::setup(){
 
 
-	sca.parseFile();
+	sca.parseFile("AUTOMATIC_DEFAULT_scaled.sca");
+
+	// cout << "length data vector = " << sca.data.size() << endl;
+
 
 }
 
@@ -15,6 +18,10 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+
+	ofBackground(100);
+
+	// draw all 
 
 }
 

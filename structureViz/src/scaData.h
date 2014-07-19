@@ -32,12 +32,26 @@ typedef struct {
 } scaItem;
 
 
+
+
+
 class scaData {
 
 public:
+
+	scaData();
+	~scaData();
+
 	vector < scaItem > data;
 
-	parseFile( string fileName );
+	int minH, maxH;
+	int minK, maxK;
+	int minL, maxL;
+
+	float minIntensity, maxIntensity;
+	float minSD, maxSD;
+
+	void parseFile( string fileName );
 
 
-}
+};
