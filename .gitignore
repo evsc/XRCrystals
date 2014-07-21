@@ -4,8 +4,8 @@
 #################
   
 
-[Bb]in/
-![Bb]in/data/
+*/bin/*
+!*/bin/data
 [Bb]uild/
 [Oo]bj/
 *.o

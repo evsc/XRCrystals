@@ -78,7 +78,8 @@
 ################################################################################
 # PROJECT_LDFLAGS=-Wl,-rpath=./libs
 
-################################################################################
+
+###############################################################################
 # PROJECT DEFINES
 #   Create a space-delimited list of DEFINES. The list will be converted into 
 #   CFLAGS with the "-D" flag later in the makefile.
