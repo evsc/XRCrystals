@@ -52,6 +52,7 @@ class ofApp : public ofBaseApp{
 
 		// search images
 		ofxCvGrayscaleImage depthImage;	// grayscale depth image
+		// ofxCvGrayscaleImage depthImageCropped;	// cropped grayscale depth image
 		ofxCvGrayscaleImage depthDiff;	// thresholded person finder image
 
 		// blob trackers
@@ -70,6 +71,11 @@ class ofApp : public ofBaseApp{
 		unsigned int highestPointThreshold;	// only consider highest points +- this & the person centroid
 		float headInterpolation; // percentage to interpolate between person centroid & highest point (0-1)
 		
+
+		float smoothHead;
+		bool cropKinectImage;
+		int cropTop;
+
 		// normalize the head coordinates?
 		bool bNormalizeX; // 0-kinect.width
 		bool bNormalizeY; // 0-kinect.height

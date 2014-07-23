@@ -50,6 +50,7 @@ void ofApp::setup(){
 
 	// setup cv
 	depthImage.allocate(kinect.width, kinect.height);
+	// depthImageCropped.allocate(kinect.width, kinect.height-cropTop);
 	depthDiff.allocate(kinect.width, kinect.height);
 
 	// zero the tilt on startup
@@ -66,6 +67,8 @@ void ofApp::update(){
 	
 		// find person-sized blobs
 		depthImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
+		// depthImageCropped.cropFrom(depthImage, 0, cropTop, kinect.width, kinect.height-cropTop);
+		// depthImageCropped.setRoiFromPixels(depthImage.getPixels(), 0, cropTop, kinect.width, kinect.height-cropTop);
 		depthDiff = depthImage;
 		depthDiff.threshold(threshold);
 		depthDiff.updateTexture();
@@ -90,8 +93,15 @@ void ofApp::update(){
 			}
 			
 			// compute rough head position between centroid and highest point
-			head = person.position.getInterpolated(highestPoint, headInterpolation);
-			head.z = kinect.getDistanceAt(head);
+			// head = person.position.getInterpolated(highestPoint, headInterpolation);
+			ofPoint tmpHead = person.position.getInterpolated(highestPoint, headInterpolation);
+
+			head.x = ofLerp(highestPoint.x, head.x, smoothHead);
+			head.y = ofLerp(highestPoint.y, head.y, smoothHead);
+			head.z = ofLerp(kinect.getDistanceAt(tmpHead), head.z, smoothHead);
+
+			// int dif = head.x - highestPoint.x;
+			// head.z = kinect.getDistanceAt(head);
 			headAdj = head;
 			
 			// normalize values
@@ -106,11 +116,12 @@ void ofApp::update(){
 			
 			// send head position
 			ofxOscMessage message;
-			message.setAddress("/head");
+			message.setAddress("/headcase");
 			message.addFloatArg(headAdj.x);
 			message.addFloatArg(headAdj.y);
 			message.addFloatArg(headAdj.z);
 			sender.sendMessage(message);
+
 
 			// ofxOscMessage message2;
 			// message2.setAddress("/1/fader3");
@@ -122,6 +133,11 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+
+	ofPushMatrix();
+	if (ofGetWidth()>640) {
+		ofScale(2.0,2.0,2.0);
+	}
 
 	// draw display image
 	ofSetColor(255);
@@ -167,6 +183,8 @@ void ofApp::draw(){
 	
 	ofSetColor(255);
 	ofDrawBitmapString("threshold " + ofToString(threshold), 12, 24);
+
+	ofPopMatrix();
 }
 
 //--------------------------------------------------------------
@@ -181,11 +199,29 @@ void ofApp::keyPressed(int key){
 		case '-':
 			threshold--;
 			if(threshold < 0) threshold = 0;
+			// personMinArea-=100;
+			// cout << "personMinArea: " << personMinArea << endl;
+			cout << "threshold: " << threshold << endl;
 			break;
 			
 		case '=':
 			threshold++;
 			if(threshold > 255) threshold = 255;
+			// personMinArea+=100;
+			// cout << "personMinArea: " << personMinArea << endl;
+			cout << "threshold: " << threshold << endl;
+			break;		
+
+		case '1':
+			smoothHead-=0.01;
+			if(smoothHead < 0) smoothHead = 0;
+			cout << "smoothHead: " << smoothHead << endl;
+			break;
+			
+		case '2':
+			smoothHead+=.01;
+			if(smoothHead > 1) smoothHead = 1;
+			cout << "smoothHead: " << smoothHead << endl;
 			break;
 			
 		case 'x':
@@ -234,6 +270,14 @@ void ofApp::keyPressed(int key){
 			if(angle<-30) angle=-30;
 			kinect.setCameraTiltAngle(angle);
 			break;
+
+		case 'f':
+			ofSetFullscreen(true);
+			break;
+
+		case 'g':
+			ofSetFullscreen(false);
+			break;
 	}
 }
 
@@ -251,6 +295,11 @@ void ofApp::resetSettings() {
 	bNormalizeX = false;
 	bNormalizeY = false;
 	bNormalizeZ = false;
+
+	cropKinectImage = true;
+	cropTop = 100;
+
+	smoothHead = 0.7;
 	
 	bScaleX = false;
 	bScaleY = false;

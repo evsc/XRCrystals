@@ -4,7 +4,8 @@
 void ofApp::setup(){
 
 
-	sca.parseFile("AUTOMATIC_DEFAULT_scaled.sca");
+	// sca.parseFile("hfpps.sca");
+	sca.parseFile("daniel.sca");
 
 	// cout << "length data vector = " << sca.data.size() << endl;
 	spaceDim = ofPoint(sca.maxH-sca.minH, sca.maxK-sca.minK, sca.maxL-sca.minL);

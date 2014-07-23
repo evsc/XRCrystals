@@ -4,14 +4,17 @@
     <kinectID>0</kinectID>
     <!-- display image: 0 - none, 1 - threshold, 2 - RGB, 3 - depth-->
     <displayImage>1</displayImage>
+    <cropKinectImage>
+        <top>100</top>
+    </cropKinectImage>
     <!-- tracking settings -->
     <tracking>
         <!-- person finder depth clipping threshold; int 0 - 255 -->
-        <threshold>103</threshold>
-        <!-- kinect near clipping plane in cm; int -->
+        <threshold>50</threshold>
+        <!-- kinect near clipping plane in cm;ddd int -->
         <nearClipping>500</nearClipping>
         <!-- kinect far clipping plane in cm; int -->
-        <farClipping>4000</farClipping>
+        <farClipping>6000</farClipping>
         <!-- minimum area to consider when looking for person blobs; int -->
         <personMinArea>3000</personMinArea>
         <!-- maximum area to consider when looking for person blobs; int -->
@@ -19,7 +22,7 @@
         <!-- only consider highest points +- this & the person centroid; int -->
         <highestPointThreshold>50</highestPointThreshold>
         <!-- percentage to interpolate between person centroid & highest point; float 0 - 1-->
-        <headInterpolation>0.600000024</headInterpolation>
+        <headInterpolation>1.0</headInterpolation>
     </tracking>
     <!-- normalize head position coords, enable/disable; bool 0 or 1 -->
     <normalize>
@@ -44,7 +47,7 @@
     <!-- osc settings -->
     <osc>
         <!-- host destination address -->
-        <sendAddress>192.168.1.5</sendAddress>
+        <sendAddress>192.168.1.193</sendAddress>
         <!-- host destination port -->
         <sendPort>8000</sendPort>
     </osc>
