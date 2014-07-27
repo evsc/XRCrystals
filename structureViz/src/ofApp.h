@@ -49,5 +49,8 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> minIntensity;
 		ofParameter<float> drawDots;
 		ofParameter<string> dataFile;
+		ofParameter<int> drawMaxH;
+		ofParameter<int> drawMaxK;
+		ofParameter<int> drawMaxL;
 		
 };

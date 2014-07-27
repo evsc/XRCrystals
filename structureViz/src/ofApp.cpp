@@ -88,19 +88,22 @@ void ofApp::draw(){
 		ofPushMatrix();
 		ofRotateZ(i * (360.0/8.0));
 
-		// draw points
-		for (vector<scaItem>::iterator it = sca.data.begin() ; it != sca.data.end(); ++it) {
-			if ((*it).intensity > minIntensity) {
-				ofDrawSphere((*it).h*uc_h, (*it).k*uc_k, (*it).l*uc_l, drawDots*(*it).intensity);
-			}
-		}	
+		for (int i=0; i<2; i++) {
 
-		// mirrored version, to complete sphere
-		for (vector<scaItem>::iterator it = sca.data.begin() ; it != sca.data.end(); ++it) {
-			if ((*it).intensity > minIntensity) {
-				ofDrawSphere((*it).h*uc_h, (*it).k*uc_k, -(*it).l*uc_l, drawDots*(*it).intensity);
+			// on second time around, we'll mirror the points to complete the sphere
+			float flip = 1.0;
+			if (i==1) flip = -1.0;
+
+			// draw points
+			for (vector<scaItem>::iterator it = sca.data.begin() ; it != sca.data.end(); ++it) {
+				if ((*it).intensity > minIntensity) {
+					if ((*it).h <= drawMaxH && (*it).k <= drawMaxK && (*it).l <= drawMaxL) {
+						ofDrawSphere((*it).h*uc_h, (*it).k*uc_k, (*it).l*uc_l*flip, drawDots*(*it).intensity);
+					}
+				}
 			}
-		}	
+		}
+
 		ofPopMatrix();
 	}
 
@@ -136,8 +139,12 @@ void ofApp::resetSettings() {
 	// GUI setup
 	gui.setup("HKL diffraction space");
 	gui.add(minIntensity.set( "minimum intensity to draw", 500000, 0, 1000000 ));
-	gui.add(drawDots.set( "intensity draw factor", 0.000002, 0, 0.00002 ));
-	gui.add(dataFile.set("Daniels-lysozyme.sca"));
+	gui.add(drawDots.set( "intensity draw factor", 0.000002, 0, 0.00005 ));
+	gui.add(dataFile.set("data file", "Daniels-lysozyme.sca"));
+
+	gui.add(drawMaxH.set("draw max H index", 10, 1, 50));
+	gui.add(drawMaxK.set("draw max K index", 10, 1, 50));
+	gui.add(drawMaxL.set("draw max L index", 10, 1, 50));
 
 }
 
