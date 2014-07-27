@@ -51,6 +51,11 @@ public:
 	float minIntensity, maxIntensity;
 	float minSD, maxSD;
 
+	ofPoint unitCellDimension;
+	ofPoint unitCellRotation;
+
+	string spaceGroup;
+
 	void parseFile( string fileName );
 
 

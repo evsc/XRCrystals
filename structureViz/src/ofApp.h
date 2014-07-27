@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
 #include "scaData.h"
-#include "mtzData.h"
+// #include "mtzData.h"
 
 class ofApp : public ofBaseApp{
 
@@ -21,10 +22,14 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+		void resetSettings();
+		void loadSettings();
+
 
 		scaData sca;
 
-		ofPoint spaceDim;
+		ofVec3f hklDim;
+		ofVec3f spaceDim;
 		ofPoint spaceO;	// origin 
 
 		float scale;
@@ -36,5 +41,13 @@ class ofApp : public ofBaseApp{
 
 		ofCamera camera[1];
 		int camToView;
+
+
+
+		ofxPanel gui;
+
+		ofParameter<float> minIntensity;
+		ofParameter<float> drawDots;
+		ofParameter<string> dataFile;
 		
 };

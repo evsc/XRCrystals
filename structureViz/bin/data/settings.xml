@@ -1,0 +1,5 @@
+<HKL_diffraction_space>
+	<minimum_intensity_to_draw>500000</minimum_intensity_to_draw>
+	<intensity_draw_factor>7.65e-06</intensity_draw_factor>
+	<UnknownName>Daniels-lysozyme.sca</UnknownName>
+</HKL_diffraction_space>

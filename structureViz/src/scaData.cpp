@@ -15,6 +15,10 @@ scaData::scaData() {
 	maxIntensity = 0;
 	minSD = 0;
 	maxSD = 0;
+
+	unitCellDimension = ofPoint(1,1,1);
+	unitCellRotation = ofPoint(0,0,0);
+	spaceGroup = "p1";
 }
 
 scaData::~scaData() {
@@ -28,13 +32,20 @@ void scaData::parseFile(string fileName) {
 	ofBuffer file = ofBufferFromFile(fileName);
 	// cout << file.getText();
 
+	// nothing of consequence in the first two lines
 	string line1 = file.getFirstLine();
 	string line2 = file.getNextLine();
-	string line3 = file.getNextLine();
 
-	// cout << "line 1 = " << line1 << endl;
-	// cout << "line 2 = " << line2 << endl;
-	cout << "unit cell\t" << "|" << line3 << endl;
+	// get Unit Cell, Space Group data in 3rd line
+	string line3 = file.getNextLine();
+	unitCellDimension = ofPoint(ofToFloat(line3.substr(0,10)), ofToFloat(line3.substr(10,10)), ofToFloat(line3.substr(20,10)));
+	unitCellRotation = ofPoint(ofToFloat(line3.substr(30,10)), ofToFloat(line3.substr(40,10)), ofToFloat(line3.substr(50,10)));
+	spaceGroup = line3.substr(60,10);
+
+	cout << "unit cell" << endl;
+	cout << "\t dimension\t" << unitCellDimension.x << " " << unitCellDimension.y << " " << unitCellDimension.z << endl;
+	cout << "\t rotation\t" << unitCellRotation.x << " " << unitCellRotation.y << " " << unitCellRotation.z << endl;
+	cout << "\t space group \t" << spaceGroup << endl;
 
 	int cnt = 0;
 
