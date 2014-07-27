@@ -8,10 +8,8 @@ void ofApp::setup(){
 	loadSettings();
 
 	// LOAD AND PARSE A scalepack file
-	// sca.parseFile("hfpps.sca");
 	sca.parseFile(dataFile);
 
-	// cout << "length data vector = " << sca.data.size() << endl;
 	// FIGURE out how big to draw
 	hklDim = ofVec3f(sca.maxH-sca.minH, sca.maxK-sca.minK, sca.maxL-sca.minL);
 
@@ -176,7 +174,7 @@ void ofApp::resetSettings() {
 }
 
 void ofApp::loadSettings() {
-
+	gui.loadFromFile("settings.xml");
 }
 
 //--------------------------------------------------------------

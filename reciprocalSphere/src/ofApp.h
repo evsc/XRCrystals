@@ -28,9 +28,9 @@ class ofApp : public ofBaseApp{
 
 		scaData sca;
 
-		ofVec3f hklDim;
-		ofVec3f spaceDim;
-		ofPoint spaceO;	// origin 
+		ofVec3f hklDim;			// maximum HKL grid points
+		ofVec3f spaceDim;		// HKL coordinates times unit cell dimension
+		ofPoint spaceO;			// origin of space on screen
 
 		float scale;
 
