@@ -54,5 +54,12 @@ class ofApp : public ofBaseApp{
 		ofParameter<int> drawMaxH;
 		ofParameter<int> drawMaxK;
 		ofParameter<int> drawMaxL;
+		ofParameter<int> sphereResolution;
+		ofParameter<float> sphereBrightness;
+		ofParameter<float> sphereAlpha;
+		ofParameter<bool> sphereFill;
+
+
+		void changeSphereResolution(int & sphereResolution);
 		
 };

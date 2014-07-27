@@ -12,7 +12,6 @@ void ofApp::setup(){
 
 	// FIGURE out how big to draw
 	hklDim = ofVec3f(sca.maxH-sca.minH, sca.maxK-sca.minK, sca.maxL-sca.minL);
-
 	spaceDim = ofVec3f(sca.unitCellDimension.x*hklDim.x,sca.unitCellDimension.y*hklDim.y);
 	float maxRadius = max(spaceDim.x, spaceDim.y);
 	maxRadius = max (maxRadius, spaceDim.z);
@@ -21,9 +20,6 @@ void ofApp::setup(){
 	scale = float(ofGetWidth()) / (maxRadius*2.3);
 	cout << "ideal multiplication factor = " << scale << endl;
 	spaceO = ofPoint(-ofGetWidth()/2,-ofGetHeight()/2,100);
-
-	// cout << "sphere resolution = " << ofGetSphereResolution() << endl;
-	ofSetSphereResolution(3);
 
 	// cout << "getNearClip : " << cam.getNearClip() << endl;
 	// cout << "getFarClip : " << cam.getFarClip() << endl;
@@ -34,7 +30,6 @@ void ofApp::setup(){
 	cam.setDistance(100);
 	cam.enableOrtho();
 	cam.setFov(60);
-	// cam.setPosition(-ofGetWidth()/2, -ofGetHeight()/2, 100);
 	cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
 
 	// set so nothing gets clipped off
@@ -70,10 +65,10 @@ void ofApp::draw(){
 
 	if (drawAxis) ofDrawAxis(100);
 
-	// draw space
-	ofNoFill(); ofColor(255);
-	// ofDrawBox(-spaceDim.x/2,-spaceDim.y/2,-spaceDim.z/2, spaceDim.x, spaceDim.y, spaceDim.z);
 
+	if (sphereFill) ofFill();
+	else ofNoFill(); 
+	ofSetColor(255*sphereBrightness, 255*sphereAlpha);
 
 	float uc_h = sca.unitCellDimension.x;
 	float uc_k = sca.unitCellDimension.y;
@@ -129,7 +124,7 @@ void ofApp::draw(){
 
 
 	ofFill();
-	ofColor(ofColor(255));
+	ofSetColor(ofColor(255));
 	stringstream keyInstructions;
 	keyInstructions << "r ... reset camera" << endl;
 	keyInstructions << "a ... draw axis " << endl;
@@ -138,7 +133,7 @@ void ofApp::draw(){
 	keyInstructions << "z ... view from z axis " << endl;
 
 
-	ofDrawBitmapString(keyInstructions.str(), 20, 500);
+	ofDrawBitmapString(keyInstructions.str(), 20, 800);
 
 }
 
@@ -159,6 +154,10 @@ void ofApp::resetSettings() {
 	ofxGuiSetFont("mono.ttf", 14, true, true);
 
 
+	// GUI listeners
+	sphereResolution.addListener(this,&ofApp::changeSphereResolution);
+
+
 	// GUI setup
 	gui.setup("HKL diffraction space");
 	gui.add(zoom.set( "zoom", 1, 0.5, 7 ));
@@ -170,7 +169,15 @@ void ofApp::resetSettings() {
 	gui.add(drawMaxH.set("draw max H index", 10, 1, 50));
 	gui.add(drawMaxK.set("draw max K index", 10, 1, 50));
 	gui.add(drawMaxL.set("draw max L index", 10, 1, 50));
+	gui.add(sphereResolution.set("sphere resolution", 3, 2, 20));
+	gui.add(sphereBrightness.set("sphere brightness", 0.5, 0, 1));
+	gui.add(sphereAlpha.set("sphere alpha", 0.5, 0, 1));
+	gui.add(sphereFill.set("fill sphere", false));
 
+}
+
+void ofApp::changeSphereResolution(int & sphereResolution){
+	ofSetSphereResolution(sphereResolution);
 }
 
 void ofApp::loadSettings() {
@@ -191,10 +198,10 @@ void ofApp::keyReleased(int key){
 		bool state = cam.getOrtho();
 		if (!state) {
 			cam.enableOrtho();
-			cam.setPosition(-ofGetWidth()/2, -ofGetHeight()/2, 100);
+			// cam.setPosition(-ofGetWidth()/2, -ofGetHeight()/2, 100);
 		} else {
 			cam.disableOrtho();
-			cam.setPosition(0, 0, 200);
+			// cam.setPosition(0, 0, 200);
 		}
 	}
 	else if (key == 'a') {
@@ -209,21 +216,21 @@ void ofApp::keyReleased(int key){
 
 	else if (key == 'x') {
 		cam.reset();
-		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
 		viewRotation = ofVec3f(0,0,0);
 		viewRotation.x = 90;
+		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
 	}
 	else if (key == 'y') {
 		cam.reset();
-		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
 		viewRotation = ofVec3f(0,0,0);
 		viewRotation.y = 90;
+		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
 	}
 	else if (key == 'z') {
 		cam.reset();
-		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
 		viewRotation = ofVec3f(0,0,0);
 		viewRotation.z = 90;
+		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
 	}
 }
 
