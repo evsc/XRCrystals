@@ -59,6 +59,8 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> sphereAlpha;
 		ofParameter<bool> sphereFill;
 
+		ofMesh foo;
+		ofSpherePrimitive sphere;
 
 		void changeSphereResolution(int & sphereResolution);
 		

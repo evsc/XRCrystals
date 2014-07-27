@@ -7,6 +7,11 @@ void ofApp::setup(){
 	resetSettings();
 	loadSettings();
 
+
+	sphere.setRadius( 100 );
+	sphere.setResolution( 4 );
+	foo = sphere.getMesh();
+
 	// LOAD AND PARSE A scalepack file
 	sca.parseFile(dataFile);
 
@@ -69,6 +74,11 @@ void ofApp::draw(){
 	if (sphereFill) ofFill();
 	else ofNoFill(); 
 	ofSetColor(255*sphereBrightness, 255*sphereAlpha);
+
+
+	// foo.drawFaces());
+	// foo.drawVertices();
+	// foo.drawWireframe();
 
 	float uc_h = sca.unitCellDimension.x;
 	float uc_k = sca.unitCellDimension.y;

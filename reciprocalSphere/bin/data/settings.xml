@@ -9,6 +9,7 @@
 	<mirror>1</mirror>
 <HKL_diffraction_space/>
 	<sphere_resolution>6</sphere_resolution>
-	<sphere_brightness>0.09</sphere_brightness>
-	<fill_sphere>1</fill_sphere>
+	<sphere_brightness>0.8475</sphere_brightness>
+	<fill_sphere>0</fill_sphere>
+<sphere_alpha>0.5</sphere_alpha>
 </HKL_diffraction_space>
