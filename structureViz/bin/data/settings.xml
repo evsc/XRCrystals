@@ -1,5 +1,11 @@
 <HKL_diffraction_space>
 	<minimum_intensity_to_draw>500000</minimum_intensity_to_draw>
-	<intensity_draw_factor>1.825e-05</intensity_draw_factor>
+	<intensity_draw_factor>1.5875e-05</intensity_draw_factor>
 	<data_file>Daniels-lysozyme.sca</data_file>
+<HKL_diffraction_space/>
+	<zoom>1</zoom>
+	<draw_max_H_index>12</draw_max_H_index>
+	<draw_max_K_index>12</draw_max_K_index>
+	<draw_max_L_index>12</draw_max_L_index>
+<mirror>1</mirror>
 </HKL_diffraction_space>

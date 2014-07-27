@@ -67,9 +67,7 @@ void ofApp::draw(){
 
 	ofBackground(100);
 	ofPushMatrix();
-	// ofTranslate(spaceO.x, spaceO.y, spaceO.z);
-	ofScale(scale,scale,scale);
-	// ofTranslate(-spaceDim.x/2, -spaceDim.y/2, -spaceDim.z/2);
+	ofScale(scale*zoom,scale*zoom,scale*zoom);
 
 
 	if (drawAxis) ofDrawAxis(100);
@@ -82,6 +80,10 @@ void ofApp::draw(){
 	float uc_h = sca.unitCellDimension.x;
 	float uc_k = sca.unitCellDimension.y;
 	float uc_l = sca.unitCellDimension.z;
+
+	ofRotateX(viewRotation.x);
+	ofRotateY(viewRotation.y);
+	ofRotateZ(viewRotation.z);
 
 	// mirror HKL group, so it forms full cirlce
 	for (int i=0; i<8; i++) {
@@ -102,9 +104,11 @@ void ofApp::draw(){
 					}
 				}
 			}
+			if (!mirror) break;
 		}
 
 		ofPopMatrix();
+		if (!mirror) break;
 	}
 
 	ofPopMatrix();
@@ -119,11 +123,27 @@ void ofApp::draw(){
 
 	gui.draw();
 
+
+
+	ofFill();
+	ofColor(ofColor(255));
+	stringstream keyInstructions;
+	keyInstructions << "r ... reset camera" << endl;
+	keyInstructions << "a ... draw axis " << endl;
+	keyInstructions << "x ... view from x axis " << endl;
+	keyInstructions << "y ... view from y axis " << endl;
+	keyInstructions << "z ... view from z axis " << endl;
+
+
+	ofDrawBitmapString(keyInstructions.str(), 20, 500);
+
 }
 
 
 
 void ofApp::resetSettings() {
+
+	viewRotation = ofVec3f(0,0,0);
 
 	// style the GUI
 	ofxGuiSetDefaultWidth(400);
@@ -138,6 +158,8 @@ void ofApp::resetSettings() {
 
 	// GUI setup
 	gui.setup("HKL diffraction space");
+	gui.add(zoom.set( "zoom", 1, 0.5, 7 ));
+	gui.add(mirror.set( "mirror", true));
 	gui.add(minIntensity.set( "minimum intensity to draw", 500000, 0, 1000000 ));
 	gui.add(drawDots.set( "intensity draw factor", 0.000002, 0, 0.00005 ));
 	gui.add(dataFile.set("data file", "Daniels-lysozyme.sca"));
@@ -181,11 +203,24 @@ void ofApp::keyReleased(int key){
 		cam.enableOrtho();
 		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
 	}
-	else if (key == 'm') {
-		scale+=1;
+
+	else if (key == 'x') {
+		cam.reset();
+		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
+		viewRotation = ofVec3f(0,0,0);
+		viewRotation.x = 90;
 	}
-	else if (key == 'n') {
-		scale-=1;
+	else if (key == 'y') {
+		cam.reset();
+		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
+		viewRotation = ofVec3f(0,0,0);
+		viewRotation.y = 90;
+	}
+	else if (key == 'z') {
+		cam.reset();
+		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
+		viewRotation = ofVec3f(0,0,0);
+		viewRotation.z = 90;
 	}
 }
 

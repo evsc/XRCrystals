@@ -41,11 +41,13 @@ class ofApp : public ofBaseApp{
 
 		ofCamera camera[1];
 		int camToView;
-
+		ofVec3f viewRotation;
 
 
 		ofxPanel gui;
 
+		ofParameter<float> zoom;
+		ofParameter<bool> mirror;
 		ofParameter<float> minIntensity;
 		ofParameter<float> drawDots;
 		ofParameter<string> dataFile;
