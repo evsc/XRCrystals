@@ -65,7 +65,7 @@ void ofApp::draw(){
 	// if (useEasyCam) cam.begin();	
 	// else camera[camToView].begin();
 
-	ofBackground(100);
+	ofBackground(100,115,115);
 	ofPushMatrix();
 	ofScale(scale*zoom,scale*zoom,scale*zoom);
 
@@ -86,21 +86,26 @@ void ofApp::draw(){
 	ofRotateZ(viewRotation.z);
 
 	// mirror HKL group, so it forms full cirlce
-	for (int i=0; i<8; i++) {
+	for (int i=0; i<4; i++) {
 		ofPushMatrix();
-		ofRotateZ(i * (360.0/8.0));
+		ofRotateZ(i * (360.0/4.0));
 
-		for (int i=0; i<2; i++) {
+		for (int i=0; i<4; i++) {
 
 			// on second time around, we'll mirror the points to complete the sphere
-			float flip = 1.0;
-			if (i==1) flip = -1.0;
+			float flipz = 1.0;
+			float flipx = 1.0;
+			if (i>1) flipx = -1.0;
+			if (i%2==1) flipz = -1.0;
 
 			// draw points
 			for (vector<scaItem>::iterator it = sca.data.begin() ; it != sca.data.end(); ++it) {
 				if ((*it).intensity > minIntensity) {
 					if ((*it).h <= drawMaxH && (*it).k <= drawMaxK && (*it).l <= drawMaxL) {
-						ofDrawSphere((*it).h*uc_h, (*it).k*uc_k, (*it).l*uc_l*flip, drawDots*(*it).intensity);
+						// avoid doubling of the mirror-plane
+						if (((*it).h != (*it).k) || (i<2)) {
+							ofDrawSphere((*it).h*uc_h*flipx, (*it).k*uc_k, (*it).l*uc_l*flipz, drawDots*(*it).intensity);
+						}
 					}
 				}
 			}
