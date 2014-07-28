@@ -4,13 +4,24 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
+	// ofSetVerticalSync(true);
+
 	resetSettings();
 	loadSettings();
 
 
-	sphere.setRadius( 100 );
-	sphere.setResolution( 4 );
-	foo = sphere.getMesh();
+	// // sphere.setRadius( 100 );
+	// // sphere.setResolution( 4 );
+	foo = ofMesh::sphere(1, 12);
+	// // foo = sphere.getMesh();
+	// ofMesh cone;
+	// cone = ofMesh::cone(100.0, 200.0);
+	// foo.append(cone);
+	// foo.save("sphere.ply");
+
+	// vboSphere.setMesh(foo, GL_STATIC_DRAW);
+	// vboSphereMesh.setMesh(foo, GL_STATIC_DRAW);
+	vboSphereMesh = foo;
 
 	// LOAD AND PARSE A scalepack file
 	sca.parseFile(dataFile);
@@ -46,6 +57,9 @@ void ofApp::setup(){
 	camera[0].setFov(60);
 	camera[0].setPosition(-ofGetWidth()/2, -ofGetHeight()/2, 0);
 	camera[0].enableOrtho();
+
+
+	// glEnable(GL_DEPTH_TEST);
 }
 
 //--------------------------------------------------------------
@@ -76,7 +90,7 @@ void ofApp::draw(){
 	ofSetColor(255*sphereBrightness, 255*sphereAlpha);
 
 
-	// foo.drawFaces());
+	// foo.drawFaces();
 	// foo.drawVertices();
 	// foo.drawWireframe();
 
@@ -87,6 +101,9 @@ void ofApp::draw(){
 	ofRotateX(viewRotation.x);
 	ofRotateY(viewRotation.y);
 	ofRotateZ(viewRotation.z);
+
+	// let's count the nodes drawn, to compare
+	visibleNodes = 0;
 
 	// mirror HKL group, so it forms full cirlce
 	for (int i=0; i<4; i++) {
@@ -107,7 +124,38 @@ void ofApp::draw(){
 					if ((*it).h <= drawMaxH && (*it).k <= drawMaxK && (*it).l <= drawMaxL) {
 						// avoid doubling of the mirror-plane
 						if (((*it).h != (*it).k) || (i<2)) {
-							ofDrawSphere((*it).h*uc_h*flipx, (*it).k*uc_k, (*it).l*uc_l*flipz, drawDots*(*it).intensity);
+
+
+							if (drawMode==0) {
+
+								// draw directly with simple OF function
+								ofDrawSphere((*it).h*uc_h*flipx, (*it).k*uc_k, (*it).l*uc_l*flipz, nodeScale*(*it).intensity);
+								
+							} else {
+
+								// include push/pop translates in every drawing step
+								ofPushMatrix();
+								ofTranslate((*it).h*uc_h*flipx,(*it).k*uc_k,(*it).l*uc_l*flipz);
+
+								float sc = nodeScale*(*it).intensity;
+								ofScale(sc,sc,sc);
+
+								if (drawMode==1) {
+									if (sphereFill) foo.drawFaces();
+									else foo.drawWireframe();
+								} 
+								else if (drawMode==2) {
+									if (sphereFill) vboSphereMesh.draw(OF_MESH_FILL);
+									else vboSphereMesh.draw(OF_MESH_WIREFRAME);
+								}
+
+								ofPopMatrix();
+								
+							}
+
+							
+
+							visibleNodes++;
 						}
 					}
 				}
@@ -129,21 +177,36 @@ void ofApp::draw(){
 	// else camera[camToView].end();
 
 
-	gui.draw();
+	if (showGUI) {
+
+		gui.draw();
 
 
+		ofFill();
+		ofSetColor(ofColor(255));
+		stringstream keyInstructions;
+		keyInstructions << " r  ... reset camera" << endl;
+		keyInstructions << " a  ... draw axis " << endl;
+		keyInstructions << " x  ... view from x axis " << endl;
+		keyInstructions << " y  ... view from y axis " << endl;
+		keyInstructions << " z  ... view from z axis " << endl;
+		keyInstructions << " m  ... drawing mode (";
+		switch (drawMode) {
+			case 0: keyInstructions << "ofDrawSphere)" << endl;
+			break;
+			case 1: keyInstructions << "mesh)" << endl;
+			break;
+			case 2: keyInstructions << "ofVboMesh)" << endl;
+			break;
+		}
+		keyInstructions << "' ' ... toggle fullscreen " << endl;
 
-	ofFill();
-	ofSetColor(ofColor(255));
-	stringstream keyInstructions;
-	keyInstructions << "r ... reset camera" << endl;
-	keyInstructions << "a ... draw axis " << endl;
-	keyInstructions << "x ... view from x axis " << endl;
-	keyInstructions << "y ... view from y axis " << endl;
-	keyInstructions << "z ... view from z axis " << endl;
 
+		ofDrawBitmapString(keyInstructions.str(), 20, 750);
+	}
 
-	ofDrawBitmapString(keyInstructions.str(), 20, 800);
+	ofDrawBitmapString(ofToString(ofGetFrameRate(),0) + " FPS", ofGetWidth()-105, ofGetHeight()-30);
+	ofDrawBitmapString(ofToString(visibleNodes) + " Nodes", ofGetWidth()-105, ofGetHeight()-50);
 
 }
 
@@ -151,11 +214,15 @@ void ofApp::draw(){
 
 void ofApp::resetSettings() {
 
+	drawMode = 0;
+
+	showGUI = true;
+
 	viewRotation = ofVec3f(0,0,0);
 
 	// style the GUI
 	ofxGuiSetDefaultWidth(400);
-	ofxGuiSetDefaultHeight(50);
+	ofxGuiSetDefaultHeight(40);
 	ofxGuiSetBackgroundColor(ofColor(50));
 	ofxGuiSetHeaderColor(ofColor::red);
 	ofxGuiSetBorderColor(ofColor::black);
@@ -170,11 +237,11 @@ void ofApp::resetSettings() {
 
 	// GUI setup
 	gui.setup("HKL diffraction space");
-	gui.add(zoom.set( "zoom", 1, 0.5, 7 ));
-	gui.add(mirror.set( "mirror", true));
-	gui.add(minIntensity.set( "minimum intensity to draw", 500000, 0, 1000000 ));
-	gui.add(drawDots.set( "intensity draw factor", 0.000002, 0, 0.00005 ));
 	gui.add(dataFile.set("data file", "Daniels-lysozyme.sca"));
+	gui.add(zoom.set( "zoom", 1, 0.5, 15 ));
+	gui.add(mirror.set( "mirror", true));
+	gui.add(minIntensity.set( "intensity filter", 500000, 0, 1000000 ));
+	gui.add(nodeScale.set( "node display scaling", 0.000002, 0, 0.0002 ));
 
 	gui.add(drawMaxH.set("draw max H index", 10, 1, 50));
 	gui.add(drawMaxK.set("draw max K index", 10, 1, 50));
@@ -217,7 +284,9 @@ void ofApp::keyReleased(int key){
 	else if (key == 'a') {
 		drawAxis = !drawAxis;
 	}
-
+	else if (key == 'g') {
+		showGUI = !showGUI;
+	}
 	else if (key == 'r') {
 		cam.reset();
 		cam.enableOrtho();
@@ -241,6 +310,15 @@ void ofApp::keyReleased(int key){
 		viewRotation = ofVec3f(0,0,0);
 		viewRotation.z = 90;
 		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
+	}
+	else if (key == 'm') {
+		drawMode++;
+		if (drawMode > 2) drawMode=0;
+		cout << "drawMode: " << drawMode << endl;
+	}
+
+	if(key == ' ') {
+		ofToggleFullscreen();
 	}
 }
 

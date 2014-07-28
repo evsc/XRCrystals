@@ -26,30 +26,56 @@ class ofApp : public ofBaseApp{
 		void loadSettings();
 
 
-		scaData sca;
+
+
+		/* **************** DATA **************** */
+		scaData sca;			// object to load scalepack data
 
 		ofVec3f hklDim;			// maximum HKL grid points
 		ofVec3f spaceDim;		// HKL coordinates times unit cell dimension
 		ofPoint spaceO;			// origin of space on screen
 
-		float scale;
 
+
+
+		/* ************ drawing related ************ */
+		ofMesh foo;
+		ofSpherePrimitive sphere;
+		ofVbo vboSphere;
+		ofVboMesh vboSphereMesh;
+
+		void changeSphereResolution(int & sphereResolution);
+
+		int visibleNodes;
+
+
+		int drawMode;	// 0 ... ofDrawSphere
+						// 1 ... ofVbo
+						// 2 ... ofVboMesh
+
+
+
+		/* **************** CAMERA **************** */
 		bool useEasyCam;
 		bool drawAxis;
-
 		ofEasyCam cam;
-
 		ofCamera camera[1];
 		int camToView;
+
+
 		ofVec3f viewRotation;
+		float scale;
 
 
+
+		/* **************** GUI **************** */
 		ofxPanel gui;
+		bool showGUI;
 
 		ofParameter<float> zoom;
 		ofParameter<bool> mirror;
 		ofParameter<float> minIntensity;
-		ofParameter<float> drawDots;
+		ofParameter<float> nodeScale;
 		ofParameter<string> dataFile;
 		ofParameter<int> drawMaxH;
 		ofParameter<int> drawMaxK;
@@ -59,9 +85,7 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> sphereAlpha;
 		ofParameter<bool> sphereFill;
 
-		ofMesh foo;
-		ofSpherePrimitive sphere;
 
-		void changeSphereResolution(int & sphereResolution);
+
 		
 };
