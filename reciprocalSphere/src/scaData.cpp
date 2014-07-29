@@ -105,7 +105,7 @@ void scaData::parseFile(string fileName, scaFormat format) {
 				item.sd = ofToFloat(line.substr(31,8));
 				item.phase = ofToFloat(line.substr(43,7));
 
-				cout << item.h << "\t" << item.k << "\t" << item.l << "\t" << item.intensity << "\t" << item.phase << endl;
+				// cout << item.h << "\t" << item.k << "\t" << item.l << "\t" << item.intensity << "\t" << item.phase << endl;
 			
 				minH = min(minH, item.h);
 				maxH = max(maxH, item.h);

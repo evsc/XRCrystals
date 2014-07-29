@@ -85,7 +85,10 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> sphereAlpha;
 		ofParameter<bool> sphereFill;
 		ofParameter<bool> sphereColor;
-
+		
+		ofParameter<bool> ewaldSphere;
+		ofParameter<float> ewaldMargin;
+		ofParameter<float> waveLength;
 
 
 		

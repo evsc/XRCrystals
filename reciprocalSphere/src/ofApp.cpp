@@ -208,6 +208,7 @@ void ofApp::draw(){
 			break;
 		}
 		keyInstructions << "' ' ... toggle fullscreen " << endl;
+		keyInstructions << " p  ... save screenshot " << endl;
 
 
 		ofDrawBitmapString(keyInstructions.str(), 20, 750);
@@ -245,7 +246,7 @@ void ofApp::resetSettings() {
 
 	// style the GUI
 	ofxGuiSetDefaultWidth(400);
-	ofxGuiSetDefaultHeight(40);
+	ofxGuiSetDefaultHeight(38);
 	ofxGuiSetBackgroundColor(ofColor(50));
 	ofxGuiSetHeaderColor(ofColor::red);
 	ofxGuiSetBorderColor(ofColor::black);
@@ -263,7 +264,7 @@ void ofApp::resetSettings() {
 	gui.add(dataFile.set("data file", "Daniels-lysozyme.sca"));
 	gui.add(zoom.set( "zoom", 1, 0.5, 15 ));
 	gui.add(mirror.set( "mirror", true));
-	gui.add(minIntensity.set( "intensity filter", 500000, 0, 1000000 ));
+	gui.add(minIntensity.set( "intensity filter", 500, 0, 10000 ));
 	gui.add(nodeScale.set( "node display scaling", 0.000002, 0, 0.0002 ));
 
 	gui.add(drawMaxH.set("draw max H index", 10, 1, 50));
@@ -274,6 +275,11 @@ void ofApp::resetSettings() {
 	gui.add(sphereAlpha.set("sphere alpha", 0.5, 0, 1));
 	gui.add(sphereFill.set("fill sphere", false));
 	gui.add(sphereColor.set("phase color", false));
+
+
+	gui.add(ewaldSphere.set("Ewald sphere", false));
+	gui.add(ewaldMargin.set("Ewald margin", 0.5, 0, 1));
+	gui.add(waveLength.set("xray wave length", 0.001, 0, 0.01));
 
 }
 
@@ -344,6 +350,17 @@ void ofApp::keyReleased(int key){
 	if(key == ' ') {
 		ofToggleFullscreen();
 	}
+
+	if (key=='p') {
+		// save a screenshot
+        ofImage img;
+        img.grabScreen(0,0,ofGetWidth(), ofGetHeight());
+        int lastIndex = dataFile.toString().find_last_of("."); 
+		string rawFileName = dataFile.toString().substr(0, lastIndex); 
+        string fileName = "screenshots/" + rawFileName + "_"+ofGetTimestampString()+".png";
+        img.saveImage(fileName);
+        cout << "saved screenshot " << fileName.c_str() << endl;
+    }
 }
 
 //--------------------------------------------------------------

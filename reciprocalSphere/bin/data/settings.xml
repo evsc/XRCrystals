@@ -1,17 +1,22 @@
 <HKL_diffraction_space>
-	<intensity_filter>725</intensity_filter>
-	<node_display_scaling>5e-05</node_display_scaling>
-	<data_file>lysozyme_main.sca</data_file>
+	<intensity_filter>1725</intensity_filter>
+	<node_display_scaling>0.000167</node_display_scaling>
+	<!-- <data_file>lysozyme_main.sca</data_file> -->
+	<data_file>hfpps_main.sca</data_file>
 	<!-- <data_file>hfpps.sca</data_file> -->
 	<!-- <data_file>Daniels-lysozyme.sca</data_file> -->
-	<zoom>4.53</zoom>
-	<draw_max_H_index>15</draw_max_H_index>
-	<draw_max_K_index>15</draw_max_K_index>
-	<draw_max_L_index>15</draw_max_L_index>
+	<zoom>1.2975</zoom>
+	<draw_max_H_index>48</draw_max_H_index>
+	<draw_max_K_index>49</draw_max_K_index>
+	<draw_max_L_index>44</draw_max_L_index>
 	<mirror>1</mirror>
 	<sphere_resolution>12</sphere_resolution>
 	<sphere_brightness>0.8475</sphere_brightness>
 	<fill_sphere>1</fill_sphere>
 <sphere_alpha>0.5</sphere_alpha>
 <HKL_diffraction_space/>
+<phase_color>1</phase_color>
+	<Ewald_sphere>0</Ewald_sphere>
+	<Ewald_margin>0.5</Ewald_margin>
+	<xray_wave_length>0.001</xray_wave_length>
 </HKL_diffraction_space>
