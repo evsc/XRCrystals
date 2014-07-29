@@ -24,6 +24,7 @@ void ofApp::setup(){
 	vboSphereMesh = foo;
 
 	// LOAD AND PARSE A scalepack file
+	// sca.parseFile(dataFile, SCA_FIRST);
 	sca.parseFile(dataFile);
 
 	// FIGURE out how big to draw
@@ -125,6 +126,11 @@ void ofApp::draw(){
 						// avoid doubling of the mirror-plane
 						if (((*it).h != (*it).k) || (i<2)) {
 
+							if (sphereColor) {
+								ofColor c = ofColor(255*sphereBrightness,0,0,255*sphereAlpha);
+								c.setHue( (*it).phase * (255.0/360.0) );
+								ofSetColor( c );
+							}
 
 							if (drawMode==0) {
 
@@ -132,6 +138,8 @@ void ofApp::draw(){
 								ofDrawSphere((*it).h*uc_h*flipx, (*it).k*uc_k, (*it).l*uc_l*flipz, nodeScale*(*it).intensity);
 								
 							} else {
+
+
 
 								// include push/pop translates in every drawing step
 								ofPushMatrix();
@@ -203,6 +211,21 @@ void ofApp::draw(){
 
 
 		ofDrawBitmapString(keyInstructions.str(), 20, 750);
+
+		// draw phase color diagram
+		ofFill();
+		int x = 10;
+		int y = 700;
+		int h = 20;
+		int w = 400;
+		int deg = 10;
+		float step = float(w)/(360.0/float(deg));
+		for (int i=0; i<360; i+=deg) {
+			ofColor c = ofColor(255*sphereBrightness,0,0,255);
+			c.setHue( i * (255.0/360.0) );
+			ofSetColor( c );
+			ofRect(x+(i/deg)*step,y,step,h);
+		}
 	}
 
 	ofDrawBitmapString(ofToString(ofGetFrameRate(),0) + " FPS", ofGetWidth()-105, ofGetHeight()-30);
@@ -250,6 +273,7 @@ void ofApp::resetSettings() {
 	gui.add(sphereBrightness.set("sphere brightness", 0.5, 0, 1));
 	gui.add(sphereAlpha.set("sphere alpha", 0.5, 0, 1));
 	gui.add(sphereFill.set("fill sphere", false));
+	gui.add(sphereColor.set("phase color", false));
 
 }
 

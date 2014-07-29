@@ -16,15 +16,15 @@ scaData::scaData() {
 	minSD = 0;
 	maxSD = 0;
 
-	unitCellDimension = ofPoint(1,1,1);
-	unitCellRotation = ofPoint(0,0,0);
+	unitCellDimension = ofVec3f(1,1,1);
+	unitCellRotation = ofVec3f(0,0,0);
 	spaceGroup = "p1";
 }
 
 scaData::~scaData() {
 }
 
-void scaData::parseFile(string fileName) {
+void scaData::parseFile(string fileName, scaFormat format) {
 
 	cout << "scaData parser" << endl << "----------------------" << endl;
 	cout << "file\t\t<" << fileName << ">" << endl;
@@ -32,52 +32,108 @@ void scaData::parseFile(string fileName) {
 	ofBuffer file = ofBufferFromFile(fileName);
 	// cout << file.getText();
 
-	// nothing of consequence in the first two lines
-	string line1 = file.getFirstLine();
-	string line2 = file.getNextLine();
-
-	// get Unit Cell, Space Group data in 3rd line
-	string line3 = file.getNextLine();
-	unitCellDimension = ofPoint(ofToFloat(line3.substr(0,10)), ofToFloat(line3.substr(10,10)), ofToFloat(line3.substr(20,10)));
-	unitCellRotation = ofPoint(ofToFloat(line3.substr(30,10)), ofToFloat(line3.substr(40,10)), ofToFloat(line3.substr(50,10)));
-	spaceGroup = line3.substr(60,10);
-
-	cout << "unit cell" << endl;
-	cout << "\t dimension\t" << unitCellDimension.x << " " << unitCellDimension.y << " " << unitCellDimension.z << endl;
-	cout << "\t rotation\t" << unitCellRotation.x << " " << unitCellRotation.y << " " << unitCellRotation.z << endl;
-	cout << "\t space group \t" << spaceGroup << endl;
 
 	int cnt = 0;
+	string line;
 
-	while (!file.isLastLine()) {
+	switch (format) {
+		case SCA_FIRST: 
+			// nothing of consequence in the first two lines
+			line = file.getFirstLine();
+			line = file.getNextLine();
 
-		string line = file.getNextLine();
-		cnt++;
+			// get Unit Cell, Space Group data in 3rd line
+			line = file.getNextLine();
+			unitCellDimension = ofVec3f(ofToFloat(line.substr(0,10)), ofToFloat(line.substr(10,10)), ofToFloat(line.substr(20,10)));
+			unitCellRotation = ofVec3f(ofToFloat(line.substr(30,10)), ofToFloat(line.substr(40,10)), ofToFloat(line.substr(50,10)));
+			spaceGroup = line.substr(60,10);
 
-		scaItem item;
-		item.h = ofToInt(line.substr(0,4));
-		item.k = ofToInt(line.substr(4,4));
-		item.l = ofToInt(line.substr(8,4));
-		item.intensity = ofToFloat(line.substr(12,8));
-		item.sd = ofToFloat(line.substr(20,8));
+			cout << "format \t\tSCA_FIRST" << endl;
+			cout << "unit cell" << endl;
+			cout << "\t dimension\t" << unitCellDimension.x << " " << unitCellDimension.y << " " << unitCellDimension.z << endl;
+			cout << "\t rotation\t" << unitCellRotation.x << " " << unitCellRotation.y << " " << unitCellRotation.z << endl;
+			cout << "\t space group \t" << spaceGroup << endl;
 
-		// cout << item.h << "\t" << item.k << "\t" << item.l << "\t" << item.intensity << "\t" << item.sd << endl;
-	
-		minH = min(minH, item.h);
-		maxH = max(maxH, item.h);
-		minK = min(minK, item.k);
-		maxK = max(maxK, item.k);
-		minL = min(minL, item.l);
-		maxL = max(maxL, item.l);
+			while (!file.isLastLine()) {
 
-		minIntensity = min(minIntensity, item.intensity);
-		maxIntensity = max(maxIntensity, item.intensity);
-		minSD = min(minSD, item.sd);
-		maxSD = max(maxSD, item.sd);
+				line = file.getNextLine();
+				cnt++;
+
+				scaItem item;
+				item.h = ofToInt(line.substr(0,4));
+				item.k = ofToInt(line.substr(4,4));
+				item.l = ofToInt(line.substr(8,4));
+				item.intensity = ofToFloat(line.substr(12,8));
+				item.sd = ofToFloat(line.substr(20,8));
+
+				// cout << item.h << "\t" << item.k << "\t" << item.l << "\t" << item.intensity << "\t" << item.sd << endl;
+			
+				minH = min(minH, item.h);
+				maxH = max(maxH, item.h);
+				minK = min(minK, item.k);
+				maxK = max(maxK, item.k);
+				minL = min(minL, item.l);
+				maxL = max(maxL, item.l);
+
+				minIntensity = min(minIntensity, item.intensity);
+				maxIntensity = max(maxIntensity, item.intensity);
+				minSD = min(minSD, item.sd);
+				maxSD = max(maxSD, item.sd);
 
 
-		data.push_back(item);
+				data.push_back(item);
+			}
+			break;
+
+		case SCA_MAIN:
+
+			cout << "format \t\tSCA_MAIN" << endl;
+
+			unitCellDimension = ofVec3f(1,1,1);
+			unitCellRotation = ofVec3f(90,90,90);
+
+			while (!file.isLastLine()) {
+
+				line = file.getNextLine();
+				cnt++;
+
+				scaItem item;
+				item.h = ofToInt(line.substr(3,4));
+				item.k = ofToInt(line.substr(7,4));
+				item.l = ofToInt(line.substr(11,4));
+				item.intensity = ofToFloat(line.substr(19,8));
+				item.sd = ofToFloat(line.substr(31,8));
+				item.phase = ofToFloat(line.substr(43,7));
+
+				cout << item.h << "\t" << item.k << "\t" << item.l << "\t" << item.intensity << "\t" << item.phase << endl;
+			
+				minH = min(minH, item.h);
+				maxH = max(maxH, item.h);
+				minK = min(minK, item.k);
+				maxK = max(maxK, item.k);
+				minL = min(minL, item.l);
+				maxL = max(maxL, item.l);
+
+				minIntensity = min(minIntensity, item.intensity);
+				maxIntensity = max(maxIntensity, item.intensity);
+				minSD = min(minSD, item.sd);
+				maxSD = max(maxSD, item.sd);
+
+
+				data.push_back(item);
+			}
+			break;
 	}
+
+
+
+
+
+
+
+
+
+
 
 	cout << "data objects\t" << cnt << endl;
 	cout << "H \t\tmin: " << minH << "\t\tmax: " << maxH << endl;

@@ -84,6 +84,7 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> sphereBrightness;
 		ofParameter<float> sphereAlpha;
 		ofParameter<bool> sphereFill;
+		ofParameter<bool> sphereColor;
 
 
 

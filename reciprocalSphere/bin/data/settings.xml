@@ -1,7 +1,8 @@
 <HKL_diffraction_space>
-	<intensity_filter>22500</intensity_filter>
+	<intensity_filter>725</intensity_filter>
 	<node_display_scaling>5e-05</node_display_scaling>
-	<data_file>hfpps.sca</data_file>
+	<data_file>lysozyme_main.sca</data_file>
+	<!-- <data_file>hfpps.sca</data_file> -->
 	<!-- <data_file>Daniels-lysozyme.sca</data_file> -->
 	<zoom>4.53</zoom>
 	<draw_max_H_index>15</draw_max_H_index>

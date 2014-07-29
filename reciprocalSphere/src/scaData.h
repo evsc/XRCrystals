@@ -19,6 +19,13 @@
 #include "ofMain.h"
 
 
+// different formatting styles in .sca files
+enum scaFormat {
+	SCA_FIRST,
+	SCA_MAIN,
+	SCA_TNT,
+	SCA_REFMAC
+};
 
 
 typedef struct {
@@ -28,9 +35,9 @@ typedef struct {
     int l;
     float intensity;
     float sd;	// standard deviation
+    float phase;
 
 } scaItem;
-
 
 
 
@@ -51,12 +58,12 @@ public:
 	float minIntensity, maxIntensity;
 	float minSD, maxSD;
 
-	ofPoint unitCellDimension;
-	ofPoint unitCellRotation;
+	ofVec3f unitCellDimension;
+	ofVec3f unitCellRotation;
 
 	string spaceGroup;
 
-	void parseFile( string fileName );
+	void parseFile( string fileName, scaFormat format = SCA_MAIN );
 
 
 };
