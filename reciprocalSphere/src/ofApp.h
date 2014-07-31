@@ -36,7 +36,9 @@ class ofApp : public ofBaseApp{
 		ofPoint spaceO;			// origin of space on screen
 
 
-
+		ofVec3f ewaldO;			// origin of Ewald sphere
+		float ewaldSphereRadius;
+		bool onEwaldSphere(int h, int k, int l, float mirrorRotZ);
 
 		/* ************ drawing related ************ */
 		ofMesh foo;
@@ -45,6 +47,7 @@ class ofApp : public ofBaseApp{
 		ofVboMesh vboSphereMesh;
 
 		void changeSphereResolution(int & sphereResolution);
+		void changeWaveLength(float & waveLength);
 
 		int visibleNodes;
 
@@ -52,6 +55,8 @@ class ofApp : public ofBaseApp{
 		int drawMode;	// 0 ... ofDrawSphere
 						// 1 ... ofVbo
 						// 2 ... ofVboMesh
+
+		ofVec3f rotateHKL;
 
 
 
@@ -83,12 +88,14 @@ class ofApp : public ofBaseApp{
 		ofParameter<int> sphereResolution;
 		ofParameter<float> sphereBrightness;
 		ofParameter<float> sphereAlpha;
-		ofParameter<bool> sphereFill;
-		ofParameter<bool> sphereColor;
+		bool sphereFill;
+		bool sphereColor;
 		
 		ofParameter<bool> ewaldSphere;
+		bool displayEwald;
 		ofParameter<float> ewaldMargin;
 		ofParameter<float> waveLength;
+		ofParameter<float> rotateCrystal;
 
 
 		

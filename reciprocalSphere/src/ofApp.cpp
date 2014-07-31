@@ -38,6 +38,10 @@ void ofApp::setup(){
 	cout << "ideal multiplication factor = " << scale << endl;
 	spaceO = ofPoint(-ofGetWidth()/2,-ofGetHeight()/2,100);
 
+	ewaldSphereRadius = 0.1/waveLength;
+	ewaldO = ofVec3f(0,0,ewaldSphereRadius);
+	cout << "ewaldSphereRadius = " << ewaldSphereRadius << endl;
+
 	// cout << "getNearClip : " << cam.getNearClip() << endl;
 	// cout << "getFarClip : " << cam.getFarClip() << endl;
 
@@ -83,13 +87,11 @@ void ofApp::draw(){
 	ofScale(scale*zoom,scale*zoom,scale*zoom);
 
 
-	if (drawAxis) ofDrawAxis(100);
 
 
-	if (sphereFill) ofFill();
-	else ofNoFill(); 
-	ofSetColor(255*sphereBrightness, 255*sphereAlpha);
 
+
+	
 
 	// foo.drawFaces();
 	// foo.drawVertices();
@@ -103,13 +105,33 @@ void ofApp::draw(){
 	ofRotateY(viewRotation.y);
 	ofRotateZ(viewRotation.z);
 
+	if (drawAxis) ofDrawAxis(100);
+	
+	if (displayEwald) {
+		ofNoFill();
+		ofSetColor(0);
+		ofDrawSphere(ewaldO.x,ewaldO.y,ewaldO.z,ewaldSphereRadius);
+	}
+
+	// ofRotateX(rotateHKL.x);
+	// ofRotateY(rotateHKL.y);
+	// ofRotateZ(rotateHKL.z);
+
+	rotateHKL.y += rotateCrystal;
+
 	// let's count the nodes drawn, to compare
 	visibleNodes = 0;
+
+	
+	ofSetColor(255*sphereBrightness, 255*sphereAlpha);
+
+	float mirrorRotZ = 0;
 
 	// mirror HKL group, so it forms full cirlce
 	for (int i=0; i<4; i++) {
 		ofPushMatrix();
-		ofRotateZ(i * (360.0/4.0));
+		mirrorRotZ = i * (360.0/4.0);
+		// ofRotateZ(mirrorRotZ);
 
 		for (int i=0; i<4; i++) {
 
@@ -121,49 +143,69 @@ void ofApp::draw(){
 
 			// draw points
 			for (vector<scaItem>::iterator it = sca.data.begin() ; it != sca.data.end(); ++it) {
+
+
+				// Intensity check
 				if ((*it).intensity > minIntensity*sca.maxIntensity) {
+
+					// HKL drawing filter
 					if ((*it).h <= drawMaxH && (*it).k <= drawMaxK && (*it).l <= drawMaxL) {
+
+						ofVec3f hkl = ofVec3f((*it).h*flipx*uc_h,(*it).k*uc_k,(*it).l*flipz*uc_l);
+						hkl.rotate(mirrorRotZ, ofVec3f(0, 0, 1));
+						hkl.rotate(rotateHKL.y, ofVec3f(0, 1, 0));
+
 						// avoid doubling of the mirror-plane
-						if (((*it).h != (*it).k) || (i<2)) {
+						if ((hkl.x != hkl.y) || (i<2)) {
 
-							if (sphereColor) {
-								ofColor c = ofColor(255*sphereBrightness,0,0,255*sphereAlpha);
-								c.setHue( (*it).phase * (255.0/360.0) );
-								ofSetColor( c );
-							}
+							if ( !ewaldSphere || onEwaldSphere(hkl.x,hkl.y,hkl.z, mirrorRotZ) ) {
 
-							if (drawMode==0) {
+								if (sphereFill) ofFill();
+								else ofNoFill(); 
 
-								// draw directly with simple OF function
-								ofDrawSphere((*it).h*uc_h*flipx, (*it).k*uc_k, (*it).l*uc_l*flipz, nodeScale*(*it).intensity);
-								
-							} else {
-
-
-
-								// include push/pop translates in every drawing step
-								ofPushMatrix();
-								ofTranslate((*it).h*uc_h*flipx,(*it).k*uc_k,(*it).l*uc_l*flipz);
-
-								float sc = nodeScale*(*it).intensity;
-								ofScale(sc,sc,sc);
-
-								if (drawMode==1) {
-									if (sphereFill) foo.drawFaces();
-									else foo.drawWireframe();
-								} 
-								else if (drawMode==2) {
-									if (sphereFill) vboSphereMesh.draw(OF_MESH_FILL);
-									else vboSphereMesh.draw(OF_MESH_WIREFRAME);
+								if (sphereColor) {
+									ofColor c = ofColor(255*sphereBrightness,0,0,255*sphereAlpha);
+									c.setHue( (*it).phase * (255.0/360.0) );
+									ofSetColor( c );
 								}
 
-								ofPopMatrix();
-								
+								if (drawMode==0) {
+
+									// draw directly with simple OF function
+									ofDrawSphere(hkl.x,hkl.y,hkl.z, nodeScale*(*it).intensity);
+									
+								} else {
+
+
+
+									// include push/pop translates in every drawing step
+									ofPushMatrix();
+									ofTranslate(hkl.x,hkl.y,hkl.z);
+
+									float sc = nodeScale*(*it).intensity;
+									ofScale(sc,sc,sc);
+
+									if (drawMode==1) {
+										if (sphereFill) foo.drawFaces();
+										else foo.drawWireframe();
+									} 
+									else if (drawMode==2) {
+										if (sphereFill) vboSphereMesh.draw(OF_MESH_FILL);
+										else vboSphereMesh.draw(OF_MESH_WIREFRAME);
+									}
+
+									ofPopMatrix();
+									
+								}
+
+								// draw line from crystal to HKL dot
+								if (ewaldSphere) {
+									ofNoFill();
+									ofLine(ewaldO, ofVec3f(hkl.x,hkl.y,hkl.z));
+								}
+
+								visibleNodes++;
 							}
-
-							
-
-							visibleNodes++;
 						}
 					}
 				}
@@ -172,6 +214,7 @@ void ofApp::draw(){
 		}
 
 		ofPopMatrix();
+
 		if (!mirror) break;
 	}
 
@@ -193,8 +236,11 @@ void ofApp::draw(){
 		ofFill();
 		ofSetColor(ofColor(255));
 		stringstream keyInstructions;
-		keyInstructions << " r  ... reset camera" << endl;
 		keyInstructions << " a  ... draw axis " << endl;
+		keyInstructions << " f  ... fill nodes" << endl;
+		keyInstructions << " c  ... color nodes with phase" << endl;
+		keyInstructions << " e  ... draw Ewald sphere " << endl;
+		keyInstructions << " r  ... reset camera" << endl;
 		keyInstructions << " x  ... view from x axis " << endl;
 		keyInstructions << " y  ... view from y axis " << endl;
 		keyInstructions << " z  ... view from z axis " << endl;
@@ -234,15 +280,54 @@ void ofApp::draw(){
 
 }
 
+/* 	determine if an HKL point lies on the Ewald Sphere
+	which means, that it satisfies the Bragg equation */
+bool ofApp::onEwaldSphere(int h, int k, int l, float mirrorRotZ) {
+
+
+	// distance between HKL grid-point needs to be close to ewaldSphere radius
+	ofVec3f hkl = ofVec3f(h,k,l);
+	// hkl.rotate(mirrorRotZ, ofVec3f(0, 0, 1));
+	// hkl.rotate(rotateHKL.y, ofVec3f(0, 1, 0));
+
+	// anything behind the HKL-origin is outside the sphere right away
+	if (hkl.z < 0) return false;
+
+	// anything in front of the crystal is out right away
+	// crystal position = ewaldO position
+	if (hkl.z > ewaldO.z) return false;
+
+	// if ((h == 3 || h == -3) && (k == 3 || k == -3) && (l == 3 || l == -3) ) {
+	// 	cout << "point(" << h << "," << k << "," << l << ") becomes " << hkl.x << " " << hkl.y << " " << hkl.z << endl;
+	// }
+
+
+	float distance = ewaldO.distance( hkl );
+	// if (h == 3 && k == 3 && l == 3 ) {
+	// 	cout << "ewaldO = " << ewaldO.x << " " << ewaldO.y << " " << ewaldO.z << "    distance = " << distance << endl;
+	// }
+
+	// if (distance < ewaldSphereRadius) return true;
+
+	if (distance > ewaldSphereRadius - ewaldMargin && distance < ewaldSphereRadius + ewaldMargin) {
+		return true;
+	}
+	// cout << "point(" << h << "," << k << "," << l << ") distance = " << distance << endl;
+
+
+	return false;
+}
 
 
 void ofApp::resetSettings() {
 
 	drawMode = 0;
-
 	showGUI = true;
+	sphereFill = true;
+	sphereColor = true;
 
 	viewRotation = ofVec3f(0,0,0);
+	rotateHKL = ofVec3f(0,0,0);
 
 	// style the GUI
 	ofxGuiSetDefaultWidth(400);
@@ -257,6 +342,7 @@ void ofApp::resetSettings() {
 
 	// GUI listeners
 	sphereResolution.addListener(this,&ofApp::changeSphereResolution);
+	waveLength.addListener(this,&ofApp::changeWaveLength);
 
 
 	// GUI setup
@@ -273,18 +359,23 @@ void ofApp::resetSettings() {
 	gui.add(sphereResolution.set("sphere resolution", 3, 2, 20));
 	gui.add(sphereBrightness.set("sphere brightness", 0.5, 0, 1));
 	gui.add(sphereAlpha.set("sphere alpha", 0.5, 0, 1));
-	gui.add(sphereFill.set("fill sphere", false));
-	gui.add(sphereColor.set("phase color", false));
+	// gui.add(sphereFill.set("fill sphere", false));
+	// gui.add(sphereColor.set("phase color", false));
 
-
-	gui.add(ewaldSphere.set("Ewald sphere", false));
+	gui.add(ewaldSphere.set("apply Ewald sphere", false));
 	gui.add(ewaldMargin.set("Ewald margin", 0.5, 0, 1));
-	gui.add(waveLength.set("xray wave length", 0.001, 0, 0.01));
+	gui.add(waveLength.set("xray wave length", 0.005, 0, 0.03));
+	gui.add(rotateCrystal.set("rotate crystal", 0.005, 0, 0.5));
 
 }
 
 void ofApp::changeSphereResolution(int & sphereResolution){
 	ofSetSphereResolution(sphereResolution);
+}
+
+void ofApp::changeWaveLength(float & waveLength){
+	ewaldSphereRadius = 0.1/waveLength;
+	ewaldO = ofVec3f(0,0,ewaldSphereRadius);
 }
 
 void ofApp::loadSettings() {
@@ -298,9 +389,12 @@ void ofApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-	// if (key == 'c') {
-	// 	useEasyCam = !useEasyCam;
-	// }
+	if (key == 'c') {
+		sphereColor = !sphereColor;
+	}
+	if (key == 'f') {
+		sphereFill = !sphereFill;
+	}
 	if (key == 'o') {
 		bool state = cam.getOrtho();
 		if (!state) {
@@ -314,10 +408,15 @@ void ofApp::keyReleased(int key){
 	else if (key == 'a') {
 		drawAxis = !drawAxis;
 	}
+	else if (key == 'e') {
+		displayEwald = !displayEwald;
+	}
 	else if (key == 'g') {
 		showGUI = !showGUI;
 	}
 	else if (key == 'r') {
+		rotateHKL = ofVec3f(0,0,0);
+		viewRotation = ofVec3f(0,0,0);
 		cam.reset();
 		cam.enableOrtho();
 		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
@@ -332,13 +431,12 @@ void ofApp::keyReleased(int key){
 	else if (key == 'y') {
 		cam.reset();
 		viewRotation = ofVec3f(0,0,0);
-		viewRotation.y = 90;
+		viewRotation.y = -90;
 		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
 	}
 	else if (key == 'z') {
 		cam.reset();
 		viewRotation = ofVec3f(0,0,0);
-		viewRotation.z = 90;
 		cam.setPosition(spaceO.x, spaceO.y, spaceO.z);
 	}
 	else if (key == 'm') {
