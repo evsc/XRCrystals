@@ -52,7 +52,7 @@ class ofApp : public ofBaseApp{
 
 		// search images
 		ofxCvGrayscaleImage depthImage;	// grayscale depth image
-		// ofxCvGrayscaleImage depthImageCropped;	// cropped grayscale depth image
+		ofxCvGrayscaleImage depthImageCropped;	// cropped grayscale depth image
 		ofxCvGrayscaleImage depthDiff;	// thresholded person finder image
 
 		// blob trackers
@@ -75,6 +75,11 @@ class ofApp : public ofBaseApp{
 		float smoothHead;
 		bool cropKinectImage;
 		int cropTop;
+		int cropBottom;
+		int cropLeft;
+		int cropRight;
+		int cropW;
+		int cropH;
 
 		// normalize the head coordinates?
 		bool bNormalizeX; // 0-kinect.width

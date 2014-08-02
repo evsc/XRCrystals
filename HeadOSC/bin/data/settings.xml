@@ -4,25 +4,29 @@
     <kinectID>0</kinectID>
     <!-- display image: 0 - none, 1 - threshold, 2 - RGB, 3 - depth-->
     <displayImage>1</displayImage>
+    <!-- crop settings -->
     <cropKinectImage>
         <top>100</top>
+        <bottom>100</bottom>
+        <left>0</left>
+        <right>0</right>
     </cropKinectImage>
     <!-- tracking settings -->
     <tracking>
         <!-- person finder depth clipping threshold; int 0 - 255 -->
-        <threshold>50</threshold>
-        <!-- kinect near clipping plane in mm; int -->
+        <threshold>86</threshold>
+        <!-- kinect near clipping plane in cm; int -->
         <nearClipping>500</nearClipping>
-        <!-- kinect far clipping plane in mm; int -->
+        <!-- kinect far clipping plane in cm; int -->
         <farClipping>6000</farClipping>
         <!-- minimum area to consider when looking for person blobs; int -->
         <personMinArea>3000</personMinArea>
         <!-- maximum area to consider when looking for person blobs; int -->
         <personMaxArea>153600</personMaxArea>
-        <!-- only consider highest points +- this & the person centroid-x; int -->
+        <!-- only consider highest points +- this & the person centroid; int -->
         <highestPointThreshold>50</highestPointThreshold>
         <!-- percentage to interpolate between person centroid & highest point; float 0 - 1-->
-        <headInterpolation>1.0</headInterpolation>
+        <headInterpolation>1.000000000</headInterpolation>
     </tracking>
     <!-- normalize head position coords, enable/disable; bool 0 or 1 -->
     <normalize>

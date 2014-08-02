@@ -34,6 +34,9 @@ void ofApp::setup(){
 	// settings
 	resetSettings();
 	loadSettings();
+
+	cropW = kinect.width - cropLeft - cropRight;
+	cropH = kinect.height - cropTop - cropBottom;
 	
 	// setup kinect
 	kinect.init(false); // no IR image
@@ -49,9 +52,10 @@ void ofApp::setup(){
 	}
 
 	// setup cv
-	depthImage.allocate(kinect.width, kinect.height);
-	// depthImageCropped.allocate(kinect.width, kinect.height-cropTop);
-	depthDiff.allocate(kinect.width, kinect.height);
+	// depthImage.allocate(kinect.width, kinect.height);
+	depthImageCropped.allocate(kinect.width, kinect.height);
+	depthImageCropped.setROI(cropLeft,cropTop,cropW, cropH);
+	depthDiff.allocate(cropW, cropH);
 
 	// zero the tilt on startup
 	angle = 0;
@@ -66,10 +70,9 @@ void ofApp::update(){
 	if(kinect.isFrameNew()) { // dont bother if the frames aren't new
 	
 		// find person-sized blobs
-		depthImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
-		// depthImageCropped.cropFrom(depthImage, 0, cropTop, kinect.width, kinect.height-cropTop);
-		// depthImageCropped.setRoiFromPixels(depthImage.getPixels(), 0, cropTop, kinect.width, kinect.height-cropTop);
-		depthDiff = depthImage;
+		// depthImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
+		depthImageCropped.setFromPixels(kinect.getDepthPixels(),kinect.width, kinect.height);
+		depthDiff = depthImageCropped;
 		depthDiff.threshold(threshold);
 		depthDiff.updateTexture();
 		personFinder.findContours(depthDiff, personMinArea, personMaxArea, 1, false);
@@ -143,7 +146,7 @@ void ofApp::draw(){
 	ofSetColor(255);
 	switch(displayImage) {
 		case THRESHOLD:
-			depthDiff.draw(0, 0);
+			depthDiff.draw(cropLeft,cropTop);
 			break;
 		case RGB:
 			kinect.draw(0, 0);
@@ -155,26 +158,31 @@ void ofApp::draw(){
 			break;
 	}
 
+	// draw crop area
+	ofNoFill();
+	ofSetColor(200,200,0);
+	ofRect(cropLeft,cropTop,cropW,cropH);
+
 	if(personFinder.blobs.size() > 0) {
 
 		// draw person finder
 		ofSetLineWidth(2.0);
-		personFinder.draw(0, 0, 640, 480);
+		personFinder.draw(cropLeft,cropTop,cropW, cropH);
 	
 		// purple - found person centroid
 		ofFill();
 		ofSetColor(255, 0, 255);
-		ofRect(person.position, 10, 10);
+		ofRect(cropLeft+person.position.x, cropTop+person.position.y, 10, 10);
 		
 		// gold - highest point
 		ofFill();
 		ofSetColor(255, 255, 0);
-		ofRect(highestPoint, 10, 10);
+		ofRect(cropLeft+highestPoint.x, cropTop+highestPoint.y, 10, 10);
 		
 		// light blue - "head" position
 		ofFill();
 		ofSetColor(0, 255, 255);
-		ofRect(head.x, head.y, 10, 10);
+		ofRect(cropLeft+head.x, cropTop+head.y, 10, 10);
 		
 		// draw current position
 		ofSetColor(255);
@@ -283,6 +291,15 @@ void ofApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void ofApp::resetSettings() {
+
+	cropKinectImage = true;
+	cropTop = 0;
+	cropBottom = 0;
+	cropLeft = 0;
+	cropRight = 0;
+
+	cropW = 640;
+	cropH = 480;
 	
 	threshold = 160;
 	nearClipping = 500;
@@ -295,9 +312,6 @@ void ofApp::resetSettings() {
 	bNormalizeX = false;
 	bNormalizeY = false;
 	bNormalizeZ = false;
-
-	cropKinectImage = true;
-	cropTop = 100;
 
 	smoothHead = 0.7;
 	
@@ -334,6 +348,14 @@ bool ofApp::loadSettings(const string xmlFile) {
 		
 		displayImage = (DisplayImage)xml.getValue("displayImage", displayImage);
 		kinectID = xml.getValue("kinectID", (int)kinectID);
+		
+		xml.pushTag("cropKinectImage");
+			cropTop = xml.getValue("top", cropTop);
+			cropBottom = xml.getValue("bottom", cropBottom);
+			cropLeft = xml.getValue("left", cropLeft);
+			cropRight = xml.getValue("right", cropRight);
+		xml.popTag();
+
 		
 		xml.pushTag("tracking");
 			threshold = xml.getValue("threshold", threshold);
@@ -390,6 +412,16 @@ bool ofApp::saveSettings(const string xmlFile) {
 		xml.addComment(" display image: 0 - none, 1 - threshold, 2 - RGB, 3 - depth");
 		xml.addValue("displayImage", displayImage);
 		
+		xml.addComment(" crop settings ");
+		xml.addTag("cropKinectImage");
+		xml.pushTag("cropKinectImage");
+			xml.addValue("top", cropTop);
+			xml.addValue("bottom", cropBottom);
+			xml.addValue("left", cropLeft);
+			xml.addValue("right", cropRight);
+		xml.popTag();
+		
+				
 		xml.addComment(" tracking settings ");
 		xml.addTag("tracking");
 		xml.pushTag("tracking");
@@ -408,6 +440,7 @@ bool ofApp::saveSettings(const string xmlFile) {
 			xml.addComment(" percentage to interpolate between person centroid & highest point; float 0 - 1" );
 			xml.addValue("headInterpolation", headInterpolation);
 		xml.popTag();
+
 		
 		xml.addComment(" normalize head position coords, enable/disable; bool 0 or 1 ");
 		xml.addTag("normalize");
