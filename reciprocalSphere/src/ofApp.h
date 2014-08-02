@@ -96,6 +96,7 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> ewaldMargin;
 		ofParameter<float> waveLength;
 		ofParameter<float> rotateCrystal;
+		ofParameter<float> tiltCrystal;
 
 
 		

@@ -154,6 +154,7 @@ void ofApp::draw(){
 						ofVec3f hkl = ofVec3f((*it).h*flipx*uc_h,(*it).k*uc_k,(*it).l*flipz*uc_l);
 						hkl.rotate(mirrorRotZ, ofVec3f(0, 0, 1));
 						hkl.rotate(rotateHKL.y, ofVec3f(0, 1, 0));
+						hkl.rotate(tiltCrystal, ofVec3f(1, 0, 0));
 
 						// avoid doubling of the mirror-plane
 						if ((hkl.x != hkl.y) || (i<2)) {
@@ -201,7 +202,7 @@ void ofApp::draw(){
 								// draw line from crystal to HKL dot
 								if (ewaldSphere) {
 									ofNoFill();
-									ofLine(ewaldO, ofVec3f(hkl.x,hkl.y,hkl.z));
+									// ofLine(ewaldO, ofVec3f(hkl.x,hkl.y,hkl.z));
 								}
 
 								visibleNodes++;
@@ -366,6 +367,7 @@ void ofApp::resetSettings() {
 	gui.add(ewaldMargin.set("Ewald margin", 0.5, 0, 1));
 	gui.add(waveLength.set("xray wave length", 0.005, 0, 0.03));
 	gui.add(rotateCrystal.set("rotate crystal", 0.005, 0, 0.5));
+	gui.add(tiltCrystal.set("tilt crystal", 0.0, 0, 180));
 
 }
 
