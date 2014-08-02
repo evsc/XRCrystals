@@ -56,6 +56,7 @@ void ofApp::setup(){
 	depthImageCropped.allocate(kinect.width, kinect.height);
 	depthImageCropped.setROI(cropLeft,cropTop,cropW, cropH);
 	depthDiff.allocate(cropW, cropH);
+	nullBg.allocate(cropW, cropH);
 
 	// zero the tilt on startup
 	angle = 0;
@@ -73,6 +74,26 @@ void ofApp::update(){
 		// depthImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
 		depthImageCropped.setFromPixels(kinect.getDepthPixels(),kinect.width, kinect.height);
 		depthDiff = depthImageCropped;
+		if (captureNullBg) {
+			if (nullBgFrames==7) {
+				// first capture, let's take the full image
+				nullBg = depthImageCropped;
+
+			} else {
+				// now lets add weighted images, to smooth it over time
+				cv::Mat cvimg = nullBg.getCvImage();
+				cv::Mat depthimg = depthImageCropped.getCvImage();
+				cv::addWeighted(cvimg, .7, depthimg, 0.3, 0., cvimg);
+				*nullBg.getCvImage() = cvimg;
+			}
+			nullBgFrames--;
+			cout << "capture nullBg " << nullBgFrames << endl;
+			if (nullBgFrames<=0) {
+				// cvConvertScale( grayImg, shortImg, 65535.0f/255.0f, 0 );
+				nullBgFrames = 0;
+				captureNullBg = false;
+			}
+		}
 		depthDiff.threshold(threshold);
 		depthDiff.updateTexture();
 		personFinder.findContours(depthDiff, personMinArea, personMaxArea, 1, false);
@@ -154,6 +175,8 @@ void ofApp::draw(){
 		case DEPTH:
 			kinect.drawDepth(0, 0);
 			break;
+		case NULLBG:
+			nullBg.draw(cropLeft,cropTop);
 		default: // NONE
 			break;
 	}
@@ -189,8 +212,35 @@ void ofApp::draw(){
 		ofDrawBitmapString(ofToString(headAdj.x, 2)+" "+ofToString(headAdj.y, 2)+" "+ofToString(headAdj.z, 2), 12, 12);
 	}
 	
+
 	ofSetColor(255);
-	ofDrawBitmapString("threshold " + ofToString(threshold), 12, 24);
+	stringstream infoStream;
+	infoStream << "threshold (-/=)\t\t" <<  ofToString(threshold) << endl;
+	infoStream << "image (d)\t\t";
+	switch (displayImage) {
+		case 0: infoStream << "NONE" << endl;
+		break;
+		case 1: infoStream << "THRESHOLD" << endl;
+		break;
+		case 2: infoStream << "RGB" << endl;
+		break;
+		case 3: infoStream << "DEPTH" << endl;
+		break;
+		case 4: infoStream << "NULLBG" << endl;
+		break;
+	}
+	infoStream << "nearClipping \t\t" << ofToString(nearClipping) << endl;
+	infoStream << "farClipping \t\t" << ofToString(farClipping) << endl;
+	infoStream << "personMinArea \t\t" << ofToString(personMinArea) << endl;
+	infoStream << "personMaxArea \t\t" << ofToString(personMaxArea) << endl;
+	infoStream << "smoothHead (1/2)\t" << ofToString(smoothHead) << endl;
+	infoStream << "highestPointThreshold \t" << ofToString(highestPointThreshold) << endl;
+	infoStream << "sendAddress \t \t" << sendAddress << endl;
+	infoStream << "capture nullBg  \t(n)" << endl;
+	infoStream << "fullscreen \t \t(f/g) " << endl;
+
+	ofDrawBitmapString(infoStream.str(), 20, 300);
+
 
 	ofPopMatrix();
 }
@@ -248,11 +298,17 @@ void ofApp::keyPressed(int key){
 			// increment enum
 			int d = (int)displayImage;
 			d++;
-			if(d > DEPTH) {
+			if(d > NULLBG) {
 				d = (int)NONE;
 			}
 			displayImage = (DisplayImage)d;
 			break;
+		}
+
+		case 'n': {
+			// capture empty scene for background subtraction
+			captureNullBg = true;
+			nullBgFrames = 7;
 		}
 			
 		case 's':
@@ -291,6 +347,9 @@ void ofApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void ofApp::resetSettings() {
+
+	captureNullBg = false;
+	nullBgFrames = 0;
 
 	cropKinectImage = true;
 	cropTop = 0;

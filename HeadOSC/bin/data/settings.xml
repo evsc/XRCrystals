@@ -3,7 +3,7 @@
     <!-- which kinect ID to open (note: doesn't change when reloading); int -->
     <kinectID>0</kinectID>
     <!-- display image: 0 - none, 1 - threshold, 2 - RGB, 3 - depth-->
-    <displayImage>1</displayImage>
+    <displayImage>2</displayImage>
     <!-- crop settings -->
     <cropKinectImage>
         <top>100</top>

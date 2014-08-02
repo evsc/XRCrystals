@@ -54,6 +54,10 @@ class ofApp : public ofBaseApp{
 		ofxCvGrayscaleImage depthImage;	// grayscale depth image
 		ofxCvGrayscaleImage depthImageCropped;	// cropped grayscale depth image
 		ofxCvGrayscaleImage depthDiff;	// thresholded person finder image
+		// ofxCvGrayscaleImage nullBg;	// empty scene, for background subtraction
+		ofxCvGrayscaleImage nullBg;	// empty scene, for background subtraction
+		bool captureNullBg;
+		int nullBgFrames;
 
 		// blob trackers
 		ofxCvContourFinder 	personFinder;
@@ -95,7 +99,8 @@ class ofApp : public ofBaseApp{
 			NONE = 0,
 			THRESHOLD = 1,
 			RGB = 2,
-			DEPTH = 3
+			DEPTH = 3,
+			NULLBG = 4
 		} displayImage;
 		
 		// osc send destination
