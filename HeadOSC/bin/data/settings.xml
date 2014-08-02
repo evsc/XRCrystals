@@ -3,7 +3,7 @@
     <!-- which kinect ID to open (note: doesn't change when reloading); int -->
     <kinectID>0</kinectID>
     <!-- display image: 0 - none, 1 - threshold, 2 - RGB, 3 - depth-->
-    <displayImage>2</displayImage>
+    <displayImage>3</displayImage>
     <!-- crop settings -->
     <cropKinectImage>
         <top>100</top>
@@ -14,7 +14,7 @@
     <!-- tracking settings -->
     <tracking>
         <!-- person finder depth clipping threshold; int 0 - 255 -->
-        <threshold>86</threshold>
+        <threshold>40</threshold>
         <!-- kinect near clipping plane in cm; int -->
         <nearClipping>500</nearClipping>
         <!-- kinect far clipping plane in cm; int -->

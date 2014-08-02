@@ -73,7 +73,18 @@ void ofApp::update(){
 		// find person-sized blobs
 		// depthImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
 		depthImageCropped.setFromPixels(kinect.getDepthPixels(),kinect.width, kinect.height);
+
+
 		depthDiff = depthImageCropped;
+
+		// bg subtraction
+		if (nullBgDefined && doBgSubtraction) {
+			cv::Mat cvimg = depthDiff.getCvImage();
+			cv::Mat bgimg = nullBg.getCvImage();
+			cv::subtract(cvimg, bgimg, cvimg);
+			*depthDiff.getCvImage() = cvimg;
+		}
+
 		if (captureNullBg) {
 			if (nullBgFrames==7) {
 				// first capture, let's take the full image
@@ -92,6 +103,7 @@ void ofApp::update(){
 				// cvConvertScale( grayImg, shortImg, 65535.0f/255.0f, 0 );
 				nullBgFrames = 0;
 				captureNullBg = false;
+				nullBgDefined = true;
 			}
 		}
 		depthDiff.threshold(threshold);
@@ -236,6 +248,9 @@ void ofApp::draw(){
 	infoStream << "smoothHead (1/2)\t" << ofToString(smoothHead) << endl;
 	infoStream << "highestPointThreshold \t" << ofToString(highestPointThreshold) << endl;
 	infoStream << "sendAddress \t \t" << sendAddress << endl;
+	infoStream << "doBgSubtraction (b)  \t";
+	if (doBgSubtraction) infoStream << "yes" << endl;
+	else infoStream << "no" << endl;
 	infoStream << "capture nullBg  \t(n)" << endl;
 	infoStream << "fullscreen \t \t(f/g) " << endl;
 
@@ -305,10 +320,16 @@ void ofApp::keyPressed(int key){
 			break;
 		}
 
+		case 'b': {
+			doBgSubtraction = !doBgSubtraction;
+			break;
+		}
+
 		case 'n': {
 			// capture empty scene for background subtraction
 			captureNullBg = true;
 			nullBgFrames = 7;
+			break;
 		}
 			
 		case 's':
@@ -348,8 +369,10 @@ void ofApp::keyPressed(int key){
 //--------------------------------------------------------------
 void ofApp::resetSettings() {
 
+	doBgSubtraction = true;
 	captureNullBg = false;
 	nullBgFrames = 0;
+	nullBgDefined = false;
 
 	cropKinectImage = true;
 	cropTop = 0;

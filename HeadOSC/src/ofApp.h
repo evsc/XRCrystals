@@ -58,6 +58,8 @@ class ofApp : public ofBaseApp{
 		ofxCvGrayscaleImage nullBg;	// empty scene, for background subtraction
 		bool captureNullBg;
 		int nullBgFrames;
+		bool nullBgDefined;
+		bool doBgSubtraction;
 
 		// blob trackers
 		ofxCvContourFinder 	personFinder;
