@@ -29,10 +29,12 @@ class ofApp : public ofBaseApp{
 		ofxOscReceiver receiver;
 
 		ofPoint head;
-		ofVec3f roomDimension;
+		ofVec3f room;
 
 		ofxPanel gui;
 		bool showGUI;
+
+		ofTrueTypeFont font;
 
 		void changeRoomX(float & roomX);
 		void changeRoomY(float & roomY);

@@ -7,6 +7,8 @@ void ofApp::setup(){
 	resetSettings();
 	loadSettings();
 
+	font.loadFont("mono.ttf", 36);
+
 	cout << "listening for osc messages on port " << oscPort << "\n";
 	receiver.setup(ofToInt(oscPort));
 
@@ -58,7 +60,7 @@ void ofApp::draw(){
 	ofBackground(30,30,30);
 
 	ofPushMatrix();
-	float sc = 0.3 * (ofGetWidth()/900.0);
+	float sc = 0.15 * (ofGetWidth()/900.0);
 	ofScale(sc,sc,sc);
 
 	ofRotateX(viewRotation.x);
@@ -68,8 +70,8 @@ void ofApp::draw(){
 	ofSetColor(255);
 	ofNoFill();
 
-	ofVec3f boxO = ofVec3f(-roomDimension.x/2,-roomDimension.y/2,-roomDimension.z/2);
-	ofDrawBox(roomDimension.x, roomDimension.y, roomDimension.z);
+	ofVec3f boxO = ofVec3f(0,0,-room.z/2);
+	ofDrawBox(room.x, room.y, room.z);
 
 	// ofSetColor(255,100);
 
@@ -77,16 +79,16 @@ void ofApp::draw(){
 	ofTranslate(boxO);
 
 	// draw point-planes
-	drawPlane( ofPoint(head.x,0,0), ofPoint(head.x,roomDimension.y,0), ofPoint(head.x, roomDimension.y, roomDimension.z), ofPoint(head.x, 0, roomDimension.z ));
-	drawPlane( ofPoint(0,head.y,0), ofPoint(roomDimension.x,head.y,0), ofPoint(roomDimension.x, head.y, roomDimension.z), ofPoint(0, head.y, roomDimension.z ));
-	drawPlane( ofPoint(0,0,head.z), ofPoint(roomDimension.x,0,head.z), ofPoint(roomDimension.x, roomDimension.y, head.z), ofPoint(0,roomDimension.y, head.z));
+	drawPlane( ofPoint(head.x,-room.y/2,0), ofPoint(head.x,room.y/2,0), ofPoint(head.x, room.y/2, room.z), ofPoint(head.x, -room.y/2, room.z ));
+	drawPlane( ofPoint(-room.x/2,head.y,0), ofPoint(room.x/2,head.y,0), ofPoint(room.x/2, head.y, room.z), ofPoint(-room.x/2, head.y, room.z ));
+	drawPlane( ofPoint(-room.x/2,-room.y/2,head.z), ofPoint(room.x/2,-room.y/2,head.z), ofPoint(room.x/2, room.y/2, head.z), ofPoint(-room.x/2,room.y/2, head.z));
 
 	// draw head
 	ofFill();
-	ofDrawBox(head, 30);
+	ofDrawBox(head, 150);
 
 	// draw kinect
-	ofDrawBox(roomDimension.x/2, roomDimension.y/2,0, 50,20,20);
+	ofDrawBox(0,0,0, 250,50,80);
 
 
 	ofPopMatrix();
@@ -95,7 +97,15 @@ void ofApp::draw(){
 	cam.end();
 
 
-	if (showGUI) gui.draw();
+	if (showGUI) {
+		gui.draw();
+
+		font.drawString("x: "+ofToString(head.x,2), 30,250);
+		font.drawString("y: "+ofToString(head.y,2), 30,300);
+		font.drawString("z: "+ofToString(head.z,2), 30,350);
+
+	}
+
 
 }
 
@@ -159,23 +169,23 @@ void ofApp::resetSettings() {
 	roomX = 640;
 	roomY = 480;
 	roomZ = 2000;
-	roomDimension = ofVec3f(roomX,roomY,roomZ);
+	room = ofVec3f(roomX,roomY,roomZ);
 }
 
 void ofApp::loadSettings() {
 	gui.loadFromFile("settings.xml");
 
-	roomDimension = ofVec3f(roomX,roomY,roomZ);
+	room = ofVec3f(roomX,roomY,roomZ);
 }
 
 void ofApp::changeRoomX(float & roomX) {
-	roomDimension = ofVec3f(roomX,roomY,roomZ);
+	room = ofVec3f(roomX,roomY,roomZ);
 }
 void ofApp::changeRoomY(float & roomY) {
-	roomDimension = ofVec3f(roomX,roomY,roomZ);
+	room = ofVec3f(roomX,roomY,roomZ);
 }
 void ofApp::changeRoomZ(float & roomZ) {
-	roomDimension = ofVec3f(roomX,roomY,roomZ);
+	room = ofVec3f(roomX,roomY,roomZ);
 }
 
 //--------------------------------------------------------------
