@@ -1,10 +1,9 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
 #include "ofxOsc.h"
 
-
-#define PORT 9000
 
 class ofApp : public ofBaseApp{
 
@@ -23,8 +22,34 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+		void createGUI();
+		void resetSettings();
+		void loadSettings();
+
 		ofxOscReceiver receiver;
 
 		ofPoint head;
-		
+		ofVec3f roomDimension;
+
+		ofxPanel gui;
+		bool showGUI;
+
+		void changeRoomX(float & roomX);
+		void changeRoomY(float & roomY);
+		void changeRoomZ(float & roomZ);
+
+
+		ofParameter<float> roomX;
+		ofParameter<float> roomY;
+		ofParameter<float> roomZ;
+
+		ofParameter<string> oscPort;
+		ofParameter<string> oscAddress;
+
+
+		ofEasyCam cam;
+		ofVec3f viewRotation;
+
+
+		void drawPlane(ofPoint p1, ofPoint p2, ofPoint p3, ofPoint p4);
 };
