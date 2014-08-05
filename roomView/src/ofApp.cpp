@@ -31,6 +31,8 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 
+	updatedHead = false;
+
 	// check for waiting messages
 	while(receiver.hasWaitingMessages()){
 
@@ -45,6 +47,7 @@ void ofApp::update(){
 			head.y = m.getArgAsFloat(1);
 			head.z = m.getArgAsFloat(2);
 
+			updatedHead = true;
 			// cout << "head position at " << head.x << " | " << head.y << " | " << head.z << endl;
 		}
 	}
@@ -60,7 +63,7 @@ void ofApp::draw(){
 	ofBackground(30,30,30);
 
 	ofPushMatrix();
-	float sc = 0.15 * (ofGetWidth()/900.0);
+	float sc = 0.05 * (ofGetWidth()/900.0);
 	ofScale(sc,sc,sc);
 
 	ofRotateX(viewRotation.x);
@@ -85,7 +88,9 @@ void ofApp::draw(){
 
 	// draw head
 	ofFill();
-	ofDrawBox(head, 150);
+	if (updatedHead) {
+		ofDrawBox(head, 150);
+	}
 
 	// draw kinect
 	ofDrawBox(0,0,0, 250,50,80);
@@ -155,9 +160,9 @@ void ofApp::createGUI() {
 	roomZ.addListener(this,&ofApp::changeRoomZ);
 
 	gui.setup("room tracking");
-	gui.add(roomX.set( "room x", 640, 0, 3000 ));
-	gui.add(roomY.set( "room y", 480, 0, 3000 ));
-	gui.add(roomZ.set( "room z", 2000, 0, 3000 ));
+	gui.add(roomX.set( "room x", 640, 0, 8000 ));
+	gui.add(roomY.set( "room y", 480, 0, 8000 ));
+	gui.add(roomZ.set( "room z", 2000, 0, 8000 ));
 	gui.add(oscPort.set("osc port", "8000"));
 	gui.add(oscAddress.set("osc address", "/head"));
 
@@ -166,6 +171,8 @@ void ofApp::createGUI() {
 void ofApp::resetSettings() {
 	showGUI = true;
 	oscPort = "8000";
+
+	updatedHead = false;
 	roomX = 640;
 	roomY = 480;
 	roomZ = 2000;

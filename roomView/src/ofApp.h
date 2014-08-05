@@ -28,6 +28,7 @@ class ofApp : public ofBaseApp{
 
 		ofxOscReceiver receiver;
 
+		bool updatedHead;
 		ofPoint head;
 		ofVec3f room;
 
