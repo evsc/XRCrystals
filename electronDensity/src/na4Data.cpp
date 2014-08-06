@@ -19,6 +19,11 @@ na4Data::na4Data() {
 	cell_dim = ofVec3f(1,1,1);
 	cell_rot = ofVec3f(90,90,90);
 
+
+	scaleValue = 0.00001;
+	minValue = 0;
+	maxValue = 0;
+
 }
 
 na4Data::~na4Data() {
@@ -154,6 +159,10 @@ void na4Data::parseFile( string fileName ) {
 				float f = intToReal(v);
 				// if (section == 0 && row == 0) cout << "col\t" << col << "\t" << c4 << "\t" << f << endl;
 				map[section][row][col] = f;
+
+				minValue = min(minValue, f);
+				maxValue = max(maxValue, f);
+
 				col++;
 				cp+=4;
 			}
@@ -177,7 +186,10 @@ void na4Data::parseFile( string fileName ) {
 	cout << "mode \t\t" << mode << endl;
 	cout << "cell dim \t" << cell_dim.x << "\t" << cell_dim.y << "\t" << cell_dim.z << endl;
 	cout << "cell rot \t" << cell_rot.x << "\t" << cell_rot.y << "\t" << cell_rot.z << endl;
-	cout << "sections \t" << section << endl;
+	cout << "loaded \t\t" << section << " sections" << endl;
+	cout << "scaleValue \t" << scaleValue << endl;
+	cout << "minValue \t" << minValue << endl;
+	cout << "maxValue \t" << maxValue << endl;
 
 }
 
@@ -224,12 +236,10 @@ int na4Data::char4ToInt( string c4 ) {
 
 float na4Data::intToReal( int v ) {
 
-	float sc = 0.0001;
-
 	if (v < pow(2,23)) {
-		return v * sc;
+		return v * scaleValue;
 	} else {
-		return (v - pow(2,24)) * sc;
+		return (v - pow(2,24)) * scaleValue;
 	}
 
 }

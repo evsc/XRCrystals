@@ -36,19 +36,16 @@ void ofApp::update(){
 	// check for waiting messages
 	while(receiver.hasWaitingMessages()){
 
-		// get the next message
 		ofxOscMessage m;
 		receiver.getNextMessage(&m);
         
-		// check for mouse moved message
 		if(m.getAddress() == oscAddress.toString()){
-			// both the arguments are int32's
+
 			head.x = m.getArgAsFloat(0);
 			head.y = m.getArgAsFloat(1);
 			head.z = m.getArgAsFloat(2);
 
 			updatedHead = true;
-			// cout << "head position at " << head.x << " | " << head.y << " | " << head.z << endl;
 		}
 	}
 

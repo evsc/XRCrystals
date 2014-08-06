@@ -36,5 +36,9 @@ public:
 
 	float*** map;
 
+	float scaleValue;
+	float minValue;
+	float maxValue;
+
 
 };
