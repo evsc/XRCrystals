@@ -17,9 +17,14 @@ public:
 
 	void parseFile( string fileName );
 
+	int char4ToInt(string c4);
+	float intToReal(int v);
+
 
 	int grid[3];
-	int lim[3];
+	int sections;
+	int cols;
+	int rows;
 
 	int spacegroup;
 
