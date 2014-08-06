@@ -1,0 +1,14 @@
+<density_map>
+	<zoom>0.42</zoom>
+	<node_scale>0.24</node_scale>
+	<filter>1.66667</filter>
+	<draw_section>-1</draw_section>
+	<draw_row>-1</draw_row>
+	<draw_col>0</draw_col>
+	<osc_port>8000</osc_port>
+	<osc_address>/head</osc_address>
+<density_map/>
+<draw_alpha>0.653333</draw_alpha>
+	<draw_brightness>1</draw_brightness>
+<draw_3d>1</draw_3d>
+</density_map>

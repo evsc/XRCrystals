@@ -27,7 +27,37 @@ void ofApp::setup(){
 
 	ofSetSphereResolution(6);
 
+
+	// contour.SetFieldFcn(contourFunction);
+
+	// set limits
+	double pLimits[]={0,1,2,3,4};
+    cout << "contour: set limits" << endl;
+    contour.SetLimits(pLimits);
+
+	// set iso contour values
+	int n = 20;
+    vector<double> vIso(n); 
+	for (unsigned int i=0;i<vIso.size();i++) {
+		vIso[i]=(i-vIso.size()/2.0)*0.1;
+	}
+    // setting iso-lines
+    cout << "contour: set planes" << endl;
+    // contour.SetPlanes(vIso); // crashes
+
+    // generate contour lines, based on contourFunction
+    cout << "contour: generate" << endl;
+    contour.Generate();
+
+    cout << "contour: primary grid \t" << contour.GetColFir() << "\t" << contour.GetRowFir() << endl;
+    cout << "contour: secondary grid \t" << contour.GetColSec() << "\t" << contour.GetRowSec() << endl;
+
+
 }
+
+// double contourFunction(double x, double y) {
+// 	return 0.5*(cos(x+3.14/4)+sin(y+3.14/4));
+// }
 
 //--------------------------------------------------------------
 void ofApp::update(){
@@ -114,27 +144,56 @@ void ofApp::draw(){
 
 		// draw flat plane
 
-		ofFill();
+		// ofFill();
 
 
 		ofPushMatrix();
 		ofTranslate( ofGetWidth()/2, ofGetHeight()/2, 0);
 
-		float zoomV = pow(10,zoom) * 10;
-		ofScale(zoomV,zoomV,zoomV);
+		// float zoomV = pow(10,zoom) * 10;
+		// ofScale(zoomV,zoomV,zoomV);
 
-		ofTranslate( -(data.sections * uc.x )/2.f, -(data.rows * uc.y )/2.f, 0);
+		// ofTranslate( -(data.sections * uc.x )/2.f, -(data.rows * uc.y )/2.f, 0);
 
-		int col = drawCol;
-		if (col < 0 || col >= data.cols) col = 0;
-		for (int section=0; section<data.sections; section++) {
-			for (int row=0; row<data.rows; row++) {
-				float oV = data.map[section][row][col];
-				float sV = oV * pow(10,nodeScale) * 0.01;
-				ofSetColor( ofMap( oV, data.minValue, data.maxValue, 0, 255) );
-				ofRect(uc.x * section, uc.y * row, 0, uc.x, uc.y );
-			}
-		}
+		// int col = drawCol;
+		// if (col < 0 || col >= data.cols) col = 0;
+		// for (int section=0; section<data.sections; section++) {
+		// 	for (int row=0; row<data.rows; row++) {
+		// 		float oV = data.map[section][row][col];
+		// 		float sV = oV * pow(10,nodeScale) * 0.01;
+		// 		ofSetColor( ofMap( oV, data.minValue, data.maxValue, 0, 255) );
+		// 		ofRect(uc.x * section, uc.y * row, 0, uc.x, uc.y );
+		// 	}
+		// }
+
+
+		// draw contour
+		ofNoFill();
+		ofSetColor(255);
+		contour.Generate();
+
+
+	    // Retreiving info
+	    // CLineStripList* pStripList;
+
+	    // getting 0-th iso-curve
+	    // pStripList = contour.GetLines(0); 
+
+	    // iterating liststrip vertices
+	    // CLineStrip::iterator pos;
+	    // for (pos = pStripList->begin(); 
+	    //     pos != pStripList->end() ; pos++)
+	    // {
+	    //     CLineStrip pStrip = (*pos);
+
+	    //     if (pStrip->empty()) {
+
+	    //     }
+	    // }
+
+
+
+
 
 		ofPopMatrix();
 
@@ -324,3 +383,6 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
+
+
+

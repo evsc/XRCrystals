@@ -2,6 +2,9 @@
 
 #include "ofMain.h"
 #include "na4Data.h"
+#include "edContour.h"
+#include "ListContour.h"
+#include "GLContour.h"
 #include "ofxGui.h"
 #include "ofxOsc.h"
 
@@ -34,6 +37,13 @@ class ofApp : public ofBaseApp{
 		na4Data data;
 		ofVec3f uc;		// unit cell dimension, inverse
 
+
+
+		
+		
+	    // edContour contour;
+	    CGLContour contour;
+	    // CListContour contour;
 
 
 		/* **************** OSC **************** */
