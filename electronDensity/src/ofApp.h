@@ -32,7 +32,7 @@ class ofApp : public ofBaseApp{
 
 		/* **************** DATA **************** */
 		na4Data data;
-
+		ofVec3f uc;		// unit cell dimension, inverse
 
 
 
@@ -56,6 +56,8 @@ class ofApp : public ofBaseApp{
 		/* **************** GUI **************** */
 		ofxPanel gui;
 		bool showGUI;
+
+		ofParameter<bool> draw3D;
 
 		ofParameter<float> zoom;
 		ofParameter<float> nodeScale;

@@ -10,6 +10,10 @@ void ofApp::setup(){
 
 	data.parseFile("lysozyme.na4");
 
+	// inverse of unit cell dimensions
+	uc = ofVec3f( 1.f/data.cell_dim.x, 1.f/data.cell_dim.y, 1.f/data.cell_dim.z );
+	uc.normalize();
+
 
 	cam.setDistance(100);
 	cam.enableOrtho();
@@ -52,59 +56,89 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-
-	cam.begin();
-
-	ofBackground(0);
-	ofPushMatrix();
-
-	float zoomV = pow(10,zoom) * 10;
-	ofScale(zoomV,zoomV,zoomV);
-
-	ofRotateX(viewRotation.x);
-	ofRotateY(viewRotation.y);
-	ofRotateZ(viewRotation.z);
-
-	// draw one grid plane first
-
-	ofFill();
-	ofSetColor(255*drawBrightness, 255*drawAlpha);
-
 	int visibleNodes = 0;
 
-	// inverse of unit cell dimensions
-	ofVec3f uc = ofVec3f( 1.f/data.cell_dim.x, 1.f/data.cell_dim.y, 1.f/data.cell_dim.z );
-	uc.normalize();
+	ofBackground(0);
 
-	ofTranslate( -(data.sections * uc.x )/2.f, -(data.rows * uc.y )/2.f, -(data.cols * uc.z )/2.f);
+	if (draw3D) {
 
-	for (int section=0; section<data.sections; section++) {
-		for (int row=0; row<data.rows; row++) {
-			for (int col=0; col<data.cols; col++) {
+		// draw 3d version of full grid
 
-				if (drawSection==-1 || drawSection==section) {
-					if (drawRow==-1 || drawRow==row) {
-						if (drawCol==-1 || drawCol==col) {
-							float oV = data.map[section][row][col];
-							float sV = oV * pow(10,nodeScale) * 0.01;
-							if (oV>0 && oV>filter) {
-								ofDrawSphere( section * uc.x, row * uc.y, col * uc.z, sV );
-								visibleNodes++;
+		cam.begin();
+		ofPushMatrix();
+
+		float zoomV = pow(10,zoom) * 10;
+		ofScale(zoomV,zoomV,zoomV);
+
+		ofRotateX(viewRotation.x);
+		ofRotateY(viewRotation.y);
+		ofRotateZ(viewRotation.z);
+
+		// draw one grid plane first
+
+		ofFill();
+		ofSetColor(255*drawBrightness, 255*drawAlpha);
+
+
+		ofTranslate( -(data.sections * uc.x )/2.f, -(data.rows * uc.y )/2.f, -(data.cols * uc.z )/2.f);
+
+		for (int section=0; section<data.sections; section++) {
+			for (int row=0; row<data.rows; row++) {
+				for (int col=0; col<data.cols; col++) {
+
+					if (drawSection==-1 || drawSection==section) {
+						if (drawRow==-1 || drawRow==row) {
+							if (drawCol==-1 || drawCol==col) {
+								float oV = data.map[section][row][col];
+								float sV = oV * pow(10,nodeScale) * 0.01;
+								if (oV>0 && oV>filter) {
+									ofDrawSphere( section * uc.x, row * uc.y, col * uc.z, sV );
+									visibleNodes++;
+								}
 							}
 						}
 					}
+
+
 				}
-
-
 			}
 		}
+
+		ofPopMatrix();
+		cam.end();
+
+
+		
+	} else {
+
+
+		// draw flat plane
+
+		ofFill();
+
+
+		ofPushMatrix();
+		ofTranslate( ofGetWidth()/2, ofGetHeight()/2, 0);
+
+		float zoomV = pow(10,zoom) * 10;
+		ofScale(zoomV,zoomV,zoomV);
+
+		ofTranslate( -(data.sections * uc.x )/2.f, -(data.rows * uc.y )/2.f, 0);
+
+		int col = drawCol;
+		if (col < 0 || col >= data.cols) col = 0;
+		for (int section=0; section<data.sections; section++) {
+			for (int row=0; row<data.rows; row++) {
+				float oV = data.map[section][row][col];
+				float sV = oV * pow(10,nodeScale) * 0.01;
+				ofSetColor( ofMap( oV, data.minValue, data.maxValue, 0, 255) );
+				ofRect(uc.x * section, uc.y * row, 0, uc.x, uc.y );
+			}
+		}
+
+		ofPopMatrix();
+
 	}
-
-
-
-	ofPopMatrix();
-
-	cam.end();
 
 
 	if (showGUI) {
@@ -115,9 +149,11 @@ void ofApp::draw(){
 		ofSetColor(ofColor(255));
 		stringstream keyInstructions;
 		keyInstructions << " r  ... reset camera" << endl;
-		keyInstructions << " x  ... view from x axis " << endl;
-		keyInstructions << " y  ... view from y axis " << endl;
-		keyInstructions << " z  ... view from z axis " << endl;
+		if (draw3D) {
+			keyInstructions << " x  ... view from x axis " << endl;
+			keyInstructions << " y  ... view from y axis " << endl;
+			keyInstructions << " z  ... view from z axis " << endl;
+		}
 		keyInstructions << " f ... toggle fullscreen " << endl;
 		keyInstructions << " p  ... save screenshot " << endl;
 
@@ -127,7 +163,8 @@ void ofApp::draw(){
 
 
 	ofDrawBitmapString(ofToString(ofGetFrameRate(),0) + " FPS", ofGetWidth()-105, ofGetHeight()-30);
-	ofDrawBitmapString(ofToString(visibleNodes) + " Nodes", ofGetWidth()-105, ofGetHeight()-50);
+	if (draw3D)	ofDrawBitmapString(ofToString(visibleNodes) + " Nodes", ofGetWidth()-105, ofGetHeight()-50);
+	
 
 
 }
@@ -146,6 +183,7 @@ void ofApp::createGUI() {
 
 
 	gui.setup("density map");
+	gui.add(draw3D.set("draw 3d", false));
 	gui.add(zoom.set( "zoom", 0, -1.f, 1.f ));
 	gui.add(nodeScale.set( "node scale", 0, -1.f, 1.f ));
 	gui.add(filter.set( "filter", 0, 0, 100 ));
@@ -178,6 +216,8 @@ void ofApp::resetSettings() {
 	drawCol = -1;
 
 	viewRotation = ofVec3f(0,0,0);
+
+	uc = ofVec3f(1,1,1);
 
 }
 
