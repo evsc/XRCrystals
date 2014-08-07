@@ -80,6 +80,8 @@ class ofApp : public ofBaseApp{
 		ofParameter<int> drawCol;
 
 		ofParameter<int> contourSize;
+		ofParameter<int> isoPlanes;
+		ofParameter<float> isoPlaneDist;
 		ofParameter<int> gridSize;
 
 		ofParameter<float> drawAlpha;
@@ -91,6 +93,8 @@ class ofApp : public ofBaseApp{
 
 		void changeContourSize(int & contourSize);
 		void changeGridSize(int & gridSize);
+		void changeIsoPlanes(int & isoPlanes);
+		void changeIsoPlaneDist(float & isoPlaneDist);
 
 
 };

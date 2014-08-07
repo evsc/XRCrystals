@@ -43,10 +43,10 @@ void ofApp::setup(){
     contour.SetLimits(pLimits);
 
 	// set iso contour values
-	int n = 10;
+	int n = isoPlanes;
     vector<double> vIso(n); 
 	for (unsigned int i=0;i<vIso.size();i++) {
-		vIso[i]=(i-vIso.size()/2.0)*0.1;
+		vIso[i]=(i-vIso.size()/2.0)*isoPlaneDist;
 	}
     // setting iso-lines
     cout << "contour: set planes" << endl;
@@ -257,7 +257,7 @@ void ofApp::draw(){
 		keyInstructions << " f ... toggle fullscreen " << endl;
 		keyInstructions << " p  ... save screenshot " << endl;
 
-		ofDrawBitmapString(keyInstructions.str(), 20, 400);
+		ofDrawBitmapString(keyInstructions.str(), 20, 600);
 	}
 
 
@@ -284,6 +284,8 @@ void ofApp::createGUI() {
 	// GUI listeners
 	contourSize.addListener(this,&ofApp::changeContourSize);
 	gridSize.addListener(this,&ofApp::changeGridSize);
+	isoPlanes.addListener(this,&ofApp::changeIsoPlanes);
+	isoPlaneDist.addListener(this,&ofApp::changeIsoPlaneDist);
 
 
 	gui.setup("density map");
@@ -302,6 +304,8 @@ void ofApp::createGUI() {
 
 	gui.add(contourSize.set( "contour size", 1000, 10, 5000));
 	gui.add(gridSize.set( "grid size", 5, 2, 128));
+	gui.add(isoPlanes.set( "iso planes", 5, 2, 40));
+	gui.add(isoPlaneDist.set( "iso plane distance", 0.1, 0.01, 5.0));
 
 	gui.add(oscPort.set("osc port", "8000"));
 	gui.add(oscAddress.set("osc address", "/head"));
@@ -315,6 +319,24 @@ void ofApp::changeContourSize(int & contourSize) {
 void ofApp::changeGridSize(int & gridSize) {
 	contour.SetSecondaryGrid(gridSize,gridSize);
 	contour.SetSecondaryGrid(contourSize,contourSize);
+}
+
+void ofApp::changeIsoPlanes(int & isoPlanes) {
+	// set iso contour values
+    vector<double> vIso(isoPlanes); 
+	for (unsigned int i=0;i<vIso.size();i++) {
+		vIso[i]=(i-vIso.size()/2.0)*isoPlaneDist;
+	}
+    contour.SetPlanes(vIso); 
+}
+
+void ofApp::changeIsoPlaneDist(float & isoPlaneDist) {
+	// set iso contour values
+    vector<double> vIso(isoPlanes); 
+	for (unsigned int i=0;i<vIso.size();i++) {
+		vIso[i]=(i-vIso.size()/2.0)*isoPlaneDist;
+	}
+    contour.SetPlanes(vIso); 
 }
 
 
