@@ -1,5 +1,5 @@
 <density_map>
-	<zoom>0.42</zoom>
+	<zoom>0.553333</zoom>
 	<node_scale>0.24</node_scale>
 	<filter>1.66667</filter>
 	<draw_section>-1</draw_section>
@@ -11,4 +11,9 @@
 <draw_alpha>0.653333</draw_alpha>
 	<draw_brightness>1</draw_brightness>
 <draw_3d>0</draw_3d>
+<interpolate_grid>1</interpolate_grid>
+	<contour_size>1606</contour_size>
+	<grid_size>5</grid_size>
+	<iso_planes>5</iso_planes>
+	<iso_plane_distance>3.7026</iso_plane_distance>
 </density_map>

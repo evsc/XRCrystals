@@ -83,6 +83,7 @@ class ofApp : public ofBaseApp{
 		ofParameter<int> isoPlanes;
 		ofParameter<float> isoPlaneDist;
 		ofParameter<int> gridSize;
+		ofParameter<bool> interpolateGrid;
 
 		ofParameter<float> drawAlpha;
 		ofParameter<float> drawBrightness;

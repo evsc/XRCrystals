@@ -1,5 +1,5 @@
 #include "ofApp.h"
-
+// #include <math.h>
 //--------------------------------------------------------------
 void ofApp::setup(){
 
@@ -66,15 +66,28 @@ void ofApp::setup(){
    used as a callback function */
 double ofApp::getPixelFunction(ofApp * mother, double x, double y) {
 
-	int grid_x = ofMap(x,0,5.0,0,mother->data.sections-1);
-	int grid_y = ofMap(y,0,5.0,0,mother->data.rows-1);
+	float grid_x = ofMap(x,0,5.0,0,mother->data.sections-1);
+	float grid_y = ofMap(y,0,5.0,0,mother->data.rows-1);
 
 	int grid_z = min( int(mother->drawCol), mother->data.cols-1);
 	grid_z = max(grid_z, 0);
 
-	double v = mother->data.map[grid_x][grid_y][grid_z];
+	if (mother->interpolateGrid && grid_x < mother->data.sections-1 && grid_y < mother->data.rows-1) {
+		// interpolate
+		float v_x1y1 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y))][grid_z];
+		float v_x2y1 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y))][grid_z];
+		float v_x1y2 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y)) +1][grid_z];
+		float v_x2y2 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y)) +1][grid_z];
 
-	return v;
+		float topValue = ofLerp(v_x1y1,v_x2y1, grid_x - int(floor(grid_x)));
+		float bottomValue = ofLerp(v_x1y2,v_x2y2, grid_x - int(floor(grid_x)));
+
+		return ofLerp(topValue, bottomValue, grid_y - int(floor(grid_y)));
+	} else {
+		return mother->data.map[int(grid_x)][int(grid_y)][grid_z];
+	}
+
+
 	// cout << "getPixelFunction ( " << x << ", " << y << " )\t" << grid_x << "|" << grid_y << "\t" << v << endl;
 	// return 1.9*(cos(x+3.14/4)+sin(y+3.14/4));
 }
@@ -170,13 +183,10 @@ void ofApp::draw(){
 
 		// draw flat plane
 
-		// ofFill();
-
+		ofFill();
 
 		ofPushMatrix();
-		ofTranslate( ofGetWidth()/2, ofGetHeight()/2, 0);
-
-		ofTranslate(500,0,0);
+		ofTranslate(1200, ofGetHeight()/2, 0);
 
 		ofPushMatrix();
 		float zoomV = pow(10,zoom) * 10;
@@ -202,7 +212,7 @@ void ofApp::draw(){
 		ofSetColor(255);
 
 		ofPushMatrix();
-		ofTranslate(-600,0,0);
+		ofTranslate(-800,0,0);
 
 		zoomV = 215.0f/contourSize * pow(10,zoom);
 		ofScale(zoomV,zoomV,zoomV);
@@ -302,6 +312,7 @@ void ofApp::createGUI() {
 	gui.add(drawCol.set( "draw col", -1, -1, 100));
 
 
+	gui.add(interpolateGrid.set( "interpolate grid", true));
 	gui.add(contourSize.set( "contour size", 1000, 10, 5000));
 	gui.add(gridSize.set( "grid size", 5, 2, 128));
 	gui.add(isoPlanes.set( "iso planes", 5, 2, 40));
