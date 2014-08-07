@@ -46,7 +46,6 @@ class ofApp : public ofBaseApp{
 	    // CListContour contour;
 
 	    static double getPixelFunction(ofApp * mother, double x, double y);
-	    double pixelFunction(double x, double y);
 
 
 		/* **************** OSC **************** */
@@ -80,11 +79,18 @@ class ofApp : public ofBaseApp{
 		ofParameter<int> drawRow;
 		ofParameter<int> drawCol;
 
+		ofParameter<int> contourSize;
+		ofParameter<int> gridSize;
+
 		ofParameter<float> drawAlpha;
 		ofParameter<float> drawBrightness;
 
 		ofParameter<string> oscPort;
 		ofParameter<string> oscAddress;
+
+
+		void changeContourSize(int & contourSize);
+		void changeGridSize(int & gridSize);
 
 
 };

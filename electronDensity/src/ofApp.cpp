@@ -30,21 +30,23 @@ void ofApp::setup(){
 
 
 	contour.SetFieldFcn(getPixelFunction, this);
-	// contour.SetFieldFcn(pixelFunction, this);
 
-	contour.SetFirstGrid(10,10);
-	contour.SetSecondaryGrid(100,100);
+	contour.SetFirstGrid(gridSize,gridSize);
+	// sets output size of the contour plot
+	contour.SetSecondaryGrid(contourSize,contourSize);
 
 	// set limits
-	double pLimits[]={0,1,0,1};
+	// regular limits seem to be 0..5 0..5, anything bigger makes it crash
+	// smaller limits 0..1 0..1 just show a portion of the grid
+	double pLimits[]={0,5,0,5};
     cout << "contour: set limits" << endl;
-    // contour.SetLimits(pLimits);
+    contour.SetLimits(pLimits);
 
 	// set iso contour values
 	int n = 10;
     vector<double> vIso(n); 
 	for (unsigned int i=0;i<vIso.size();i++) {
-		vIso[i]=(i-vIso.size()/2.0)*0.2;
+		vIso[i]=(i-vIso.size()/2.0)*0.1;
 	}
     // setting iso-lines
     cout << "contour: set planes" << endl;
@@ -60,6 +62,8 @@ void ofApp::setup(){
 
 }
 
+/* function that sends the electron-density information back to the GLContour object 
+   used as a callback function */
 double ofApp::getPixelFunction(ofApp * mother, double x, double y) {
 
 	int grid_x = ofMap(x,0,5.0,0,mother->data.sections-1);
@@ -76,14 +80,7 @@ double ofApp::getPixelFunction(ofApp * mother, double x, double y) {
 }
 
 
-double ofApp::pixelFunction(double x, double y) {
-	int grid_x = ofMap(x,0,5.0,0,data.sections);
-	int grid_y = ofMap(x,0,5.0,0,data.rows);
-
-	return data.map[grid_x][grid_y][drawCol];
-}
-
-
+/* test function */
 double contourFunction(double x, double y) {
 	return 0.5*(cos(x+3.14/4)+sin(y+3.14/4));
 }
@@ -179,27 +176,42 @@ void ofApp::draw(){
 		ofPushMatrix();
 		ofTranslate( ofGetWidth()/2, ofGetHeight()/2, 0);
 
-		// float zoomV = pow(10,zoom) * 10;
-		// ofScale(zoomV,zoomV,zoomV);
+		ofTranslate(500,0,0);
 
-		// ofTranslate( -(data.sections * uc.x )/2.f, -(data.rows * uc.y )/2.f, 0);
+		ofPushMatrix();
+		float zoomV = pow(10,zoom) * 10;
+		ofScale(zoomV,zoomV,zoomV);
 
-		// int col = drawCol;
-		// if (col < 0 || col >= data.cols) col = 0;
-		// for (int section=0; section<data.sections; section++) {
-		// 	for (int row=0; row<data.rows; row++) {
-		// 		float oV = data.map[section][row][col];
-		// 		float sV = oV * pow(10,nodeScale) * 0.01;
-		// 		ofSetColor( ofMap( oV, data.minValue, data.maxValue, 0, 255) );
-		// 		ofRect(uc.x * section, uc.y * row, 0, uc.x, uc.y );
-		// 	}
-		// }
+		ofTranslate( -(data.sections * uc.x )/2.f, -(data.rows * uc.y )/2.f, 0);
+
+		int col = drawCol;
+		if (col < 0 || col >= data.cols) col = 0;
+		for (int section=0; section<data.sections; section++) {
+			for (int row=0; row<data.rows; row++) {
+				float oV = data.map[section][row][col];
+				float sV = oV * pow(10,nodeScale) * 0.01;
+				ofSetColor( ofMap( oV, data.minValue, data.maxValue, 0, 255) );
+				ofRect(uc.x * section, uc.y * row, 0, uc.x, uc.y );
+			}
+		}
+		ofPopMatrix();
 
 
 		// draw contour
 		ofNoFill();
 		ofSetColor(255);
+
+		ofPushMatrix();
+		ofTranslate(-600,0,0);
+
+		zoomV = 215.0f/contourSize * pow(10,zoom);
+		ofScale(zoomV,zoomV,zoomV);
+		ofTranslate(-contourSize/2,-contourSize/2,0);
+
+		// this actualy generates and draws the contour plot
 		contour.Generate();
+ 
+		ofPopMatrix();
 
 
 	    // Retreiving info
@@ -269,6 +281,10 @@ void ofApp::createGUI() {
 	ofxGuiSetTextPadding(5);
 	ofxGuiSetFont("mono.ttf", 12, true, true);
 
+	// GUI listeners
+	contourSize.addListener(this,&ofApp::changeContourSize);
+	gridSize.addListener(this,&ofApp::changeGridSize);
+
 
 	gui.setup("density map");
 	gui.add(draw3D.set("draw 3d", false));
@@ -283,9 +299,22 @@ void ofApp::createGUI() {
 	gui.add(drawRow.set( "draw row", -1, -1, 100));
 	gui.add(drawCol.set( "draw col", -1, -1, 100));
 
+
+	gui.add(contourSize.set( "contour size", 1000, 10, 5000));
+	gui.add(gridSize.set( "grid size", 5, 2, 128));
+
 	gui.add(oscPort.set("osc port", "8000"));
 	gui.add(oscAddress.set("osc address", "/head"));
 
+}
+
+void ofApp::changeContourSize(int & contourSize) {
+	contour.SetSecondaryGrid(contourSize,contourSize);
+}
+
+void ofApp::changeGridSize(int & gridSize) {
+	contour.SetSecondaryGrid(gridSize,gridSize);
+	contour.SetSecondaryGrid(contourSize,contourSize);
 }
 
 
