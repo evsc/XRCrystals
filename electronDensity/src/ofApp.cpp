@@ -14,36 +14,41 @@ void ofApp::setup(){
 	uc = ofVec3f( 1.f/data.cell_dim.x, 1.f/data.cell_dim.y, 1.f/data.cell_dim.z );
 	uc.normalize();
 
-
 	cam.setDistance(100);
 	cam.enableOrtho();
 	cam.setFov(60);
 	cam.setPosition(-ofGetWidth()/2,-ofGetHeight()/2,100);
-
 	// set so nothing gets clipped off
 	cam.setFarClip(2000);
 	cam.setNearClip(-1000);
 
-
 	ofSetSphereResolution(6);
 
 
-	// contour.SetFieldFcn(contourFunction);
+
+	////////// CONTOUR setup
+
+
+	contour.SetFieldFcn(getPixelFunction, this);
+	// contour.SetFieldFcn(pixelFunction, this);
+
+	contour.SetFirstGrid(10,10);
+	contour.SetSecondaryGrid(100,100);
 
 	// set limits
-	double pLimits[]={0,1,2,3,4};
+	double pLimits[]={0,1,0,1};
     cout << "contour: set limits" << endl;
-    contour.SetLimits(pLimits);
+    // contour.SetLimits(pLimits);
 
 	// set iso contour values
-	int n = 20;
+	int n = 10;
     vector<double> vIso(n); 
 	for (unsigned int i=0;i<vIso.size();i++) {
-		vIso[i]=(i-vIso.size()/2.0)*0.1;
+		vIso[i]=(i-vIso.size()/2.0)*0.2;
 	}
     // setting iso-lines
     cout << "contour: set planes" << endl;
-    // contour.SetPlanes(vIso); // crashes
+    contour.SetPlanes(vIso); 
 
     // generate contour lines, based on contourFunction
     cout << "contour: generate" << endl;
@@ -55,9 +60,33 @@ void ofApp::setup(){
 
 }
 
-// double contourFunction(double x, double y) {
-// 	return 0.5*(cos(x+3.14/4)+sin(y+3.14/4));
-// }
+double ofApp::getPixelFunction(ofApp * mother, double x, double y) {
+
+	int grid_x = ofMap(x,0,5.0,0,mother->data.sections-1);
+	int grid_y = ofMap(y,0,5.0,0,mother->data.rows-1);
+
+	int grid_z = min( int(mother->drawCol), mother->data.cols-1);
+	grid_z = max(grid_z, 0);
+
+	double v = mother->data.map[grid_x][grid_y][grid_z];
+
+	return v;
+	// cout << "getPixelFunction ( " << x << ", " << y << " )\t" << grid_x << "|" << grid_y << "\t" << v << endl;
+	// return 1.9*(cos(x+3.14/4)+sin(y+3.14/4));
+}
+
+
+double ofApp::pixelFunction(double x, double y) {
+	int grid_x = ofMap(x,0,5.0,0,data.sections);
+	int grid_y = ofMap(x,0,5.0,0,data.rows);
+
+	return data.map[grid_x][grid_y][drawCol];
+}
+
+
+double contourFunction(double x, double y) {
+	return 0.5*(cos(x+3.14/4)+sin(y+3.14/4));
+}
 
 //--------------------------------------------------------------
 void ofApp::update(){

@@ -6,6 +6,7 @@
 #include "stdlib.h"
 #include "math.h"
 #include "Contour.h"
+#include "ofApp.h"
 
 // #ifdef _DEBUG
 // #undef THIS_FILE
@@ -13,7 +14,7 @@
 // #define new DEBUG_NEW
 // #endif 
 
-double TestFunction(double x,double y)
+double TestFunction(ofApp* mother, double x,double y)
 {  
 	return 0.5*(cos(x+3.14/4)+sin(y+3.14/4)); 
 };
@@ -369,7 +370,7 @@ void CContour::Pass2(int x1, int x2, int y1, int y2)
 			yy3 = y1+yy3*(y2-y1);
 			xx3 = xoff+xx3*m_dDx;
 			yy3 = yoff+yy3*m_dDy;
-			f = (*m_pFieldFcn)(xx3, yy3);
+			f = (*m_pFieldFcn)(app, xx3, yy3);
 			if (f == v) {
 				ExportLine(i,bot,y1,top,y2);
 				ExportLine(i,x1,left,x2,right);
@@ -399,7 +400,7 @@ double CContour::Field(int x, int y)	 /* evaluate funct if we must,	*/
 	FnctData(x,y)->m_sBotLen = 0;
 	FnctData(x,y)->m_sRightLen = 0;
 	FnctData(x,y)->m_sLeftLen = 0;
-	return (FnctData(x,y)->m_dFnVal = (*m_pFieldFcn)(x1, y1));
+	return (FnctData(x,y)->m_dFnVal = (*m_pFieldFcn)(app, x1, y1));
 }
 
 void CContour::SetPlanes(const std::vector<double>& vPlanes)
@@ -410,7 +411,7 @@ void CContour::SetPlanes(const std::vector<double>& vPlanes)
 	m_vPlanes = vPlanes;
 };
 
-void CContour::SetFieldFcn(double (*_pFieldFcn)(double, double)) 
+void CContour::SetFieldFcn(double (*_pFieldFcn)(ofApp*,double, double)) 
 {	
 	m_pFieldFcn=_pFieldFcn;
 };

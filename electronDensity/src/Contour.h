@@ -46,6 +46,8 @@ struct CFnStr {
 	short m_sBotLen;
 };
 
+class ofApp;
+
 class CContour  
 {
 public:
@@ -74,7 +76,7 @@ public:
 	// Sets the isocurve values
 	void SetPlanes(const std::vector<double>& vPlanes);
 	// Sets the pointer to the F(x,y) funtion
-	void SetFieldFcn(double (*_pFieldFcn)(double, double));
+	void SetFieldFcn(double (*_pFieldFcn)(ofApp*,double, double));
 
 	// Retrieve dimension of grids, contouring region and isocurve
 	int GetColFir() const		{	return m_iColFir;};
@@ -93,6 +95,9 @@ public:
 	// double GetYi(int i) const { ASSERT(i>=0); return m_pLimits[2] +  i/(m_iColSec+1)*(m_pLimits[3]-m_pLimits[2])/(double)( m_iRowSec );};
 	double GetYi(int i) const { return m_pLimits[2] +  i/(m_iColSec+1)*(m_pLimits[3]-m_pLimits[2])/(double)( m_iRowSec );};
 
+	ofApp * app;
+
+
 protected:
 	// Accesibles variables
 	std::vector<double> m_vPlanes;			// value of contour planes
@@ -101,7 +106,7 @@ protected:
 	int m_iRowFir;								// primary	grid, number of rows
 	int m_iColSec;								// secondary grid, number of columns
 	int m_iRowSec;								// secondary grid, number of rows
-	double (*m_pFieldFcn)(double x, double y); // pointer to F(x,y) function
+	double (*m_pFieldFcn)(ofApp* mother, double x, double y); // pointer to F(x,y) function
 
 	// Protected function
 	virtual void ExportLine(int iPlane, int x1, int y1, int x2, int y2) = 0; // plots a line from (x1,y1) to (x2,y2)

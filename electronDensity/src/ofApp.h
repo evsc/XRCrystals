@@ -2,8 +2,8 @@
 
 #include "ofMain.h"
 #include "na4Data.h"
-#include "edContour.h"
-#include "ListContour.h"
+// #include "edContour.h"
+// #include "ListContour.h"
 #include "GLContour.h"
 #include "ofxGui.h"
 #include "ofxOsc.h"
@@ -45,6 +45,9 @@ class ofApp : public ofBaseApp{
 	    CGLContour contour;
 	    // CListContour contour;
 
+	    static double getPixelFunction(ofApp * mother, double x, double y);
+	    double pixelFunction(double x, double y);
+
 
 		/* **************** OSC **************** */
 		ofxOscReceiver receiver;
@@ -85,3 +88,7 @@ class ofApp : public ofBaseApp{
 
 
 };
+
+
+
+double contourFunction(double x, double y);

@@ -8,17 +8,23 @@
 #include "ofMain.h"
 #include "Contour.h"
 
+
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Contour.h"
+class ofApp;
 
 class CGLContour : public CContour  
 {
 public:
 	CGLContour();
 	virtual ~CGLContour();
+
+
+	// ofApp * app;
+
+	virtual void SetFieldFcn(double (*_pFieldFcn)(ofApp*, double, double), ofApp * call_oject);
 
 	// Drawing segment using OpenGL
 	// See CContour::ExportLine for further details
@@ -27,7 +33,7 @@ public:
 
 inline void CGLContour::ExportLine(int iPlane,int x1, int y1, int x2, int y2)
 {
-	cout << "GLContour::ExportLine(" << iPlane << ", " << x1 << ", " << y1 << ", " << x2 << ", " << y2 << ")" << endl;
+	// cout << "GLContour::ExportLine(" << iPlane << ", " << x1 << ", " << y1 << ", " << x2 << ", " << y2 << ")" << endl;
 	// glColor3f(iPlane/(float)GetNPlanes(),0,1.f-iPlane/(float)GetNPlanes());
 	// glBegin(GL_LINES);
 	// 	glVertex2f((GLfloat)(m_pLimits[0]+x1*m_dDx),(GLfloat)(m_pLimits[2]+y1*m_dDy));

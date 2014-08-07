@@ -7,7 +7,7 @@ void ofApp::setup(){
 	resetSettings();
 	loadSettings();
 
-	font.loadFont("mono.ttf", 36);
+	font.loadFont("mono.ttf", 60);
 
 	cout << "listening for osc messages on port " << oscPort << "\n";
 	receiver.setup(ofToInt(oscPort));
@@ -103,8 +103,8 @@ void ofApp::draw(){
 		gui.draw();
 
 		font.drawString("x: "+ofToString(head.x,2), 30,250);
-		font.drawString("y: "+ofToString(head.y,2), 30,300);
-		font.drawString("z: "+ofToString(head.z,2), 30,350);
+		font.drawString("y: "+ofToString(head.y,2), 30,350);
+		font.drawString("z: "+ofToString(head.z,2), 30,450);
 
 	}
 

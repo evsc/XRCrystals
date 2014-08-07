@@ -4,7 +4,7 @@
 
 // #include "stdafx.h"
 #include "GLContour.h"
-
+#include "ofApp.h"
 
 // #ifdef _DEBUG
 // #undef THIS_FILE
@@ -26,3 +26,11 @@ CGLContour::~CGLContour()
 {
 
 }
+
+
+void CGLContour::SetFieldFcn(double (*_pFieldFcn)(ofApp*, double, double), ofApp * call_object) 
+{	
+	// ofApp* app = static_cast<ofApp*>(call_object);
+	app = call_object;
+	m_pFieldFcn=_pFieldFcn;
+};
