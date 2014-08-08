@@ -77,7 +77,7 @@ class ofApp : public ofBaseApp{
 
 		ofParameter<int> drawSection;
 		ofParameter<int> drawRow;
-		ofParameter<int> drawCol;
+		ofParameter<float> drawCol;
 
 		ofParameter<int> contourSize;
 		ofParameter<int> isoPlanes;

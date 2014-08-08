@@ -4,7 +4,7 @@
 	<filter>1.66667</filter>
 	<draw_section>-1</draw_section>
 	<draw_row>-1</draw_row>
-	<draw_col>0</draw_col>
+	<draw_col>6</draw_col>
 	<osc_port>8000</osc_port>
 	<osc_address>/head</osc_address>
 <density_map/>
@@ -12,8 +12,8 @@
 	<draw_brightness>1</draw_brightness>
 <draw_3d>0</draw_3d>
 <interpolate_grid>1</interpolate_grid>
-	<contour_size>1606</contour_size>
-	<grid_size>5</grid_size>
-	<iso_planes>5</iso_planes>
-	<iso_plane_distance>3.7026</iso_plane_distance>
+	<contour_size>808</contour_size>
+	<grid_size>128</grid_size>
+	<iso_planes>7</iso_planes>
+	<iso_plane_distance>8.5066</iso_plane_distance>
 </density_map>

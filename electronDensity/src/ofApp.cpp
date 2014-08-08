@@ -69,22 +69,35 @@ double ofApp::getPixelFunction(ofApp * mother, double x, double y) {
 	float grid_x = ofMap(x,0,5.0,0,mother->data.sections-1);
 	float grid_y = ofMap(y,0,5.0,0,mother->data.rows-1);
 
-	int grid_z = min( int(mother->drawCol), mother->data.cols-1);
-	grid_z = max(grid_z, 0);
+	float grid_z = max( min( float(mother->drawCol), float(mother->data.cols)-1), 0.f);
 
-	if (mother->interpolateGrid && grid_x < mother->data.sections-1 && grid_y < mother->data.rows-1) {
+	if (mother->interpolateGrid && grid_x < mother->data.sections-1 && grid_y < mother->data.rows-1 && grid_z < mother->data.cols-1) {
 		// interpolate
-		float v_x1y1 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y))][grid_z];
-		float v_x2y1 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y))][grid_z];
-		float v_x1y2 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y)) +1][grid_z];
-		float v_x2y2 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y)) +1][grid_z];
+		float v_x1y1 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y))][int(floor(grid_z))];
+		float v_x2y1 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y))][int(floor(grid_z))];
+		float v_x1y2 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y)) +1][int(floor(grid_z))];
+		float v_x2y2 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y)) +1][int(floor(grid_z))];
 
 		float topValue = ofLerp(v_x1y1,v_x2y1, grid_x - int(floor(grid_x)));
 		float bottomValue = ofLerp(v_x1y2,v_x2y2, grid_x - int(floor(grid_x)));
 
-		return ofLerp(topValue, bottomValue, grid_y - int(floor(grid_y)));
+		float frontValue = ofLerp(topValue, bottomValue, grid_y - int(floor(grid_y)));
+
+		v_x1y1 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y))][int(floor(grid_z))+1];
+		v_x2y1 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y))][int(floor(grid_z))+1];
+		v_x1y2 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y)) +1][int(floor(grid_z))+1];
+		v_x2y2 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y)) +1][int(floor(grid_z))+1];
+
+		topValue = ofLerp(v_x1y1,v_x2y1, grid_x - int(floor(grid_x)));
+		bottomValue = ofLerp(v_x1y2,v_x2y2, grid_x - int(floor(grid_x)));
+
+		float backValue = ofLerp(topValue, bottomValue, grid_y - int(floor(grid_y)));
+
+		return ofLerp(frontValue, backValue, grid_z - int(floor(grid_z)));
+
+
 	} else {
-		return mother->data.map[int(grid_x)][int(grid_y)][grid_z];
+		return mother->data.map[int(grid_x)][int(grid_y)][int(grid_z)];
 	}
 
 
@@ -309,14 +322,14 @@ void ofApp::createGUI() {
 
 	gui.add(drawSection.set( "draw section", -1, -1, 100));
 	gui.add(drawRow.set( "draw row", -1, -1, 100));
-	gui.add(drawCol.set( "draw col", -1, -1, 100));
+	gui.add(drawCol.set( "draw col", 0, 0., 50.));
 
 
 	gui.add(interpolateGrid.set( "interpolate grid", true));
 	gui.add(contourSize.set( "contour size", 1000, 10, 5000));
 	gui.add(gridSize.set( "grid size", 5, 2, 128));
 	gui.add(isoPlanes.set( "iso planes", 5, 2, 40));
-	gui.add(isoPlaneDist.set( "iso plane distance", 0.1, 0.01, 5.0));
+	gui.add(isoPlaneDist.set( "iso plane distance", 0.1, 0.01, 25.0));
 
 	gui.add(oscPort.set("osc port", "8000"));
 	gui.add(oscAddress.set("osc address", "/head"));
@@ -385,6 +398,16 @@ void ofApp::loadSettings() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 
+	if (key == OF_KEY_DOWN) {
+		drawCol+=0.1;
+		if (drawCol > data.cols-1) drawCol = data.cols-1;
+		if (drawCol < 0) drawCol = 0;
+	}
+	else if (key == OF_KEY_UP) {
+		drawCol-=0.1;
+		if (drawCol > data.cols-1) drawCol = data.cols-1;
+		if (drawCol < 0) drawCol = 0;
+	}
 }
 
 //--------------------------------------------------------------
@@ -437,6 +460,7 @@ void ofApp::keyReleased(int key){
 		cam.enableOrtho();
 		cam.setPosition(-ofGetWidth()/2,-ofGetHeight()/2,100);	
 	}
+
 
 }
 
