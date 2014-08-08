@@ -52,9 +52,11 @@ class ofApp : public ofBaseApp{
 
 		/* **************** OSC **************** */
 		ofxOscReceiver receiver;
+		ofxOscSender localSender;
 
 		bool updatedHead;
 		ofPoint head;
+		bool drawHead;
 
 
 		/* **************** CAMERA **************** */

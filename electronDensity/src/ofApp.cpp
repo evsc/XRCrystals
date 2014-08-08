@@ -80,6 +80,11 @@ void ofApp::setup(){
     cout << "listening for osc messages on port " << oscPort << "\n";
 	receiver.setup(ofToInt(oscPort));
 
+	string localAddr = "100.100.10.11";
+	int oscPortOut = 8002;
+    cout << "sending osc messages to " << localAddr <<  " on port " << oscPortOut << "\n";
+	localSender.setup(localAddr, oscPortOut);
+
 }
 
 /* function that sends the electron-density information back to the GLContour object 
@@ -170,10 +175,20 @@ void ofApp::update(){
 			// map head position to parameter that controls plane that is drawn
 			drawRow = ofMap(head.z,1000,5000, 0, data.rows-1);
 			drawRow = max( min( float(drawRow), float(data.rows)-1), 0.f);
-
 			
 			drawSection = ofMap(head.x,-2800,2800, 0, data.sections-1);
 			drawSection = max( min( float(drawSection), float(data.sections)-1), 0.f);
+
+			drawCol = ofMap(head.y,200,2300, 0, data.cols-1);
+			drawCol = max( min( float(drawCol), float(data.cols)-1), 0.f);
+
+			float v = getInterpolatedGridValue(drawSection, drawRow, drawCol);
+
+			// send value to oscillator
+			ofxOscMessage message;
+			message.setAddress("/sound");
+			message.addFloatArg(v);
+			localSender.sendMessage(message);
 
 			updatedHead = true;
 		}
@@ -275,28 +290,51 @@ void ofApp::draw(){
 		// ofTranslate(ofGetWidth()*0.5, ofGetHeight()/2,0);
 
 		zoomV = 215.0f/contourSize * pow(10,zoom);
-		ofScale(zoomV*1.5,zoomV,zoomV);
+		ofScale(zoomV*1.5,-zoomV,zoomV);
 		ofTranslate(-contourSize/2,-contourSize/2,0);
-		ofSetLineWidth(2.0);
 
 		// this actualy generates and draws the contour plot
+		ofSetLineWidth(2.0);
 		contourCol.Generate();
+
+		if (drawHead) {
+			ofSetLineWidth(1.0);
+			ofSetColor(255,0,0); 
+			ofPushMatrix();
+			ofTranslate( drawSection * (1000.0/data.sections), drawCol * 1000.0/data.cols, 0);
+			ofLine(-50/1.5,0,50/1.5,0);
+			ofLine(0,-50,0,50);
+			ofPopMatrix();
+		}
 
 		ofPopMatrix();
 
 
 
+		ofNoFill();
+		ofSetColor(255);
 
 		ofPushMatrix();
 		// ofTranslate(-800,0,0);
 		ofTranslate(ofGetWidth()*0.75, ofGetHeight()/2,0);
 
 		zoomV = 215.0f/contourSize * pow(10,zoom);
-		ofScale(zoomV*1.5,zoomV,zoomV);
+		ofScale(zoomV*1.5,-zoomV,zoomV);
 		ofTranslate(-contourSize/2,-contourSize/2,0);
 
 		// this actualy generates and draws the contour plot
+		ofSetLineWidth(2.0);
 		contourSection.Generate();
+
+		if (drawHead) {
+			ofSetLineWidth(1.0);
+			ofSetColor(255,0,0); 
+			ofPushMatrix();
+			ofTranslate( drawRow * (1000.0/data.rows), drawCol * 1000.0/data.cols, 0);
+			ofLine(-50/1.5,0,50/1.5,0);
+			ofLine(0,-50,0,50);
+			ofPopMatrix();
+		}
 
 		ofPopMatrix();
 
@@ -444,6 +482,8 @@ void ofApp::resetSettings() {
 	zoom = 0;
 	nodeScale = 0;
 
+	drawHead = true;
+
 	drawAlpha = 0.5;
 	drawBrightness = 1.f;
 
@@ -533,7 +573,9 @@ void ofApp::keyReleased(int key){
 		cam.enableOrtho();
 		cam.setPosition(-ofGetWidth()/2,-ofGetHeight()/2,100);	
 	}
-
+	else if (key == 'h') {
+		drawHead = !drawHead;
+	}
 
 }
 
