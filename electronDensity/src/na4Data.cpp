@@ -236,10 +236,10 @@ int na4Data::char4ToInt( string c4 ) {
 
 float na4Data::intToReal( int v ) {
 
-	if (v < pow(2,23)) {
+	if (v < pow(2,23.0)) {
 		return v * scaleValue;
 	} else {
-		return (v - pow(2,24)) * scaleValue;
+		return (v - pow(2,24.0)) * scaleValue;
 	}
 
 }

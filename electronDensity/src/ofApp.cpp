@@ -285,89 +285,58 @@ void ofApp::draw(){
 		ofNoFill();
 		ofSetColor(255);
 
+
+		
+
 		ofPushMatrix();
-		ofTranslate(ofGetWidth()*0.25, ofGetHeight()/2,0);
+		ofTranslate(ofGetWidth()*0.5, ofGetHeight()/2,0);
 		// ofTranslate(ofGetWidth()*0.5, ofGetHeight()/2,0);
 
 		zoomV = 215.0f/contourSize * pow(10,zoom);
-		ofScale(zoomV*1.5,-zoomV,zoomV);
+		ofScale(zoomV*1.33,-zoomV,zoomV);
 		ofTranslate(-contourSize/2,-contourSize/2,0);
 
 		// this actualy generates and draws the contour plot
 		ofSetLineWidth(2.0);
-		contourCol.Generate();
 
-		if (drawHead) {
-			ofSetLineWidth(1.0);
-			ofSetColor(255,0,0); 
-			ofPushMatrix();
-			ofTranslate( drawSection * (1000.0/data.sections), drawCol * 1000.0/data.cols, 0);
-			ofLine(-50/1.5,0,50/1.5,0);
-			ofLine(0,-50,0,50);
-			ofPopMatrix();
+
+		if (frontView) {
+
+			contourCol.Generate();
+
+			if (drawHead) {
+				ofSetLineWidth(1.0);
+				ofSetColor(255,0,0); 
+				ofPushMatrix();
+				ofTranslate( drawSection * (1000.0/data.sections), drawCol * 1000.0/data.cols, 0);
+				ofLine(-50/1.5,0,50/1.5,0);
+				ofLine(0,-50,0,50);
+				ofPopMatrix();
+			}
+
+		} else {
+
+			contourSection.Generate();
+
+			if (drawHead) {
+				ofSetLineWidth(1.0);
+				ofSetColor(255,0,0); 
+				ofPushMatrix();
+				ofTranslate( drawRow * (1000.0/data.rows), drawCol * 1000.0/data.cols, 0);
+				ofLine(-50/1.5,0,50/1.5,0);
+				ofLine(0,-50,0,50);
+				ofPopMatrix();
+			}
+
 		}
 
-		ofPopMatrix();
 
-
-
-		ofNoFill();
-		ofSetColor(255);
-
-		ofPushMatrix();
-		// ofTranslate(-800,0,0);
-		ofTranslate(ofGetWidth()*0.75, ofGetHeight()/2,0);
-
-		zoomV = 215.0f/contourSize * pow(10,zoom);
-		ofScale(zoomV*1.5,-zoomV,zoomV);
-		ofTranslate(-contourSize/2,-contourSize/2,0);
-
-		// this actualy generates and draws the contour plot
-		ofSetLineWidth(2.0);
-		contourSection.Generate();
-
-		if (drawHead) {
-			ofSetLineWidth(1.0);
-			ofSetColor(255,0,0); 
-			ofPushMatrix();
-			ofTranslate( drawRow * (1000.0/data.rows), drawCol * 1000.0/data.cols, 0);
-			ofLine(-50/1.5,0,50/1.5,0);
-			ofLine(0,-50,0,50);
 			ofPopMatrix();
-		}
+			ofSetLineWidth(1.0);
 
-		ofPopMatrix();
-
-		ofSetLineWidth(1.0);
-
-
-
-
-	    // Retreiving info
-	    // CLineStripList* pStripList;
-
-	    // getting 0-th iso-curve
-	    // pStripList = contour.GetLines(0); 
-
-	    // iterating liststrip vertices
-	    // CLineStrip::iterator pos;
-	    // for (pos = pStripList->begin(); 
-	    //     pos != pStripList->end() ; pos++)
-	    // {
-	    //     CLineStrip pStrip = (*pos);
-
-	    //     if (pStrip->empty()) {
-
-	    //     }
-	    // }
-
-
-
-
-
-		ofPopMatrix();
 
 	}
+
 
 
 	if (showGUI) {
@@ -390,9 +359,10 @@ void ofApp::draw(){
 	}
 
 
-
+	ofSetColor(200);
 	ofDrawBitmapString(ofToString(ofGetFrameRate(),0) + " FPS", ofGetWidth()-105, ofGetHeight()-30);
 	if (draw3D)	ofDrawBitmapString(ofToString(visibleNodes) + " Nodes", ofGetWidth()-105, ofGetHeight()-50);
+
 	
 
 
@@ -436,6 +406,7 @@ void ofApp::createGUI() {
 	gui.add(gridSize.set( "grid size", 5, 2, 128));
 	gui.add(isoPlanes.set( "iso planes", 5, 2, 40));
 	gui.add(isoPlaneDist.set( "iso plane distance", 0.1, 0.01, 25.0));
+	gui.add(frontView.set( "front view", true));
 
 	gui.add(oscPort.set("osc port", "8000"));
 	gui.add(oscAddress.set("osc address", "/head"));
@@ -481,6 +452,7 @@ void ofApp::resetSettings() {
 	filter = 10;
 	zoom = 0;
 	nodeScale = 0;
+	frontView = true;
 
 	drawHead = true;
 
