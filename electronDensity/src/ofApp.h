@@ -46,9 +46,9 @@ class ofApp : public ofBaseApp{
 	    CGLContour contourSection;
 	    // CListContour contour;
 
-	    static double getElectronDensityCol(ofApp * mother, double x, double y);
-	    static double getElectronDensitySection(ofApp * mother, double x, double y);
-
+	    static double getElectronDensityRow(ofApp * parent, double x, double y);
+	    static double getElectronDensitySection(ofApp * parent, double x, double y);
+	    double getInterpolatedGridValue(double grid_x, double grid_y, double grid_z);
 
 		/* **************** OSC **************** */
 		ofxOscReceiver receiver;
@@ -78,7 +78,7 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> filter;
 
 		ofParameter<float> drawSection;
-		ofParameter<int> drawRow;
+		ofParameter<float> drawRow;
 		ofParameter<float> drawCol;
 
 		ofParameter<int> contourSize;

@@ -1,10 +1,10 @@
 <density_map>
-	<zoom>0.553333</zoom>
+	<zoom>0.113333</zoom>
 	<node_scale>0.24</node_scale>
 	<filter>1.66667</filter>
-	<draw_section>-1</draw_section>
+	<draw_section>17.7025</draw_section>
 	<draw_row>-1</draw_row>
-	<draw_col>6</draw_col>
+	<draw_col>19.1628</draw_col>
 	<osc_port>8001</osc_port>
 	<osc_address>/head</osc_address>
 <density_map/>

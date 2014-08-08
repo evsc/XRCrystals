@@ -31,7 +31,7 @@ void ofApp::setup(){
 	cout << endl << "CONTOUR" << endl << "-----" << endl;
 
 	cout << "contourCol setup" << endl;
-	contourCol.SetFieldFcn(getElectronDensityCol, this);
+	contourCol.SetFieldFcn(getElectronDensityRow, this);
 
 	contourCol.SetFirstGrid(gridSize,gridSize);
 	// sets output size of the contour plot
@@ -84,88 +84,64 @@ void ofApp::setup(){
 
 /* function that sends the electron-density information back to the GLContour object 
    used as a callback function */
-double ofApp::getElectronDensityCol(ofApp * mother, double x, double y) {
+double ofApp::getElectronDensityRow(ofApp * parent, double x, double y) {
 
-	float grid_x = ofMap(x,0,5.0,0,mother->data.sections-1);
-	float grid_y = ofMap(y,0,5.0,0,mother->data.rows-1);
+	// sections
+	float grid_x = ofMap(x,0,5.0,0,parent->data.sections-1);
+	// rows
+	float grid_y = max( min( float(parent->drawRow), float(parent->data.rows)-1), 0.f);
+	// cols
+	float grid_z = ofMap(y,0,5.0,0,parent->data.cols-1);
 
-	float grid_z = max( min( float(mother->drawCol), float(mother->data.cols)-1), 0.f);
-
-	if (mother->interpolateGrid && grid_x < mother->data.sections-1 && grid_y < mother->data.rows-1 && grid_z < mother->data.cols-1) {
-		// interpolate
-		float v_x1y1 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y))][int(floor(grid_z))];
-		float v_x2y1 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y))][int(floor(grid_z))];
-		float v_x1y2 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y)) +1][int(floor(grid_z))];
-		float v_x2y2 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y)) +1][int(floor(grid_z))];
-
-		float topValue = ofLerp(v_x1y1,v_x2y1, grid_x - int(floor(grid_x)));
-		float bottomValue = ofLerp(v_x1y2,v_x2y2, grid_x - int(floor(grid_x)));
-
-		float frontValue = ofLerp(topValue, bottomValue, grid_y - int(floor(grid_y)));
-
-		v_x1y1 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y))][int(floor(grid_z))+1];
-		v_x2y1 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y))][int(floor(grid_z))+1];
-		v_x1y2 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y)) +1][int(floor(grid_z))+1];
-		v_x2y2 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y)) +1][int(floor(grid_z))+1];
-
-		topValue = ofLerp(v_x1y1,v_x2y1, grid_x - int(floor(grid_x)));
-		bottomValue = ofLerp(v_x1y2,v_x2y2, grid_x - int(floor(grid_x)));
-
-		float backValue = ofLerp(topValue, bottomValue, grid_y - int(floor(grid_y)));
-
-		return ofLerp(frontValue, backValue, grid_z - int(floor(grid_z)));
-
-
+	if (parent->interpolateGrid && grid_x < parent->data.sections-1 && grid_y < parent->data.rows-1 && grid_z < parent->data.cols-1) {
+		return parent->getInterpolatedGridValue(grid_x, grid_y, grid_z);
 	} else {
-		return mother->data.map[int(grid_x)][int(grid_y)][int(grid_z)];
+		return parent->data.map[int(grid_x)][int(grid_y)][int(grid_z)];
 	}
-
-
-	// cout << "getPixelFunction ( " << x << ", " << y << " )\t" << grid_x << "|" << grid_y << "\t" << v << endl;
-	// return 1.9*(cos(x+3.14/4)+sin(y+3.14/4));
 }
 
 
 /* function that sends the electron-density information back to the GLContour object 
    used as a callback function */
-double ofApp::getElectronDensitySection(ofApp * mother, double x, double y) {
+double ofApp::getElectronDensitySection(ofApp * parent, double x, double y) {
 
-	float grid_x = max( min( float(mother->drawSection), float(mother->data.sections)-1), 0.f);
-	float grid_y = ofMap(y,0,5.0,0,mother->data.rows-1);
-	float grid_z = ofMap(x,0,5.0,0,mother->data.cols-1);
+	float grid_x = max( min( float(parent->drawSection), float(parent->data.sections)-1), 0.f);
+	float grid_y = ofMap(x,0,5.0,0,parent->data.rows-1);
+	float grid_z = ofMap(y,0,5.0,0,parent->data.cols-1);
 
-	if (mother->interpolateGrid && grid_x < mother->data.sections-1 && grid_y < mother->data.rows-1 && grid_z < mother->data.cols-1) {
-		// interpolate
-		float v_x1y1 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y))][int(floor(grid_z))];
-		float v_x2y1 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y))][int(floor(grid_z))];
-		float v_x1y2 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y)) +1][int(floor(grid_z))];
-		float v_x2y2 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y)) +1][int(floor(grid_z))];
-
-		float topValue = ofLerp(v_x1y1,v_x2y1, grid_x - int(floor(grid_x)));
-		float bottomValue = ofLerp(v_x1y2,v_x2y2, grid_x - int(floor(grid_x)));
-
-		float frontValue = ofLerp(topValue, bottomValue, grid_y - int(floor(grid_y)));
-
-		v_x1y1 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y))][int(floor(grid_z))+1];
-		v_x2y1 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y))][int(floor(grid_z))+1];
-		v_x1y2 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y)) +1][int(floor(grid_z))+1];
-		v_x2y2 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y)) +1][int(floor(grid_z))+1];
-
-		topValue = ofLerp(v_x1y1,v_x2y1, grid_x - int(floor(grid_x)));
-		bottomValue = ofLerp(v_x1y2,v_x2y2, grid_x - int(floor(grid_x)));
-
-		float backValue = ofLerp(topValue, bottomValue, grid_y - int(floor(grid_y)));
-
-		return ofLerp(frontValue, backValue, grid_z - int(floor(grid_z)));
-
-
+	if (parent->interpolateGrid && grid_x < parent->data.sections-1 && grid_y < parent->data.rows-1 && grid_z < parent->data.cols-1) {
+		return parent->getInterpolatedGridValue(grid_x, grid_y, grid_z);
 	} else {
-		return mother->data.map[int(grid_x)][int(grid_y)][int(grid_z)];
+		return parent->data.map[int(grid_x)][int(grid_y)][int(grid_z)];
 	}
 
+}
 
-	// cout << "getPixelFunction ( " << x << ", " << y << " )\t" << grid_x << "|" << grid_y << "\t" << v << endl;
-	// return 1.9*(cos(x+3.14/4)+sin(y+3.14/4));
+double ofApp::getInterpolatedGridValue(double grid_x, double grid_y, double grid_z) {
+
+	// interpolate
+	float v_x1y1 = data.map[ int(floor(grid_x)) ][ int(floor(grid_y))][int(floor(grid_z))];
+	float v_x2y1 = data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y))][int(floor(grid_z))];
+	float v_x1y2 = data.map[ int(floor(grid_x)) ][ int(floor(grid_y)) +1][int(floor(grid_z))];
+	float v_x2y2 = data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y)) +1][int(floor(grid_z))];
+
+	float topValue = ofLerp(v_x1y1,v_x2y1, grid_x - int(floor(grid_x)));
+	float bottomValue = ofLerp(v_x1y2,v_x2y2, grid_x - int(floor(grid_x)));
+
+	float frontValue = ofLerp(topValue, bottomValue, grid_y - int(floor(grid_y)));
+
+	v_x1y1 = data.map[ int(floor(grid_x)) ][ int(floor(grid_y))][int(floor(grid_z))+1];
+	v_x2y1 = data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y))][int(floor(grid_z))+1];
+	v_x1y2 = data.map[ int(floor(grid_x)) ][ int(floor(grid_y)) +1][int(floor(grid_z))+1];
+	v_x2y2 = data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y)) +1][int(floor(grid_z))+1];
+
+	topValue = ofLerp(v_x1y1,v_x2y1, grid_x - int(floor(grid_x)));
+	bottomValue = ofLerp(v_x1y2,v_x2y2, grid_x - int(floor(grid_x)));
+
+	float backValue = ofLerp(topValue, bottomValue, grid_y - int(floor(grid_y)));
+
+	return ofLerp(frontValue, backValue, grid_z - int(floor(grid_z)));
+
 }
 
 /* test function */
@@ -192,8 +168,8 @@ void ofApp::update(){
 			head.z = m.getArgAsFloat(2);
 
 			// map head position to parameter that controls plane that is drawn
-			drawCol = ofMap(head.z,1000,5000, 0, data.cols-1);
-			drawCol = max( min( float(drawCol), float(data.cols)-1), 0.f);
+			drawRow = ofMap(head.z,1000,5000, 0, data.rows-1);
+			drawRow = max( min( float(drawRow), float(data.rows)-1), 0.f);
 
 			
 			drawSection = ofMap(head.x,-2800,2800, 0, data.sections-1);
@@ -295,12 +271,13 @@ void ofApp::draw(){
 		ofSetColor(255);
 
 		ofPushMatrix();
-		// ofTranslate(-800,0,0);
 		ofTranslate(ofGetWidth()*0.25, ofGetHeight()/2,0);
+		// ofTranslate(ofGetWidth()*0.5, ofGetHeight()/2,0);
 
 		zoomV = 215.0f/contourSize * pow(10,zoom);
-		ofScale(zoomV,zoomV,zoomV);
+		ofScale(zoomV*1.5,zoomV,zoomV);
 		ofTranslate(-contourSize/2,-contourSize/2,0);
+		ofSetLineWidth(2.0);
 
 		// this actualy generates and draws the contour plot
 		contourCol.Generate();
@@ -308,18 +285,23 @@ void ofApp::draw(){
 		ofPopMatrix();
 
 
+
+
 		ofPushMatrix();
 		// ofTranslate(-800,0,0);
 		ofTranslate(ofGetWidth()*0.75, ofGetHeight()/2,0);
 
 		zoomV = 215.0f/contourSize * pow(10,zoom);
-		ofScale(zoomV,zoomV,zoomV);
+		ofScale(zoomV*1.5,zoomV,zoomV);
 		ofTranslate(-contourSize/2,-contourSize/2,0);
 
 		// this actualy generates and draws the contour plot
 		contourSection.Generate();
 
 		ofPopMatrix();
+
+		ofSetLineWidth(1.0);
+
 
 
 
@@ -407,7 +389,7 @@ void ofApp::createGUI() {
 	gui.add(drawBrightness.set( "draw brightness", 0.5, 0, 1 ));
 
 	gui.add(drawSection.set( "draw section", -1, -1, 100.0));
-	gui.add(drawRow.set( "draw row", -1, -1, 100));
+	gui.add(drawRow.set( "draw row", -1, -1, 100.0));
 	gui.add(drawCol.set( "draw col", 0, 0., 50.));
 
 
