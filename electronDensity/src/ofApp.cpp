@@ -8,6 +8,7 @@ void ofApp::setup(){
 	resetSettings();
 	loadSettings();
 
+	cout << endl << "DATA" << endl << "-----" << endl;
 	data.parseFile("lysozyme.na4");
 
 	// inverse of unit cell dimensions
@@ -27,20 +28,20 @@ void ofApp::setup(){
 
 
 	////////// CONTOUR setup
+	cout << endl << "CONTOUR" << endl << "-----" << endl;
 
+	cout << "contourCol setup" << endl;
+	contourCol.SetFieldFcn(getElectronDensityCol, this);
 
-	contour.SetFieldFcn(getPixelFunction, this);
-
-	contour.SetFirstGrid(gridSize,gridSize);
+	contourCol.SetFirstGrid(gridSize,gridSize);
 	// sets output size of the contour plot
-	contour.SetSecondaryGrid(contourSize,contourSize);
+	contourCol.SetSecondaryGrid(contourSize,contourSize);
 
 	// set limits
 	// regular limits seem to be 0..5 0..5, anything bigger makes it crash
 	// smaller limits 0..1 0..1 just show a portion of the grid
 	double pLimits[]={0,5,0,5};
-    cout << "contour: set limits" << endl;
-    contour.SetLimits(pLimits);
+    contourCol.SetLimits(pLimits);
 
 	// set iso contour values
 	int n = isoPlanes;
@@ -49,22 +50,41 @@ void ofApp::setup(){
 		vIso[i]=(i-vIso.size()/2.0)*isoPlaneDist;
 	}
     // setting iso-lines
-    cout << "contour: set planes" << endl;
-    contour.SetPlanes(vIso); 
+    contourCol.SetPlanes(vIso); 
 
     // generate contour lines, based on contourFunction
-    cout << "contour: generate" << endl;
-    contour.Generate();
+    contourCol.Generate();
 
-    cout << "contour: primary grid \t" << contour.GetColFir() << "\t" << contour.GetRowFir() << endl;
-    cout << "contour: secondary grid \t" << contour.GetColSec() << "\t" << contour.GetRowSec() << endl;
+    cout << "contourCol: primary grid \t" << contourCol.GetColFir() << "\t" << contourCol.GetRowFir() << endl;
+    cout << "contourCol: secondary grid \t" << contourCol.GetColSec() << "\t" << contourCol.GetRowSec() << endl;
 
+
+	cout << endl << "contourSection setup" << endl;
+	contourSection.SetFieldFcn(getElectronDensitySection, this);
+	contourSection.SetFirstGrid(gridSize,gridSize);
+	contourSection.SetSecondaryGrid(contourSize,contourSize);
+    contourSection.SetLimits(pLimits);
+    contourSection.SetPlanes(vIso); 
+    contourSection.Generate();
+    cout << "contourSection: primary grid \t" << contourSection.GetColFir() << "\t" << contourSection.GetRowFir() << endl;
+    cout << "contourSection: secondary grid \t" << contourSection.GetColSec() << "\t" << contourSection.GetRowSec() << endl;
+
+
+
+
+
+
+
+
+    cout << endl << "OSC" << endl << "-----" << endl;
+    cout << "listening for osc messages on port " << oscPort << "\n";
+	receiver.setup(ofToInt(oscPort));
 
 }
 
 /* function that sends the electron-density information back to the GLContour object 
    used as a callback function */
-double ofApp::getPixelFunction(ofApp * mother, double x, double y) {
+double ofApp::getElectronDensityCol(ofApp * mother, double x, double y) {
 
 	float grid_x = ofMap(x,0,5.0,0,mother->data.sections-1);
 	float grid_y = ofMap(y,0,5.0,0,mother->data.rows-1);
@@ -106,6 +126,48 @@ double ofApp::getPixelFunction(ofApp * mother, double x, double y) {
 }
 
 
+/* function that sends the electron-density information back to the GLContour object 
+   used as a callback function */
+double ofApp::getElectronDensitySection(ofApp * mother, double x, double y) {
+
+	float grid_x = max( min( float(mother->drawSection), float(mother->data.sections)-1), 0.f);
+	float grid_y = ofMap(y,0,5.0,0,mother->data.rows-1);
+	float grid_z = ofMap(x,0,5.0,0,mother->data.cols-1);
+
+	if (mother->interpolateGrid && grid_x < mother->data.sections-1 && grid_y < mother->data.rows-1 && grid_z < mother->data.cols-1) {
+		// interpolate
+		float v_x1y1 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y))][int(floor(grid_z))];
+		float v_x2y1 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y))][int(floor(grid_z))];
+		float v_x1y2 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y)) +1][int(floor(grid_z))];
+		float v_x2y2 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y)) +1][int(floor(grid_z))];
+
+		float topValue = ofLerp(v_x1y1,v_x2y1, grid_x - int(floor(grid_x)));
+		float bottomValue = ofLerp(v_x1y2,v_x2y2, grid_x - int(floor(grid_x)));
+
+		float frontValue = ofLerp(topValue, bottomValue, grid_y - int(floor(grid_y)));
+
+		v_x1y1 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y))][int(floor(grid_z))+1];
+		v_x2y1 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y))][int(floor(grid_z))+1];
+		v_x1y2 = mother->data.map[ int(floor(grid_x)) ][ int(floor(grid_y)) +1][int(floor(grid_z))+1];
+		v_x2y2 = mother->data.map[ int(floor(grid_x))+1 ][ int(floor(grid_y)) +1][int(floor(grid_z))+1];
+
+		topValue = ofLerp(v_x1y1,v_x2y1, grid_x - int(floor(grid_x)));
+		bottomValue = ofLerp(v_x1y2,v_x2y2, grid_x - int(floor(grid_x)));
+
+		float backValue = ofLerp(topValue, bottomValue, grid_y - int(floor(grid_y)));
+
+		return ofLerp(frontValue, backValue, grid_z - int(floor(grid_z)));
+
+
+	} else {
+		return mother->data.map[int(grid_x)][int(grid_y)][int(grid_z)];
+	}
+
+
+	// cout << "getPixelFunction ( " << x << ", " << y << " )\t" << grid_x << "|" << grid_y << "\t" << v << endl;
+	// return 1.9*(cos(x+3.14/4)+sin(y+3.14/4));
+}
+
 /* test function */
 double contourFunction(double x, double y) {
 	return 0.5*(cos(x+3.14/4)+sin(y+3.14/4));
@@ -128,6 +190,14 @@ void ofApp::update(){
 			head.x = m.getArgAsFloat(0);
 			head.y = m.getArgAsFloat(1);
 			head.z = m.getArgAsFloat(2);
+
+			// map head position to parameter that controls plane that is drawn
+			drawCol = ofMap(head.z,1000,5000, 0, data.cols-1);
+			drawCol = max( min( float(drawCol), float(data.cols)-1), 0.f);
+
+			
+			drawSection = ofMap(head.x,-2800,2800, 0, data.sections-1);
+			drawSection = max( min( float(drawSection), float(data.sections)-1), 0.f);
 
 			updatedHead = true;
 		}
@@ -198,26 +268,26 @@ void ofApp::draw(){
 
 		ofFill();
 
-		ofPushMatrix();
-		ofTranslate(1200, ofGetHeight()/2, 0);
+		// ofPushMatrix();
+		// ofTranslate(1200, ofGetHeight()/2, 0);
 
-		ofPushMatrix();
+		// ofPushMatrix();
 		float zoomV = pow(10,zoom) * 10;
-		ofScale(zoomV,zoomV,zoomV);
+		// ofScale(zoomV,zoomV,zoomV);
 
-		ofTranslate( -(data.sections * uc.x )/2.f, -(data.rows * uc.y )/2.f, 0);
+		// ofTranslate( -(data.sections * uc.x )/2.f, -(data.rows * uc.y )/2.f, 0);
 
-		int col = drawCol;
-		if (col < 0 || col >= data.cols) col = 0;
-		for (int section=0; section<data.sections; section++) {
-			for (int row=0; row<data.rows; row++) {
-				float oV = data.map[section][row][col];
-				float sV = oV * pow(10,nodeScale) * 0.01;
-				ofSetColor( ofMap( oV, data.minValue, data.maxValue, 0, 255) );
-				ofRect(uc.x * section, uc.y * row, 0, uc.x, uc.y );
-			}
-		}
-		ofPopMatrix();
+		// int col = drawCol;
+		// if (col < 0 || col >= data.cols) col = 0;
+		// for (int section=0; section<data.sections; section++) {
+		// 	for (int row=0; row<data.rows; row++) {
+		// 		float oV = data.map[section][row][col];
+		// 		float sV = oV * pow(10,nodeScale) * 0.01;
+		// 		ofSetColor( ofMap( oV, data.minValue, data.maxValue, 0, 255) );
+		// 		ofRect(uc.x * section, uc.y * row, 0, uc.x, uc.y );
+		// 	}
+		// }
+		// ofPopMatrix();
 
 
 		// draw contour
@@ -225,16 +295,32 @@ void ofApp::draw(){
 		ofSetColor(255);
 
 		ofPushMatrix();
-		ofTranslate(-800,0,0);
+		// ofTranslate(-800,0,0);
+		ofTranslate(ofGetWidth()*0.25, ofGetHeight()/2,0);
 
 		zoomV = 215.0f/contourSize * pow(10,zoom);
 		ofScale(zoomV,zoomV,zoomV);
 		ofTranslate(-contourSize/2,-contourSize/2,0);
 
 		// this actualy generates and draws the contour plot
-		contour.Generate();
- 
+		contourCol.Generate();
+
 		ofPopMatrix();
+
+
+		ofPushMatrix();
+		// ofTranslate(-800,0,0);
+		ofTranslate(ofGetWidth()*0.75, ofGetHeight()/2,0);
+
+		zoomV = 215.0f/contourSize * pow(10,zoom);
+		ofScale(zoomV,zoomV,zoomV);
+		ofTranslate(-contourSize/2,-contourSize/2,0);
+
+		// this actualy generates and draws the contour plot
+		contourSection.Generate();
+
+		ofPopMatrix();
+
 
 
 	    // Retreiving info
@@ -320,7 +406,7 @@ void ofApp::createGUI() {
 	gui.add(drawAlpha.set( "draw alpha", 0.5, 0, 1 ));
 	gui.add(drawBrightness.set( "draw brightness", 0.5, 0, 1 ));
 
-	gui.add(drawSection.set( "draw section", -1, -1, 100));
+	gui.add(drawSection.set( "draw section", -1, -1, 100.0));
 	gui.add(drawRow.set( "draw row", -1, -1, 100));
 	gui.add(drawCol.set( "draw col", 0, 0., 50.));
 
@@ -337,12 +423,15 @@ void ofApp::createGUI() {
 }
 
 void ofApp::changeContourSize(int & contourSize) {
-	contour.SetSecondaryGrid(contourSize,contourSize);
+	contourCol.SetSecondaryGrid(contourSize,contourSize);
+	contourSection.SetSecondaryGrid(contourSize,contourSize);
 }
 
 void ofApp::changeGridSize(int & gridSize) {
-	contour.SetSecondaryGrid(gridSize,gridSize);
-	contour.SetSecondaryGrid(contourSize,contourSize);
+	contourCol.SetSecondaryGrid(gridSize,gridSize);
+	contourSection.SetSecondaryGrid(gridSize,gridSize);
+	contourCol.SetSecondaryGrid(contourSize,contourSize);
+	contourSection.SetSecondaryGrid(contourSize,contourSize);
 }
 
 void ofApp::changeIsoPlanes(int & isoPlanes) {
@@ -351,7 +440,8 @@ void ofApp::changeIsoPlanes(int & isoPlanes) {
 	for (unsigned int i=0;i<vIso.size();i++) {
 		vIso[i]=(i-vIso.size()/2.0)*isoPlaneDist;
 	}
-    contour.SetPlanes(vIso); 
+    contourCol.SetPlanes(vIso); 
+    contourSection.SetPlanes(vIso); 
 }
 
 void ofApp::changeIsoPlaneDist(float & isoPlaneDist) {
@@ -360,7 +450,8 @@ void ofApp::changeIsoPlaneDist(float & isoPlaneDist) {
 	for (unsigned int i=0;i<vIso.size();i++) {
 		vIso[i]=(i-vIso.size()/2.0)*isoPlaneDist;
 	}
-    contour.SetPlanes(vIso); 
+    contourCol.SetPlanes(vIso); 
+    contourSection.SetPlanes(vIso); 
 }
 
 

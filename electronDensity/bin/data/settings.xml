@@ -5,7 +5,7 @@
 	<draw_section>-1</draw_section>
 	<draw_row>-1</draw_row>
 	<draw_col>6</draw_col>
-	<osc_port>8000</osc_port>
+	<osc_port>8001</osc_port>
 	<osc_address>/head</osc_address>
 <density_map/>
 <draw_alpha>0.653333</draw_alpha>

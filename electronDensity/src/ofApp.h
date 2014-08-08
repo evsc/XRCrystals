@@ -42,10 +42,12 @@ class ofApp : public ofBaseApp{
 		
 		
 	    // edContour contour;
-	    CGLContour contour;
+	    CGLContour contourCol;
+	    CGLContour contourSection;
 	    // CListContour contour;
 
-	    static double getPixelFunction(ofApp * mother, double x, double y);
+	    static double getElectronDensityCol(ofApp * mother, double x, double y);
+	    static double getElectronDensitySection(ofApp * mother, double x, double y);
 
 
 		/* **************** OSC **************** */
@@ -75,7 +77,7 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> nodeScale;
 		ofParameter<float> filter;
 
-		ofParameter<int> drawSection;
+		ofParameter<float> drawSection;
 		ofParameter<int> drawRow;
 		ofParameter<float> drawCol;
 
