@@ -94,7 +94,7 @@ double ofApp::getElectronDensityRow(ofApp * parent, double x, double y) {
 	// sections
 	float grid_x = ofMap(x,0,5.0,0,parent->data.sections-1);
 	// rows
-	float grid_y = max( min( float(parent->drawRow), float(parent->data.rows)-1), 0.f);
+	float grid_y = max( min( float(parent->drawRow), float(parent->data.rows)-2), 0.f);
 	// cols
 	float grid_z = ofMap(y,0,5.0,0,parent->data.cols-1);
 
@@ -110,7 +110,7 @@ double ofApp::getElectronDensityRow(ofApp * parent, double x, double y) {
    used as a callback function */
 double ofApp::getElectronDensitySection(ofApp * parent, double x, double y) {
 
-	float grid_x = max( min( float(parent->drawSection), float(parent->data.sections)-1), 0.f);
+	float grid_x = max( min( float(parent->drawSection), float(parent->data.sections)-2), 0.f);
 	float grid_y = ofMap(x,0,5.0,0,parent->data.rows-1);
 	float grid_z = ofMap(y,0,5.0,0,parent->data.cols-1);
 
@@ -183,6 +183,7 @@ void ofApp::update(){
 			drawCol = max( min( float(drawCol), float(data.cols)-1), 0.f);
 
 			float v = getInterpolatedGridValue(drawSection, drawRow, drawCol);
+			cout << "OSC receive, getInterpolatedGridValue at ( " << drawSection << ", " << drawRow << ", " << drawCol << " )" << endl;
 
 			// send value to oscillator
 			ofxOscMessage message;
@@ -308,7 +309,7 @@ void ofApp::draw(){
 				ofSetLineWidth(1.0);
 				ofSetColor(255,0,0); 
 				ofPushMatrix();
-				ofTranslate( drawSection * (1000.0/data.sections), drawCol * 1000.0/data.cols, 0);
+				ofTranslate( drawSection * (contourSize/float(data.sections)), drawCol * contourSize/float(data.cols), 0);
 				ofLine(-50/1.5,0,50/1.5,0);
 				ofLine(0,-50,0,50);
 				ofPopMatrix();
@@ -322,7 +323,7 @@ void ofApp::draw(){
 				ofSetLineWidth(1.0);
 				ofSetColor(255,0,0); 
 				ofPushMatrix();
-				ofTranslate( drawRow * (1000.0/data.rows), drawCol * 1000.0/data.cols, 0);
+				ofTranslate( drawRow * (contourSize/float(data.rows)), drawCol * contourSize/float(data.cols), 0);
 				ofLine(-50/1.5,0,50/1.5,0);
 				ofLine(0,-50,0,50);
 				ofPopMatrix();
