@@ -2,9 +2,9 @@
 	<zoom>0.533333</zoom>
 	<node_scale>0.24</node_scale>
 	<filter>1.66667</filter>
-	<draw_section>27.9201</draw_section>
-	<draw_row>0</draw_row>
-	<draw_col>14.0563</draw_col>
+	<draw_section>17.419</draw_section>
+	<draw_row>22.166</draw_row>
+	<draw_col>14.5922</draw_col>
 	<osc_port>8001</osc_port>
 	<osc_address>/head</osc_address>
 <density_map/>
@@ -17,4 +17,5 @@
 	<iso_planes>7</iso_planes>
 	<iso_plane_distance>8.5066</iso_plane_distance>
 <front_view>1</front_view>
+<send_sound_info>1</send_sound_info>
 </density_map>
