@@ -168,7 +168,7 @@ void ofApp::update(){
         
 		if(m.getAddress() == oscAddress.toString()){
 
-			head.x = m.getArgAsFloat(0);
+			head.x = -m.getArgAsFloat(0);
 			head.y = m.getArgAsFloat(1);
 			head.z = m.getArgAsFloat(2);
 
@@ -312,6 +312,8 @@ void ofApp::draw(){
 				ofTranslate( drawSection * (contourSize/float(data.sections)), drawCol * contourSize/float(data.cols), 0);
 				ofLine(-50/1.5,0,50/1.5,0);
 				ofLine(0,-50,0,50);
+				ofFill();
+				ofRect(-50.0/1.5,-50,100.0/1.5,100);
 				ofPopMatrix();
 			}
 
@@ -326,6 +328,8 @@ void ofApp::draw(){
 				ofTranslate( drawRow * (contourSize/float(data.rows)), drawCol * contourSize/float(data.cols), 0);
 				ofLine(-50/1.5,0,50/1.5,0);
 				ofLine(0,-50,0,50);
+				ofFill();
+				ofRect(-50.0/1.5,-50,100.0/1.5,100);
 				ofPopMatrix();
 			}
 
