@@ -95,6 +95,7 @@ class ofApp : public ofBaseApp{
 
 		ofParameter<string> oscPort;
 		ofParameter<string> oscAddress;
+		ofParameter<bool> sendSoundInfo;
 
 
 		void changeContourSize(int & contourSize);

@@ -174,22 +174,24 @@ void ofApp::update(){
 
 			// map head position to parameter that controls plane that is drawn
 			drawRow = ofMap(head.z,1000,5000, 0, data.rows-1);
-			drawRow = max( min( float(drawRow), float(data.rows)-1), 0.f);
+			drawRow = max( min( float(drawRow), float(data.rows)-2), 0.f);
 			
 			drawSection = ofMap(head.x,-2800,2800, 0, data.sections-1);
-			drawSection = max( min( float(drawSection), float(data.sections)-1), 0.f);
+			drawSection = max( min( float(drawSection), float(data.sections)-2), 0.f);
 
 			drawCol = ofMap(head.y,200,2300, 0, data.cols-1);
-			drawCol = max( min( float(drawCol), float(data.cols)-1), 0.f);
+			drawCol = max( min( float(drawCol), float(data.cols)-2), 0.f);
 
 			float v = getInterpolatedGridValue(drawSection, drawRow, drawCol);
-			cout << "OSC receive, getInterpolatedGridValue at ( " << drawSection << ", " << drawRow << ", " << drawCol << " )" << endl;
+			// cout << "OSC receive, getInterpolatedGridValue at ( " << drawSection << ", " << drawRow << ", " << drawCol << " )" << endl;
 
-			// send value to oscillator
-			ofxOscMessage message;
-			message.setAddress("/sound");
-			message.addFloatArg(v);
-			localSender.sendMessage(message);
+			if (sendSoundInfo) {
+				// send value to oscillator
+				ofxOscMessage message;
+				message.setAddress("/sound");
+				message.addFloatArg(v);
+				localSender.sendMessage(message);
+			}
 
 			updatedHead = true;
 		}
@@ -361,12 +363,13 @@ void ofApp::draw(){
 		keyInstructions << " p  ... save screenshot " << endl;
 
 		ofDrawBitmapString(keyInstructions.str(), 20, 600);
+
+		ofSetColor(200);
+		ofDrawBitmapString(ofToString(ofGetFrameRate(),0) + " FPS", ofGetWidth()-105, ofGetHeight()-30);
+		if (draw3D)	ofDrawBitmapString(ofToString(visibleNodes) + " Nodes", ofGetWidth()-105, ofGetHeight()-50);
 	}
 
 
-	ofSetColor(200);
-	ofDrawBitmapString(ofToString(ofGetFrameRate(),0) + " FPS", ofGetWidth()-105, ofGetHeight()-30);
-	if (draw3D)	ofDrawBitmapString(ofToString(visibleNodes) + " Nodes", ofGetWidth()-105, ofGetHeight()-50);
 
 	
 
@@ -415,6 +418,7 @@ void ofApp::createGUI() {
 
 	gui.add(oscPort.set("osc port", "8000"));
 	gui.add(oscAddress.set("osc address", "/head"));
+	gui.add(sendSoundInfo.set("send sound info", false));
 
 }
 
@@ -458,6 +462,7 @@ void ofApp::resetSettings() {
 	zoom = 0;
 	nodeScale = 0;
 	frontView = true;
+	sendSoundInfo = false;
 
 	drawHead = true;
 
