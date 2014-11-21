@@ -173,8 +173,6 @@ void ofApp::draw(){
                                 // ... both change over time, if crystal is tiled
 
                                 // register dot as currently visible, for sound trigger
-                                // identifier= (*it).h  (*it).k  (*it).l
-
 
                                 // first look if a object with that coordinates is already registered
                                 int coordinates = mirrorno*1000000 + ((*it).h+50)*10000 + ((*it).k+50)*100 + (*it).l+50;
@@ -214,9 +212,12 @@ void ofApp::draw(){
 
 									// draw directly with simple OF function
 									ofDrawSphere(hkl.x,hkl.y,hkl.z, nodeScale*(*it).intensity);
-                                    ofFill();
-                                    ofSetColor(ofColor(255));
-                                    ofDrawBitmapString(ofToString(latitude,0)+"\n"+ofToString(longitude,1),hkl.x,hkl.y,hkl.z);
+
+									if(drawLongLat) {
+                                        ofFill();
+                                        ofSetColor(ofColor(255));
+                                        ofDrawBitmapString(ofToString(latitude,0)+"\n"+ofToString(longitude,1),hkl.x,hkl.y,hkl.z);
+									}
 								} else {
 
 
@@ -270,22 +271,27 @@ void ofApp::draw(){
         int coord = (dot->mirrorno)*1000000 + (dot->h+50)*10000 + (dot->k+50)*100 + dot->l+50;
         if ( dot->fresh ) {
             dot->fresh = false;
-            cout << "fresh sound \t" << coord << endl;
-            ofxOscMessage message;
-            message.setAddress("/soundOn");
-            message.addIntArg(coord);
-            message.addFloatArg(dot->intensity);
-            message.addFloatArg(dot->latitude);
-            message.addFloatArg(dot->longitude);
-            message.addFloatArg(dot->phase);
-            localSender.sendMessage(message);
+            // cout << "fresh sound \t" << coord << endl;
+            if(sendOSC) {
+                ofxOscMessage message;
+                message.setAddress("/soundOn");
+                message.addIntArg(coord);
+                message.addFloatArg(dot->intensity);
+                message.addFloatArg(dot->latitude);
+                message.addFloatArg(dot->longitude);
+                message.addFloatArg(dot->phase);
+                localSender.sendMessage(message);
+            }
         }
         if( !dot->updated ) {
-            cout << "this sound needs to go away \t" << coord << endl;
-            ofxOscMessage message;
-            message.setAddress("/soundOff");
-            message.addIntArg(coord);
-            localSender.sendMessage(message);
+            // cout << "this sound needs to go away \t" << coord << endl;
+            if(sendOSC) {
+                ofxOscMessage message;
+                message.setAddress("/soundOff");
+                message.addIntArg(coord);
+                message.addFloatArg(dot->latitude);
+                localSender.sendMessage(message);
+            }
             soundElements.erase(it2++);
         } else {
             ++it2;
@@ -314,6 +320,7 @@ void ofApp::draw(){
 		keyInstructions << " x  ... view from x axis " << endl;
 		keyInstructions << " y  ... view from y axis " << endl;
 		keyInstructions << " z  ... view from z axis " << endl;
+		keyInstructions << " l  ... draw Longitude/Latitude " << endl;
 		keyInstructions << " m  ... drawing mode (";
 		switch (drawMode) {
 			case 0: keyInstructions << "ofDrawSphere)" << endl;
@@ -327,12 +334,12 @@ void ofApp::draw(){
 		keyInstructions << " p  ... save screenshot " << endl;
 
 
-		ofDrawBitmapString(keyInstructions.str(), 20, 550);
+		ofDrawBitmapString(keyInstructions.str(), 20, 600);
 
 		// draw phase color diagram
 		ofFill();
 		int x = 10;
-		int y = 510;
+		int y = 560;
 		int h = 20;
 		int w = 400;
 		int deg = 10;
@@ -392,6 +399,7 @@ bool ofApp::onEwaldSphere(int h, int k, int l, float mirrorRotZ) {
 
 void ofApp::resetSettings() {
 
+    drawLongLat = false;
 	drawMode = 0;
 	showGUI = true;
 	sphereFill = true;
@@ -434,11 +442,12 @@ void ofApp::resetSettings() {
 	// gui.add(sphereColor.set("phase color", false));
 
 	gui.add(ewaldSphere.set("apply Ewald sphere", false));
+
 	gui.add(ewaldMargin.set("Ewald margin", 0.5, 0, 1));
 	gui.add(waveLength.set("xray wave length", 0.005, 0, 0.03));
 	gui.add(rotateCrystal.set("rotate crystal", 0.005, 0, 0.5));
 	gui.add(tiltCrystal.set("tilt crystal", 0.0, 0, 180));
-
+    gui.add(sendOSC.set("send OSC", false));
 }
 
 void ofApp::changeSphereResolution(int & sphereResolution){
@@ -463,6 +472,9 @@ void ofApp::keyPressed(int key){
 void ofApp::keyReleased(int key){
 	if (key == 'c') {
 		sphereColor = !sphereColor;
+	}
+	if (key == 'l') {
+        drawLongLat = !drawLongLat;
 	}
 	if (key == 'f') {
 		sphereFill = !sphereFill;

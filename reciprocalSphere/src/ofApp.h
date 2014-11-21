@@ -79,6 +79,8 @@ class ofApp : public ofBaseApp{
 
         /* **************** SOUND **************** */
 
+        bool drawLongLat;
+
         std::map<int, activeDot> soundElements;
 
         ofxOscReceiver receiver;
@@ -121,7 +123,7 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> waveLength;
 		ofParameter<float> rotateCrystal;
 		ofParameter<float> tiltCrystal;
-
+        ofParameter<bool> sendOSC;
 
 
 };
