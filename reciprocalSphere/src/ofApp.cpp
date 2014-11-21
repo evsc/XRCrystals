@@ -45,6 +45,11 @@ void ofApp::setup(){
 	// cout << "getNearClip : " << cam.getNearClip() << endl;
 	// cout << "getFarClip : " << cam.getFarClip() << endl;
 
+	string localAddr = "localhost";
+	int oscPortOut = 8888;
+    cout << "sending osc messages to " << localAddr <<  " on port " << oscPortOut << "\n";
+	localSender.setup(localAddr, oscPortOut);
+
 
 	useEasyCam = true;
 	drawAxis = true;
@@ -266,9 +271,21 @@ void ofApp::draw(){
         if ( dot->fresh ) {
             dot->fresh = false;
             cout << "fresh sound \t" << coord << endl;
+            ofxOscMessage message;
+            message.setAddress("/soundOn");
+            message.addIntArg(coord);
+            message.addFloatArg(dot->intensity);
+            message.addFloatArg(dot->latitude);
+            message.addFloatArg(dot->longitude);
+            message.addFloatArg(dot->phase);
+            localSender.sendMessage(message);
         }
         if( !dot->updated ) {
             cout << "this sound needs to go away \t" << coord << endl;
+            ofxOscMessage message;
+            message.setAddress("/soundOff");
+            message.addIntArg(coord);
+            localSender.sendMessage(message);
             soundElements.erase(it2++);
         } else {
             ++it2;
