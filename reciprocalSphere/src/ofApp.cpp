@@ -45,6 +45,7 @@ void ofApp::setup(){
 	// cout << "getNearClip : " << cam.getNearClip() << endl;
 	// cout << "getFarClip : " << cam.getFarClip() << endl;
 
+
 	useEasyCam = true;
 	drawAxis = true;
 
@@ -111,16 +112,22 @@ void ofApp::draw(){
 
 	// let's count the nodes drawn, to compare
 	visibleNodes = 0;
-
+    //soundElements.clear();
+    std::map<int,activeDot>::iterator it = soundElements.begin();
+    while (it != soundElements.end()) {
+        activeDot* dot = &it->second;
+        dot->updated = false;
+        it++;
+    }
 
 	ofSetColor(255*sphereBrightness, 255*sphereAlpha);
 
 	float mirrorRotZ = 0;
 
 	// mirror HKL group, so it forms full cirlce
-	for (int i=0; i<4; i++) {
+	for (int m=0; m<4; m++) {
 		ofPushMatrix();
-		mirrorRotZ = i * (360.0/4.0);
+		mirrorRotZ = m * (360.0/4.0);
 		// ofRotateZ(mirrorRotZ);
 
 		for (int i=0; i<4; i++) {
@@ -130,6 +137,8 @@ void ofApp::draw(){
 			float flipx = 1.0;
 			if (i>1) flipx = -1.0;
 			if (i%2==1) flipz = -1.0;
+
+			int mirrorno = m*4 + i;
 
 			// draw points
 			for (vector<scaItem>::iterator it = sca.data.begin() ; it != sca.data.end(); ++it) {
@@ -152,12 +161,40 @@ void ofApp::draw(){
                             // check for intersection with ewald sphere
 							if ( !ewaldSphere || onEwaldSphere(hkl.x,hkl.y,hkl.z, mirrorRotZ) ) {
 
-                                // register dot as currently visible, for sound trigger
-                                // identifier= (*it).h  (*it).k  (*it).l
+                                // cout << "hkl \t" << (*it).h << "\t" << (*it).k << "\t" << (*it).l << endl;
 
                                 float latitude = hkl.y;
                                 float longitude = ((atan2(hkl.x-ewaldO.x, ewaldO.z-hkl.z)) *180 / PI);
                                 // ... both change over time, if crystal is tiled
+
+                                // register dot as currently visible, for sound trigger
+                                // identifier= (*it).h  (*it).k  (*it).l
+
+
+                                // first look if a object with that coordinates is already registered
+                                int coordinates = mirrorno*1000000 + ((*it).h+50)*10000 + ((*it).k+50)*100 + (*it).l+50;
+                                std::map<int,activeDot>::iterator iter = soundElements.find(coordinates);
+                                bool newDot = false;
+
+                                if( iter != soundElements.end() ) {
+                                    // found it, only need to update it
+                                } else {
+                                    // create new
+                                    newDot = true;
+                                    // cout << "new sound to be created \t" << coordinates << endl;
+                                    // these values we only set once
+                                    soundElements[coordinates].h = (*it).h;
+                                    soundElements[coordinates].k = (*it).k;
+                                    soundElements[coordinates].l = (*it).l;
+                                    soundElements[coordinates].mirrorno = mirrorno;
+                                    soundElements[coordinates].longitude = longitude;
+                                    soundElements[coordinates].latitude = latitude;
+                                    soundElements[coordinates].intensity = (*it).intensity;
+                                    soundElements[coordinates].fresh = true;
+                                    soundElements[coordinates].phase = (*it).phase;
+                                }
+                                activeDot* dot = &soundElements.find(coordinates)->second;
+                                dot->updated = true;
 
 								if (sphereFill) ofFill();
 								else ofNoFill();
@@ -219,6 +256,27 @@ void ofApp::draw(){
 	cam.end();
 
 
+	// sound related
+	// start sound for fresh dots
+	// and stop sounds and delete non-active dots
+    std::map<int,activeDot>::iterator it2 = soundElements.begin();
+    while (it2 != soundElements.end()) {
+        activeDot* dot = &it2->second;
+        int coord = (dot->mirrorno)*1000000 + (dot->h+50)*10000 + (dot->k+50)*100 + dot->l+50;
+        if ( dot->fresh ) {
+            dot->fresh = false;
+            cout << "fresh sound \t" << coord << endl;
+        }
+        if( !dot->updated ) {
+            cout << "this sound needs to go away \t" << coord << endl;
+            soundElements.erase(it2++);
+        } else {
+            ++it2;
+        }
+    }
+
+
+
 	// if (useEasyCam) cam.end();
 	// else camera[camToView].end();
 
@@ -272,6 +330,7 @@ void ofApp::draw(){
 
 	ofDrawBitmapString(ofToString(ofGetFrameRate(),0) + " FPS", ofGetWidth()-105, ofGetHeight()-30);
 	ofDrawBitmapString(ofToString(visibleNodes) + " Nodes", ofGetWidth()-105, ofGetHeight()-50);
+	ofDrawBitmapString(ofToString(soundElements.size()) + " Sounds", ofGetWidth()-105, ofGetHeight()-70);
 
 }
 

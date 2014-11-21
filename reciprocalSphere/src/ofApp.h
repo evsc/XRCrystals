@@ -4,6 +4,25 @@
 #include "ofxGui.h"
 #include "scaData.h"
 // #include "mtzData.h"
+#include "ofxOsc.h"
+#include <map>
+
+typedef struct {
+
+    int h;
+    int k;
+    int l;
+    int mirrorno;
+    float intensity;
+    float longitude;
+    float latitude;
+    float phase;
+
+    bool updated;   // if not, that means the dot disappeared, the sound should stop
+    bool fresh;     // dot just appeared, the sound should be instantiated
+
+} activeDot;
+
 
 class ofApp : public ofBaseApp{
 
@@ -60,7 +79,10 @@ class ofApp : public ofBaseApp{
 
         /* **************** SOUND **************** */
 
+        std::map<int, activeDot> soundElements;
 
+        ofxOscReceiver receiver;
+		ofxOscSender localSender;
 
 		/* **************** CAMERA **************** */
 		bool useEasyCam;
