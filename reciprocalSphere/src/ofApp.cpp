@@ -32,7 +32,7 @@ void ofApp::setup(){
 	spaceDim = ofVec3f(sca.unitCellDimension.x*hklDim.x,sca.unitCellDimension.y*hklDim.y);
 	float maxRadius = max(spaceDim.x, spaceDim.y);
 	maxRadius = max (maxRadius, spaceDim.z);
-	cout << "biggest dimension = " << maxRadius << endl;	
+	cout << "biggest dimension = " << maxRadius << endl;
 
 	scale = float(ofGetWidth()) / (maxRadius*2.3);
 	cout << "ideal multiplication factor = " << scale << endl;
@@ -77,9 +77,9 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-	cam.begin();	
+	cam.begin();
 
-	// if (useEasyCam) cam.begin();	
+	// if (useEasyCam) cam.begin();
 	// else camera[camToView].begin();
 
 	ofBackground(100,115,115);
@@ -91,7 +91,7 @@ void ofApp::draw(){
 
 
 
-	
+
 
 	// foo.drawFaces();
 	// foo.drawVertices();
@@ -106,7 +106,7 @@ void ofApp::draw(){
 	ofRotateZ(viewRotation.z);
 
 	if (drawAxis) ofDrawAxis(100);
-	
+
 	if (displayEwald) {
 		ofNoFill();
 		ofSetColor(0);
@@ -122,7 +122,7 @@ void ofApp::draw(){
 	// let's count the nodes drawn, to compare
 	visibleNodes = 0;
 
-	
+
 	ofSetColor(255*sphereBrightness, 255*sphereAlpha);
 
 	float mirrorRotZ = 0;
@@ -162,7 +162,7 @@ void ofApp::draw(){
 							if ( !ewaldSphere || onEwaldSphere(hkl.x,hkl.y,hkl.z, mirrorRotZ) ) {
 
 								if (sphereFill) ofFill();
-								else ofNoFill(); 
+								else ofNoFill();
 
 								if (sphereColor) {
 									ofColor c = ofColor(255*sphereBrightness,0,0,255*sphereAlpha);
@@ -174,7 +174,7 @@ void ofApp::draw(){
 
 									// draw directly with simple OF function
 									ofDrawSphere(hkl.x,hkl.y,hkl.z, nodeScale*(*it).intensity);
-									
+
 								} else {
 
 
@@ -189,14 +189,14 @@ void ofApp::draw(){
 									if (drawMode==1) {
 										if (sphereFill) foo.drawFaces();
 										else foo.drawWireframe();
-									} 
+									}
 									else if (drawMode==2) {
 										if (sphereFill) vboSphereMesh.draw(OF_MESH_FILL);
 										else vboSphereMesh.draw(OF_MESH_WIREFRAME);
 									}
 
 									ofPopMatrix();
-									
+
 								}
 
 								// draw line from crystal to HKL dot
@@ -258,12 +258,12 @@ void ofApp::draw(){
 		keyInstructions << " p  ... save screenshot " << endl;
 
 
-		ofDrawBitmapString(keyInstructions.str(), 20, 750);
+		ofDrawBitmapString(keyInstructions.str(), 20, 550);
 
 		// draw phase color diagram
 		ofFill();
 		int x = 10;
-		int y = 700;
+		int y = 510;
 		int h = 20;
 		int w = 400;
 		int deg = 10;
@@ -332,13 +332,13 @@ void ofApp::resetSettings() {
 
 	// style the GUI
 	ofxGuiSetDefaultWidth(400);
-	ofxGuiSetDefaultHeight(38);
+	ofxGuiSetDefaultHeight(28);
 	ofxGuiSetBackgroundColor(ofColor(50));
 	ofxGuiSetHeaderColor(ofColor::red);
 	ofxGuiSetBorderColor(ofColor::black);
 	ofxGuiSetTextColor(ofColor(200,255,0));
-	ofxGuiSetTextPadding(12);
-	ofxGuiSetFont("mono.ttf", 14, true, true);
+	ofxGuiSetTextPadding(10);
+	ofxGuiSetFont("mono.ttf", 12, true, true);
 
 
 	// GUI listeners
@@ -455,8 +455,8 @@ void ofApp::keyReleased(int key){
 		// save a screenshot
         ofImage img;
         img.grabScreen(0,0,ofGetWidth(), ofGetHeight());
-        int lastIndex = dataFile.toString().find_last_of("."); 
-		string rawFileName = dataFile.toString().substr(0, lastIndex); 
+        int lastIndex = dataFile.toString().find_last_of(".");
+		string rawFileName = dataFile.toString().substr(0, lastIndex);
         string fileName = "screenshots/" + rawFileName + "_"+ofGetTimestampString()+".png";
         img.saveImage(fileName);
         cout << "saved screenshot " << fileName.c_str() << endl;
@@ -494,6 +494,6 @@ void ofApp::gotMessage(ofMessage msg){
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
+void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }

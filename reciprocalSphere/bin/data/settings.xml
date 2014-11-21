@@ -1,5 +1,5 @@
 <HKL_diffraction_space>
-	<intensity_filter>0.59</intensity_filter>
+	<intensity_filter>0.4225</intensity_filter>
 	<node_display_scaling>0.0002</node_display_scaling>
 	<!-- <data_file>lysozyme_main.sca</data_file> -->
 	<data_file>hfpps_main.sca</data_file>
@@ -16,9 +16,9 @@
 <sphere_alpha>0.5</sphere_alpha>
 <HKL_diffraction_space/>
 <phase_color>1</phase_color>
-	<apply_Ewald_sphere>0</apply_Ewald_sphere>
-	<Ewald_margin>0.1375</Ewald_margin>
-	<xray_wave_length>0.0018</xray_wave_length>
-<rotate_crystal>0</rotate_crystal>
-<tilt_crystal>29.25</tilt_crystal>
-</HKL_diffraction_space>
+	<apply_Ewald_sphere>1</apply_Ewald_sphere>
+	<Ewald_margin>0.255</Ewald_margin>
+	<xray_wave_length>0.00285</xray_wave_length>
+<rotate_crystal>0.22875</rotate_crystal>
+<tilt_crystal>0</tilt_crystal>
+</HKL_diffraction_space>
