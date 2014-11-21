@@ -87,16 +87,6 @@ void ofApp::draw(){
 	ofScale(scale*zoom,scale*zoom,scale*zoom);
 
 
-
-
-
-
-
-
-	// foo.drawFaces();
-	// foo.drawVertices();
-	// foo.drawWireframe();
-
 	float uc_h = sca.unitCellDimension.x;
 	float uc_k = sca.unitCellDimension.y;
 	float uc_l = sca.unitCellDimension.z;
@@ -159,7 +149,15 @@ void ofApp::draw(){
 						// avoid doubling of the mirror-plane
 						if ((hkl.x != hkl.y) || (i<2)) {
 
+                            // check for intersection with ewald sphere
 							if ( !ewaldSphere || onEwaldSphere(hkl.x,hkl.y,hkl.z, mirrorRotZ) ) {
+
+                                // register dot as currently visible, for sound trigger
+                                // identifier= (*it).h  (*it).k  (*it).l
+
+                                float latitude = hkl.y;
+                                float longitude = ((atan2(hkl.x-ewaldO.x, ewaldO.z-hkl.z)) *180 / PI);
+                                // ... both change over time, if crystal is tiled
 
 								if (sphereFill) ofFill();
 								else ofNoFill();
@@ -174,7 +172,9 @@ void ofApp::draw(){
 
 									// draw directly with simple OF function
 									ofDrawSphere(hkl.x,hkl.y,hkl.z, nodeScale*(*it).intensity);
-
+                                    ofFill();
+                                    ofSetColor(ofColor(255));
+                                    ofDrawBitmapString(ofToString(latitude,0)+"\n"+ofToString(longitude,1),hkl.x,hkl.y,hkl.z);
 								} else {
 
 
@@ -197,12 +197,6 @@ void ofApp::draw(){
 
 									ofPopMatrix();
 
-								}
-
-								// draw line from crystal to HKL dot
-								if (ewaldSphere) {
-									ofNoFill();
-									// ofLine(ewaldO, ofVec3f(hkl.x,hkl.y,hkl.z));
 								}
 
 								visibleNodes++;

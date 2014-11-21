@@ -58,6 +58,8 @@ class ofApp : public ofBaseApp{
 
 		ofVec3f rotateHKL;
 
+        /* **************** SOUND **************** */
+
 
 
 		/* **************** CAMERA **************** */
@@ -90,7 +92,7 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> sphereAlpha;
 		bool sphereFill;
 		bool sphereColor;
-		
+
 		ofParameter<bool> ewaldSphere;
 		bool displayEwald;
 		ofParameter<float> ewaldMargin;
@@ -99,5 +101,5 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> tiltCrystal;
 
 
-		
+
 };
