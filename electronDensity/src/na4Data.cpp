@@ -29,11 +29,11 @@ na4Data::na4Data() {
 na4Data::~na4Data() {
 
 	// delete pointer array
-	// 	for ( int i=0; i<num_rows; i++ )  
-	// {  
-	//   delete[] array_of_arrays[i];  
-	// }  
-	// delete[] array_of_arrays; 
+	// 	for ( int i=0; i<num_rows; i++ )
+	// {
+	//   delete[] array_of_arrays[i];
+	// }
+	// delete[] array_of_arrays;
 	// }
 
 
@@ -59,7 +59,7 @@ void na4Data::parseFile( string fileName ) {
 	// 2 TITLE
 
 	line = file.getNextLine();
-	// 3 From clipper Xmap  
+	// 3 From clipper Xmap
 
 	line = file.getNextLine();
 	// 4 AXIS           Z       X       Y
@@ -76,6 +76,10 @@ void na4Data::parseFile( string fileName ) {
 	rows = ofToInt(line.substr(16,8))+1;
 	sections = ofToInt(line.substr(32,8))+1;
 	cols = ofToInt(line.substr(48,8))+1;
+
+	cout << "rows \t" << rows << endl;
+	cout << "sections \t" << sections << endl;
+	cout << "cols \t" << cols << endl;
 
 
 	line = file.getNextLine();
@@ -95,7 +99,7 @@ void na4Data::parseFile( string fileName ) {
 
 
 	line = file.getNextLine();
-	// 10 RHOLIM      -1.61241         2.74221        0.114427E-03    0.454045    
+	// 10 RHOLIM      -1.61241         2.74221        0.114427E-03    0.454045
 	line = file.getNextLine();
 	// 11 INDXR4     0  21
 	line = file.getNextLine();
@@ -116,13 +120,13 @@ void na4Data::parseFile( string fileName ) {
 
 
 	// now we know the size of the density map, we can create our data container
-	map = new float**[sections];  
-	for ( int i=0; i<sections; i++ ) {  
-	  map[i] = new float*[rows];  
+	map = new float**[sections];
+	for ( int i=0; i<sections; i++ ) {
+	  map[i] = new float*[rows];
 	  for ( int j=0; j<rows; j++ ) {
 	  	map[i][j] = new float[cols];
 	  }
-	}   
+	}
 
 	int section = 0;
 
@@ -133,15 +137,19 @@ void na4Data::parseFile( string fileName ) {
 		// SECTION       0
 		section = ofToInt(line.substr(8,7));
 		// cout << "section \t" << section << endl;
-		
+
 		line = file.getNextLine();
 		// .. empty
 
+		// cout << "section " << section << endl;
+
+
 		int row = 0;
 		while (true) {
+            // cout << "row " << row << endl;
 			// first line
 			line = file.getNextLine();
-			
+
 			if (line.length() < 5) {
 				// break when empty line, because that means section is done
 				break;
@@ -194,7 +202,7 @@ void na4Data::parseFile( string fileName ) {
 }
 
 
-/* ***** convert 4-character string into interger **** 
+/* ***** convert 4-character string into interger ****
    according to mapping algorithm in <maptona4.f> (ccp4 program suite) */
 int na4Data::char4ToInt( string c4 ) {
 
@@ -255,4 +263,4 @@ float na4Data::intToReal( int v ) {
       // ENDIF
       // END
 
-// SIGN(A,B) returns the value of A with the sign of B. 
+// SIGN(A,B) returns the value of A with the sign of B.

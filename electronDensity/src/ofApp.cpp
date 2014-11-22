@@ -9,7 +9,8 @@ void ofApp::setup(){
 	loadSettings();
 
 	cout << endl << "DATA" << endl << "-----" << endl;
-	data.parseFile("lysozyme.na4");
+	// data.parseFile("lysozyme.na4");
+	data.parseFile("TeapotVoxelsPointCloud17.na4");
 
 	// inverse of unit cell dimensions
 	uc = ofVec3f( 1.f/data.cell_dim.x, 1.f/data.cell_dim.y, 1.f/data.cell_dim.z );
@@ -45,12 +46,12 @@ void ofApp::setup(){
 
 	// set iso contour values
 	int n = isoPlanes;
-    vector<double> vIso(n); 
+    vector<double> vIso(n);
 	for (unsigned int i=0;i<vIso.size();i++) {
 		vIso[i]=(i-vIso.size()/2.0)*isoPlaneDist;
 	}
     // setting iso-lines
-    contourCol.SetPlanes(vIso); 
+    contourCol.SetPlanes(vIso);
 
     // generate contour lines, based on contourFunction
     contourCol.Generate();
@@ -64,7 +65,7 @@ void ofApp::setup(){
 	contourSection.SetFirstGrid(gridSize,gridSize);
 	contourSection.SetSecondaryGrid(contourSize,contourSize);
     contourSection.SetLimits(pLimits);
-    contourSection.SetPlanes(vIso); 
+    contourSection.SetPlanes(vIso);
     contourSection.Generate();
     cout << "contourSection: primary grid \t" << contourSection.GetColFir() << "\t" << contourSection.GetRowFir() << endl;
     cout << "contourSection: secondary grid \t" << contourSection.GetColSec() << "\t" << contourSection.GetRowSec() << endl;
@@ -87,7 +88,7 @@ void ofApp::setup(){
 
 }
 
-/* function that sends the electron-density information back to the GLContour object 
+/* function that sends the electron-density information back to the GLContour object
    used as a callback function */
 double ofApp::getElectronDensityRow(ofApp * parent, double x, double y) {
 
@@ -106,7 +107,7 @@ double ofApp::getElectronDensityRow(ofApp * parent, double x, double y) {
 }
 
 
-/* function that sends the electron-density information back to the GLContour object 
+/* function that sends the electron-density information back to the GLContour object
    used as a callback function */
 double ofApp::getElectronDensitySection(ofApp * parent, double x, double y) {
 
@@ -165,7 +166,7 @@ void ofApp::update(){
 
 		ofxOscMessage m;
 		receiver.getNextMessage(&m);
-        
+
 		if(m.getAddress() == oscAddress.toString()){
 
 			head.x = -m.getArgAsFloat(0);
@@ -175,7 +176,7 @@ void ofApp::update(){
 			// map head position to parameter that controls plane that is drawn
 			drawRow = ofMap(head.z,1000,5000, 0, data.rows-1);
 			drawRow = max( min( float(drawRow), float(data.rows)-2), 0.f);
-			
+
 			drawSection = ofMap(head.x,-2800,2800, 0, data.sections-1);
 			drawSection = max( min( float(drawSection), float(data.sections)-2), 0.f);
 
@@ -254,7 +255,7 @@ void ofApp::draw(){
 		cam.end();
 
 
-		
+
 	} else {
 
 
@@ -289,7 +290,7 @@ void ofApp::draw(){
 		ofSetColor(255);
 
 
-		
+
 
 		ofPushMatrix();
 		ofTranslate(ofGetWidth()*0.5, ofGetHeight()/2,0);
@@ -309,7 +310,7 @@ void ofApp::draw(){
 
 			if (drawHead) {
 				ofSetLineWidth(1.0);
-				ofSetColor(255,0,0); 
+				ofSetColor(255,0,0);
 				ofPushMatrix();
 				ofTranslate( drawSection * (contourSize/float(data.sections)), drawCol * contourSize/float(data.cols), 0);
 				ofLine(-50/1.5,0,50/1.5,0);
@@ -325,7 +326,7 @@ void ofApp::draw(){
 
 			if (drawHead) {
 				ofSetLineWidth(1.0);
-				ofSetColor(255,0,0); 
+				ofSetColor(255,0,0);
 				ofPushMatrix();
 				ofTranslate( drawRow * (contourSize/float(data.rows)), drawCol * contourSize/float(data.cols), 0);
 				ofLine(-50/1.5,0,50/1.5,0);
@@ -371,7 +372,7 @@ void ofApp::draw(){
 
 
 
-	
+
 
 
 }
@@ -436,22 +437,22 @@ void ofApp::changeGridSize(int & gridSize) {
 
 void ofApp::changeIsoPlanes(int & isoPlanes) {
 	// set iso contour values
-    vector<double> vIso(isoPlanes); 
+    vector<double> vIso(isoPlanes);
 	for (unsigned int i=0;i<vIso.size();i++) {
 		vIso[i]=(i-vIso.size()/2.0)*isoPlaneDist;
 	}
-    contourCol.SetPlanes(vIso); 
-    contourSection.SetPlanes(vIso); 
+    contourCol.SetPlanes(vIso);
+    contourSection.SetPlanes(vIso);
 }
 
 void ofApp::changeIsoPlaneDist(float & isoPlaneDist) {
 	// set iso contour values
-    vector<double> vIso(isoPlanes); 
+    vector<double> vIso(isoPlanes);
 	for (unsigned int i=0;i<vIso.size();i++) {
 		vIso[i]=(i-vIso.size()/2.0)*isoPlaneDist;
 	}
-    contourCol.SetPlanes(vIso); 
-    contourSection.SetPlanes(vIso); 
+    contourCol.SetPlanes(vIso);
+    contourSection.SetPlanes(vIso);
 }
 
 
@@ -553,7 +554,7 @@ void ofApp::keyReleased(int key){
 		cam.reset();
 		viewRotation = ofVec3f(0,0,0);
 		cam.enableOrtho();
-		cam.setPosition(-ofGetWidth()/2,-ofGetHeight()/2,100);	
+		cam.setPosition(-ofGetWidth()/2,-ofGetHeight()/2,100);
 	}
 	else if (key == 'h') {
 		drawHead = !drawHead;
@@ -592,7 +593,7 @@ void ofApp::gotMessage(ofMessage msg){
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
+void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }
 
