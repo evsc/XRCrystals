@@ -7,9 +7,9 @@ void ofApp::setup(){
     valSolid = 32;
     valEmpty = -32;
 
-    grid[0] = 62;
-    grid[1] = 39;
-    grid[2] = 31;
+    grid[0] = 104;   // 62
+    grid[1] = 234;   // 39
+    grid[2] = 162;   // 31
 
     // first let's clear all of space
     space = new float**[grid[0]];
@@ -31,7 +31,7 @@ void ofApp::setup(){
     parseVoxelFile("TeapotVoxelsPointCloud17.ASE");
     saveOutNa4("TeapotVoxelsPointCloud17.na4");
 
-    scale = 15.0f;
+    scale = 8.0f;
     drawAxis = true;
     cam.setDistance(100);
     cam.enableOrtho();
@@ -192,37 +192,37 @@ void ofApp::saveOutNa4(string na4file){
     outputFile << "TITLE" << "\n";
     outputFile << na4file << "\n";
     outputFile << "AXIS           Z       X       Y" << "\n";
-    outputFile << "GRID         108     108      56" << "\n";
+    outputFile << "GRID         104     162     234" << "\n";
     outputFile << "XYZLIM  ";
     char no[48];
     sprintf(no, " %7d %7d %7d %7d %7d %7d", 0, grid[0]-1, 0, grid[2]-1, 0, grid[1]-1);
     outputFile << no << "\n";
 
     // "0      54       0      53       0      28" << "\n";
-    outputFile << "SPACEGROUP            96" << "\n";
+    outputFile << "SPACEGROUP             1" << "\n";
     outputFile << "MODE           2" << "\n";
-    outputFile << "CELL        78.733    78.733    36.859    90.000    90.000    90.000" << "\n";
+    outputFile << "CELL        34.333    55.071    77.681    90.000    90.000    90.000" << "\n";
     outputFile << "RHOLIM      -1.61241         2.74221        0.114427E-03    0.454045    " << "\n";
-    outputFile << "INDXR4     0  21" << "\n";
+    outputFile << "INDXR4     0  19" << "\n";
     outputFile << "END HEADER" << "\n";
     outputFile << "\n";
 
 
     // write sections (=z axis?)
 
-    for (int k=0; k<grid[2]; k++) {
+    for (int k=0; k<grid[2]; k++) { //
         char num[2];
-        sprintf(num, "%2d", k);
-        outputFile << "SECTION      " << num << "\n";
+        sprintf(num, "%3d", k);
+        outputFile << "SECTION     " << num << "\n";
         outputFile << "\n";
         for (int i=0; i<grid[0]; i++) {
             // lines
             for (int j=0; j<grid[1]; j++) {
                 // 4 characters per number
-                string v = "1qlB";
-                if (space[i][j][k]>0) v = "wrm-";
+                string v = "wrmw";
+                if (space[i][j][k]>0) v = "1qlB";
                 outputFile << v;
-                if (j==19) outputFile << "\n";
+                if ( ((j+1)%20==0) ) outputFile << "\n";
             }
             outputFile << "\n";
         }
@@ -230,6 +230,7 @@ void ofApp::saveOutNa4(string na4file){
     }
 
     outputFile.close();
+    cout << "file closed" << endl;
 }
 
 //--------------------------------------------------------------

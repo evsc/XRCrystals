@@ -10,7 +10,7 @@ void ofApp::setup(){
 
 	cout << endl << "DATA" << endl << "-----" << endl;
 	// data.parseFile("lysozyme.na4");
-	data.parseFile("TeapotVoxelsPointCloud17.na4");
+	data.parseFile("TeapotVoxels_P1_8.na4");
 
 	// inverse of unit cell dimensions
 	uc = ofVec3f( 1.f/data.cell_dim.x, 1.f/data.cell_dim.y, 1.f/data.cell_dim.z );

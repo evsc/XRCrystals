@@ -130,6 +130,8 @@ void na4Data::parseFile( string fileName ) {
 
 	int section = 0;
 
+	cout << "loop over all section" << endl;
+
 	// loop over all sections
 	while (true) {
 
@@ -141,7 +143,7 @@ void na4Data::parseFile( string fileName ) {
 		line = file.getNextLine();
 		// .. empty
 
-		// cout << "section " << section << endl;
+		cout << "section " << section << endl;
 
 
 		int row = 0;
@@ -166,6 +168,7 @@ void na4Data::parseFile( string fileName ) {
 				int v = char4ToInt(c4);
 				float f = intToReal(v);
 				// if (section == 0 && row == 0) cout << "col\t" << col << "\t" << c4 << "\t" << f << endl;
+				// cout << "col " << col << endl;
 				map[section][row][col] = f;
 
 				minValue = min(minValue, f);
@@ -175,7 +178,7 @@ void na4Data::parseFile( string fileName ) {
 				cp+=4;
 			}
 
-			// cout << "section " << section << " line.length " << line.length() << " in row " << row << endl;
+			cout << "section " << section << " line.length " << line.length() << " in row " << row << endl;
 			row++;
 
 		}
