@@ -10,7 +10,8 @@ void ofApp::setup(){
 
 	cout << endl << "DATA" << endl << "-----" << endl;
 	// data.parseFile("lysozyme.na4");
-	data.parseFile("TeapotVoxels_P1_8.na4");
+	// data.parseFile("TeapotVoxels_P1_8.na4");
+	data.parseFile("TeapotVoxelsPointCloud17.na4");
 
 	// inverse of unit cell dimensions
 	uc = ofVec3f( 1.f/data.cell_dim.x, 1.f/data.cell_dim.y, 1.f/data.cell_dim.z );
@@ -81,7 +82,7 @@ void ofApp::setup(){
     cout << "listening for osc messages on port " << oscPort << "\n";
 	receiver.setup(ofToInt(oscPort));
 
-	string localAddr = "100.100.10.11";
+	string localAddr = "localhost";
 	int oscPortOut = 8002;
     cout << "sending osc messages to " << localAddr <<  " on port " << oscPortOut << "\n";
 	localSender.setup(localAddr, oscPortOut);
@@ -297,7 +298,8 @@ void ofApp::draw(){
 		// ofTranslate(ofGetWidth()*0.5, ofGetHeight()/2,0);
 
 		zoomV = 215.0f/contourSize * pow(10,zoom);
-		ofScale(zoomV*1.33,-zoomV,zoomV);
+		ofScale(zoomV,-zoomV,zoomV);
+		// ofScale(zoomV*1.33,-zoomV,zoomV);
 		ofTranslate(-contourSize/2,-contourSize/2,0);
 
 		// this actualy generates and draws the contour plot

@@ -77,9 +77,9 @@ void na4Data::parseFile( string fileName ) {
 	sections = ofToInt(line.substr(32,8))+1;
 	cols = ofToInt(line.substr(48,8))+1;
 
-	cout << "rows \t" << rows << endl;
+	cout << "rows \t\t" << rows << endl;
 	cout << "sections \t" << sections << endl;
-	cout << "cols \t" << cols << endl;
+	cout << "cols \t\t" << cols << endl;
 
 
 	line = file.getNextLine();
@@ -114,6 +114,19 @@ void na4Data::parseFile( string fileName ) {
 	// 2kRw1qlB0JU-00RL0jB50viB02Wtz0QZyWH7 ... up to grid[2] letters*4
 	// ... up to grid[0] lines
 
+	// sections = text blocks divided by section headers
+	// rows = broken into lines, within sections
+	// cols = number of characters within a line
+
+	// <TeapotVoxels_P1_8.na4> has:
+	// 162 sections		== X
+	// 234 cols 		== Y
+	// 104 rows 		== Z
+
+	// AXIS           Z       X       Y 	... order of data structures?
+	// GRID         104     162     234		... distance btw unit cells?
+	// XYZLIM         0     103       0     161       0     233		.. data limits 
+
 
 	line = file.getNextLine();
 	// .. empty
@@ -130,7 +143,6 @@ void na4Data::parseFile( string fileName ) {
 
 	int section = 0;
 
-	cout << "loop over all section" << endl;
 
 	// loop over all sections
 	while (true) {
@@ -143,21 +155,30 @@ void na4Data::parseFile( string fileName ) {
 		line = file.getNextLine();
 		// .. empty
 
-		cout << "section " << section << endl;
+		// cout << "section " << section << endl;
 
 
 		int row = 0;
 		while (true) {
-            // cout << "row " << row << endl;
 			// first line
 			line = file.getNextLine();
+            // cout << "row " << row << endl;
 
-			if (line.length() < 5) {
+			int cnt_cols = 0;
+
+            if (line.length() < 3) {
 				// break when empty line, because that means section is done
 				break;
 			} else {
-				// second line completes the row data
-				line += file.getNextLine();
+
+	            cnt_cols = line.length() / 4;
+
+	            while (cnt_cols < cols) {
+	            	// cout << "\tcnt = " << cnt_cols << " \t another row" << endl;
+	            	line += file.getNextLine();
+	            	cnt_cols = line.length() / 4;
+            	}
+
 			}
 
 			unsigned int cp = 0;
@@ -178,7 +199,7 @@ void na4Data::parseFile( string fileName ) {
 				cp+=4;
 			}
 
-			cout << "section " << section << " line.length " << line.length() << " in row " << row << endl;
+			// cout << "section " << section << " line.length " << line.length() << " in row " << row << endl;
 			row++;
 
 		}
