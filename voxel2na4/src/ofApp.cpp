@@ -1,4 +1,5 @@
 #include "ofApp.h"
+// #include <stdio.h>
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -10,6 +11,10 @@ void ofApp::setup(){
     grid[0] = 104;   // 62
     grid[1] = 234;   // 39
     grid[2] = 162;   // 31
+
+    offset[0] = 20;
+    offset[1] = 100;
+    offset[2] = 50;
 
     // first let's clear all of space
     space = new float**[grid[0]];
@@ -162,7 +167,7 @@ void ofApp::parseVoxelFile(string voxelfile){
 				maxZ = max(maxZ, float(z));
                 // cout << ofToString(x) << "\t" << ofToString(y) << "\t" << ofToString(z) << endl;
 
-                space[x][y][z] = valSolid;
+                space[x+offset[0]][y+offset[1]][z+offset[2]] = valSolid;
             }
         }
 
@@ -193,12 +198,13 @@ void ofApp::saveOutNa4(string na4file){
     outputFile << na4file << "\n";
     outputFile << "AXIS           Z       X       Y" << "\n";
     outputFile << "GRID         104     162     234" << "\n";
-    outputFile << "XYZLIM  ";
-    char no[48];
-    sprintf(no, " %7d %7d %7d %7d %7d %7d", 0, grid[0]-1, 0, grid[2]-1, 0, grid[1]-1);
-    outputFile << no << "\n";
 
-    // "0      54       0      53       0      28" << "\n";
+    outputFile << "XYZLIM  ";
+    outputFile << ofToString(0, 8, ' ') << ofToString(grid[0]-1, 8, ' ');
+    outputFile << ofToString(0, 8, ' ') << ofToString(grid[2]-1, 8, ' ');
+    outputFile << ofToString(0, 8, ' ') << ofToString(grid[1]-1, 8, ' ');
+    outputFile << "\n";
+
     outputFile << "SPACEGROUP             1" << "\n";
     outputFile << "MODE           2" << "\n";
     outputFile << "CELL        34.333    55.071    77.681    90.000    90.000    90.000" << "\n";
@@ -211,9 +217,7 @@ void ofApp::saveOutNa4(string na4file){
     // write sections (=z axis?)
 
     for (int k=0; k<grid[2]; k++) { //
-        char num[2];
-        sprintf(num, "%3d", k);
-        outputFile << "SECTION     " << num << "\n";
+        outputFile << "SECTION     " << ofToString(k, 3, ' ') << "\n";
         outputFile << "\n";
         for (int i=0; i<grid[0]; i++) {
             // lines
