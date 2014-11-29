@@ -25,7 +25,10 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+		string fullFileName;
 		string fileName;
+		string idName;
+		string directory;
 		string templateName;
 
         int grid[3];    // size of our overall voxel grid

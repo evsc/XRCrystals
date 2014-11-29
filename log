@@ -19,7 +19,12 @@ file conversions
 - same file, just different unitcell dimensions/angles?
 
 
+ERRORS
+==========
 
+maptona4
+**** A4REAL ERROR: Illegal character(s) >>      <<.
+>> something is off with the xyz limits
 
 
 

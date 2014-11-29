@@ -9,14 +9,14 @@ void ofApp::setup(){
     valEmpty = -32;
 
     grid[0] = 104;   // 62
-    grid[1] = 234;   // 39
-    grid[2] = 162;   // 31
+    grid[1] = 162;   // 39
+    grid[2] = 234;   // 31
 
     offset[0] = 1;  // x
-    offset[1] = 80;  // y 
+    offset[1] = 20;  // y 
     offset[2] = 1;  // z
 
-    for ( int i=0; i<3; i++) scalePrimitive[i] = 0.7;
+    for ( int i=0; i<3; i++) scalePrimitive[i] = 0.9;
 
     // first let's clear all of space
     space = new float**[grid[0]];
@@ -36,9 +36,18 @@ void ofApp::setup(){
     }
 
     templateName = "4MEZ";
-    fileName = "/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227.ASE";
-    parseVoxelFile(fileName);
-    // saveOutNa4("/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227.na4");
+
+    fullFileName = "/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227.ASE";
+    int lastIndex = fullFileName.find_last_of("/");
+    fileName = fullFileName.substr(lastIndex+1);
+    directory = fullFileName.substr(0,lastIndex+1);
+    
+    lastIndex = fileName.find_last_of(".");
+    idName = fileName.substr(0,lastIndex);
+
+
+    parseVoxelFile(fullFileName);
+    saveOutNa4(directory + idName + "_reshuffle.na4");
 
     scale = 3.0f;
     drawAxis = true;
@@ -157,7 +166,7 @@ void ofApp::draw(){
 
 void ofApp::parseVoxelFile(string voxelfile){
 
-    cout << "let's parse those voxels from " << voxelfile << endl;
+    cout << "let's parse those voxels from " << endl << voxelfile << endl;
 
     ofBuffer file = ofBufferFromFile(voxelfile);
 
@@ -240,6 +249,7 @@ void ofApp::saveOutNa4(string na4file){
 
     cout << "--------" << endl;
     cout << "save out voxel data in .na4 format" << endl;
+    cout << na4file << endl;
 
     if (!ofFile::doesFileExist(na4file)) {
         outputFile = ofFile(ofToDataPath(na4file), ofFile::ReadWrite);
@@ -247,18 +257,19 @@ void ofApp::saveOutNa4(string na4file){
     }
     outputFile.open(na4file, ofFile::ReadWrite);
 
-
     // write header
     outputFile << "MAPTONA4 HEADER" << "\n";
     outputFile << "TITLE" << "\n";
     outputFile << na4file << "\n";
     outputFile << "AXIS           Z       X       Y" << "\n";
-    outputFile << "GRID         104     162     234" << "\n";
+    outputFile << "GRID        " << ofToString(grid[0], 4, ' ');
+    outputFile << "    " << ofToString(grid[1], 4, ' ');
+    outputFile << "    " << ofToString(grid[2], 4, ' ') << "\n";
 
     outputFile << "XYZLIM  ";
     outputFile << ofToString(0, 8, ' ') << ofToString(grid[0]-1, 8, ' ');
-    outputFile << ofToString(0, 8, ' ') << ofToString(grid[2]-1, 8, ' ');
     outputFile << ofToString(0, 8, ' ') << ofToString(grid[1]-1, 8, ' ');
+    outputFile << ofToString(0, 8, ' ') << ofToString(grid[2]-1, 8, ' ');
     outputFile << "\n";
 
     outputFile << "SPACEGROUP             1" << "\n";
@@ -272,17 +283,17 @@ void ofApp::saveOutNa4(string na4file){
 
     // write sections (=z axis?)
 
-    for (int k=0; k<grid[2]; k++) { //
-        outputFile << "SECTION     " << ofToString(k, 3, ' ') << "\n";
+    for (int j=0; j<grid[1]; j++) { //
+        outputFile << "SECTION     " << ofToString(j, 3, ' ') << "\n";
         outputFile << "\n";
         for (int i=0; i<grid[0]; i++) {
             // lines
-            for (int j=0; j<grid[1]; j++) {
+            for (int k=0; k<grid[2]; k++) {
                 // 4 characters per number
                 string v = "wrmw";
                 if (space[i][j][k]>0) v = "1qlB";
                 outputFile << v;
-                if ( ((j+1)%20==0) ) outputFile << "\n";
+                if ( ((k+1)%20==0) ) outputFile << "\n";
             }
             outputFile << "\n";
         }
