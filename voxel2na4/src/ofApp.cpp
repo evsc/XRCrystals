@@ -33,8 +33,8 @@ void ofApp::setup(){
         }
     }
 
-    parseVoxelFile("TeapotVoxelsPointCloud17.ASE");
-    saveOutNa4("TeapotVoxelsPointCloud17.na4");
+    parseVoxelFile("Teapot02_4MEZ_151_93_73.ASE");
+    // saveOutNa4("Teapot02_4MEZ_151_93_73.na4");
 
     scale = 8.0f;
     drawAxis = true;
@@ -75,6 +75,7 @@ void ofApp::draw(){
     for (int i=0; i<grid[0]; i++) {
         for (int j=0; j<grid[1]; j++) {
             for (int k=0; k<grid[2]; k++) {
+
                 if(space[i][j][k] > 0) {
                     // draw voxel
 
@@ -135,7 +136,7 @@ void ofApp::parseVoxelFile(string voxelfile){
     float cutOffX = 0;
     float cutOffY = 0;
     float cutOffZ = 0;
-    float gridStep = 2;
+    float gridStep = 1;
 
     while (!file.isLastLine()) {
         line = file.getNextLine();
@@ -167,7 +168,12 @@ void ofApp::parseVoxelFile(string voxelfile){
 				maxZ = max(maxZ, float(z));
                 // cout << ofToString(x) << "\t" << ofToString(y) << "\t" << ofToString(z) << endl;
 
-                space[x+offset[0]][y+offset[1]][z+offset[2]] = valSolid;
+                int i = x+offset[0];
+                int j = y+offset[1];
+                int k = z+offset[2];
+                if (i<grid[0] && j<grid[1] && k<grid[2]) {
+                    space[i][j][k] = valSolid;
+                }
             }
         }
 
@@ -244,7 +250,14 @@ void ofApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    if (key=='p') {
+        // save a screenshot
+        ofImage img;
+        img.grabScreen(0,0,ofGetWidth(), ofGetHeight());
+        string fileName = "screenshots/voxel2na4_"+ofGetTimestampString()+".png";
+        img.saveImage(fileName);
+        cout << "saved screenshot " << fileName.c_str() << endl;
+    }
 }
 
 //--------------------------------------------------------------

@@ -4,7 +4,6 @@ TODO
 ----
 
 electronDensity
-- filename > settings.xml
 
 
 voxel2na4
@@ -30,3 +29,7 @@ ffmpeg -i teapot_ed_01.mp4 -pix_fmt rgb24 -loop_output 0 teapot_ed_01.gif
 ffmpeg -i teapot_ed_01.mp4 -y -vf "setpts=1*PTS" teapot_ed_01.gif
 ffmpeg -i teapot_ed_01.mp4 -y -s 768x768 -vf "setpts=1*PTS" teapot_ed_02.gif
 ffmpeg -i teapot_ed_02.gif -y -filter:v "crop=768:500:0:134" teapot_ed_03.gif
+
+ffmpeg -i teapot_ed_02.gif -y -filter:v "crop=768:500:0:134" -s 768x768 teapot_ed_03.gif
+
+ffmpeg -i teapot_ed_02.gif -y -filter:v "crop=768:300:0:234" -s 768x500 teapot_ed_04.gif
