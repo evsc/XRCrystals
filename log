@@ -1,7 +1,7 @@
 
 
 TODO
-----
+===========
 
 electronDensity
 
@@ -20,16 +20,24 @@ voxel2na4
 
 
 ANIM 
+===========
 
-ffmpeg -f image2 -i map_%03d.png teapot_ed_01.mp4
+1) 
+make video
+ffmpeg -f image2 -i map_%03d.png ../teapot02_ed_01.mp4
+
+make video and crop
+ffmpeg -f image2 -i map_%03d.png -filter:v "crop=1024:300:0:468" ../teapot02_ed_01.mp4
 
 
-ffmpeg -i teapot_ed_01.mp4 -pix_fmt rgb24 -loop_output 0 teapot_ed_01.gif
-
-ffmpeg -i teapot_ed_01.mp4 -y -vf "setpts=1*PTS" teapot_ed_01.gif
+2) 
+make animated gif
 ffmpeg -i teapot_ed_01.mp4 -y -s 768x768 -vf "setpts=1*PTS" teapot_ed_02.gif
-ffmpeg -i teapot_ed_02.gif -y -filter:v "crop=768:500:0:134" teapot_ed_03.gif
 
-ffmpeg -i teapot_ed_02.gif -y -filter:v "crop=768:500:0:134" -s 768x768 teapot_ed_03.gif
+make animated gif and scale
+ffmpeg -i ../teapot02_ed_01.mp4 -y -s 500x300 -vf "setpts=1*PTS" ../teapot02_ed_01.gif
 
+
+
+crop and scale
 ffmpeg -i teapot_ed_02.gif -y -filter:v "crop=768:300:0:234" -s 768x500 teapot_ed_04.gif

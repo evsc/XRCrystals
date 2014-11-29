@@ -28,6 +28,7 @@ class ofApp : public ofBaseApp{
 
         int grid[3];    // size of our overall voxel grid
         int offset[3];	// placement of model offset in grid
+        float scalePrimitive[3];
         float*** space;   // the actual voxel grid
 
         std::vector< voxel > voxels;

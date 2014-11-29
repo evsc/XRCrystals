@@ -12,9 +12,11 @@ void ofApp::setup(){
     grid[1] = 234;   // 39
     grid[2] = 162;   // 31
 
-    offset[0] = 20;
-    offset[1] = 100;
-    offset[2] = 50;
+    offset[0] = 5;
+    offset[1] = 5;
+    offset[2] = 5;
+
+    for ( int i=0; i<3; i++) scalePrimitive[i] = 0.7;
 
     // first let's clear all of space
     space = new float**[grid[0]];
@@ -34,9 +36,9 @@ void ofApp::setup(){
     }
 
     parseVoxelFile("Teapot02_4MEZ_151_93_73.ASE");
-    // saveOutNa4("Teapot02_4MEZ_151_93_73.na4");
+    saveOutNa4("Teapot02_4MEZ_151_93_73.na4");
 
-    scale = 8.0f;
+    scale = 3.0f;
     drawAxis = true;
     cam.setDistance(100);
     cam.enableOrtho();
@@ -168,9 +170,9 @@ void ofApp::parseVoxelFile(string voxelfile){
 				maxZ = max(maxZ, float(z));
                 // cout << ofToString(x) << "\t" << ofToString(y) << "\t" << ofToString(z) << endl;
 
-                int i = x+offset[0];
-                int j = y+offset[1];
-                int k = z+offset[2];
+                int i = x * scalePrimitive[0] + offset[0];
+                int j = y * scalePrimitive[1] + offset[1];
+                int k = z * scalePrimitive[2] + offset[2];
                 if (i<grid[0] && j<grid[1] && k<grid[2]) {
                     space[i][j][k] = valSolid;
                 }
