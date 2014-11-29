@@ -12,9 +12,9 @@ void ofApp::setup(){
     grid[1] = 234;   // 39
     grid[2] = 162;   // 31
 
-    offset[0] = 5;
-    offset[1] = 5;
-    offset[2] = 5;
+    offset[0] = 1;  // x
+    offset[1] = 80;  // y 
+    offset[2] = 1;  // z
 
     for ( int i=0; i<3; i++) scalePrimitive[i] = 0.7;
 
@@ -35,8 +35,8 @@ void ofApp::setup(){
         }
     }
 
-    parseVoxelFile("Teapot02_4MEZ_151_93_73.ASE");
-    saveOutNa4("Teapot02_4MEZ_151_93_73.na4");
+    parseVoxelFile("/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227.ASE");
+    saveOutNa4("/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227.na4");
 
     scale = 3.0f;
     drawAxis = true;
@@ -175,6 +175,12 @@ void ofApp::parseVoxelFile(string voxelfile){
                 int k = z * scalePrimitive[2] + offset[2];
                 if (i<grid[0] && j<grid[1] && k<grid[2]) {
                     space[i][j][k] = valSolid;
+                } else {
+                    cout << "cutoff ";
+                    if (i>=grid[0]) cout << "\tx: " << i << " / " << grid[0];
+                    if (j>=grid[1]) cout << "\ty: " << j << " / " << grid[1];
+                    if (k>=grid[2]) cout << "\tz: " << k << " / " << grid[2];
+                    cout << endl;
                 }
             }
         }
@@ -182,6 +188,7 @@ void ofApp::parseVoxelFile(string voxelfile){
         // if (cnt > 34 && cnt < 45) cout << cnt << "\t" << line << endl;
     }
 
+    cout << "-------" << endl << "size of primitive:" << endl;
     cout << "minX \t" << minX << "\t maxX \t" << maxX << endl;
     cout << "minY \t" << minY << "\t maxY \t" << maxY << endl;
     cout << "minZ \t" << minZ << "\t maxZ \t" << maxZ << endl;
