@@ -74,6 +74,7 @@ class ofApp : public ofBaseApp{
 		bool showGUI;
 
 		ofParameter<bool> draw3D;
+		ofParameter<string> dataFile;
 
 		ofParameter<float> zoom;
 		ofParameter<float> nodeScale;
@@ -103,6 +104,9 @@ class ofApp : public ofBaseApp{
 		void changeIsoPlanes(int & isoPlanes);
 		void changeIsoPlaneDist(float & isoPlaneDist);
 
+
+
+		int imgSq;
 
 };
 

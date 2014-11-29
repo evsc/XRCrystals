@@ -8,10 +8,9 @@ void ofApp::setup(){
 	resetSettings();
 	loadSettings();
 
-	cout << endl << "DATA" << endl << "-----" << endl;
 	// data.parseFile("lysozyme.na4");
 	// data.parseFile("TeapotVoxels_P1_8.na4");
-	data.parseFile("TeapotVoxelsPointCloud17.na4");
+	data.parseFile(dataFile);
 
 	// inverse of unit cell dimensions
 	uc = ofVec3f( 1.f/data.cell_dim.x, 1.f/data.cell_dim.y, 1.f/data.cell_dim.z );
@@ -305,6 +304,8 @@ void ofApp::draw(){
 		// this actualy generates and draws the contour plot
 		ofSetLineWidth(2.0);
 
+		float scaleX = 1.0;
+
 
 		if (frontView) {
 
@@ -315,10 +316,10 @@ void ofApp::draw(){
 				ofSetColor(255,0,0);
 				ofPushMatrix();
 				ofTranslate( drawSection * (contourSize/float(data.sections)), drawCol * contourSize/float(data.cols), 0);
-				ofLine(-50/1.5,0,50/1.5,0);
+				ofLine(-50/scaleX,0,50/scaleX,0);
 				ofLine(0,-50,0,50);
 				ofFill();
-				ofRect(-50.0/1.5,-50,100.0/1.5,100);
+				ofRect(-50.0/scaleX,-50,100.0/scaleX,100);
 				ofPopMatrix();
 			}
 
@@ -331,10 +332,10 @@ void ofApp::draw(){
 				ofSetColor(255,0,0);
 				ofPushMatrix();
 				ofTranslate( drawRow * (contourSize/float(data.rows)), drawCol * contourSize/float(data.cols), 0);
-				ofLine(-50/1.5,0,50/1.5,0);
+				ofLine(-50/scaleX,0,50/scaleX,0);
 				ofLine(0,-50,0,50);
 				ofFill();
-				ofRect(-50.0/1.5,-50,100.0/1.5,100);
+				ofRect(-50.0/scaleX,-50,100.0/scaleX,100);
 				ofPopMatrix();
 			}
 
@@ -399,6 +400,7 @@ void ofApp::createGUI() {
 
 
 	gui.setup("density map");
+	gui.add(dataFile.set("data file", "TeapotVoxelsPointCloud17.na4"));
 	gui.add(draw3D.set("draw 3d", false));
 	gui.add(zoom.set( "zoom", 0, -1.f, 1.f ));
 	gui.add(nodeScale.set( "node scale", 0, -1.f, 1.f ));
@@ -467,7 +469,7 @@ void ofApp::resetSettings() {
 	frontView = true;
 	sendSoundInfo = false;
 
-	drawHead = true;
+	drawHead = false;
 
 	drawAlpha = 0.5;
 	drawBrightness = 1.f;
@@ -479,6 +481,8 @@ void ofApp::resetSettings() {
 	viewRotation = ofVec3f(0,0,0);
 
 	uc = ofVec3f(1,1,1);
+
+	imgSq = 0;
 
 }
 
@@ -496,15 +500,29 @@ void ofApp::loadSettings() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 
+	float moveStep = 0.5;
+
 	if (key == OF_KEY_DOWN) {
-		drawCol+=0.1;
-		if (drawCol > data.cols-1) drawCol = data.cols-1;
-		if (drawCol < 0) drawCol = 0;
+		if (!frontView) {
+			drawSection+=moveStep;
+			if (drawSection > data.sections-1) drawSection = data.sections-1;
+			if (drawSection < 0) drawSection = 0;
+		} else {
+			drawRow+=moveStep;
+			if (drawRow > data.rows-1) drawRow = data.rows-1;
+			if (drawRow < 0) drawRow = 0;
+		}
 	}
 	else if (key == OF_KEY_UP) {
-		drawCol-=0.1;
-		if (drawCol > data.cols-1) drawCol = data.cols-1;
-		if (drawCol < 0) drawCol = 0;
+		if (!frontView) {
+			drawSection-=moveStep;
+			if (drawSection > data.sections-1) drawSection = data.sections-1;
+			if (drawSection < 0) drawSection = 0;
+		} else {
+			drawRow-=moveStep;
+			if (drawRow > data.rows-1) drawRow = data.rows-1;
+			if (drawRow < 0) drawRow = 0;
+		}
 	}
 }
 
@@ -517,11 +535,15 @@ void ofApp::keyReleased(int key){
 
 	else if (key == 'p') {
 		// save a screenshot
+		
         ofImage img;
         img.grabScreen(0,0,ofGetWidth(), ofGetHeight());
-        string fileName = "screenshots/map_"+ofGetTimestampString()+".png";
+        // string fileName = "screenshots/map_"+ofGetTimestampString()+".png";
+        string fileName = "screenshots/map_"+ofToString(imgSq,3,'0')+".png";
         img.saveImage(fileName);
         cout << "saved screenshot " << fileName.c_str() << endl;
+
+		imgSq++;
 	}
 
 	else if (key == 'r') {

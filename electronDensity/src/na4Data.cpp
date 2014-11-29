@@ -77,9 +77,9 @@ void na4Data::parseFile( string fileName ) {
 	sections = ofToInt(line.substr(32,8))+1;
 	cols = ofToInt(line.substr(48,8))+1;
 
-	cout << "rows \t\t" << rows << endl;
-	cout << "sections \t" << sections << endl;
-	cout << "cols \t\t" << cols << endl;
+	// cout << "rows \t\t" << rows << endl;
+	// cout << "sections \t" << sections << endl;
+	// cout << "cols \t\t" << cols << endl;
 
 
 	line = file.getNextLine();
