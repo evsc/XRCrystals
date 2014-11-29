@@ -31,3 +31,27 @@ echo "maptona4 out: <${outfile}>"
 maptona4 mapin "${infile}" mapout "${outfile}"
 
 echo "maptona4 conversoin done!"
+
+
+
+# sfall HKLOUT "/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227_reshuffle.mtz" MAPIN "/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227_reshuffle.map"
+
+# title [No title given]
+# labout  FC=FCalc PHIC=PHICalc
+# NAME -
+#     PROJECT DEED
+# MODE SFCALC -
+#     MAPIN
+# badd 0.0
+# vdwr 2.5
+# end
+
+
+ # COMMAND
+
+# sfall HKLOUT "/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227_reshuffle.mtz" MAPIN "/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227_reshuffle.map" 
+
+# NEED keyworded input ?
+
+# title [abc] labout  FC=FCalc PHIC=PHICalc MODE SFCALC -      MAPIN NAME -      PROJECT DEED badd 0.0 vdwr 2.5 end
+
