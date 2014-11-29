@@ -25,11 +25,25 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+		string fileName;
+		string templateName;
 
         int grid[3];    // size of our overall voxel grid
         int offset[3];	// placement of model offset in grid
         float scalePrimitive[3];
         float*** space;   // the actual voxel grid
+
+        float minX;
+        float maxX;
+        float minY;
+        float maxY;
+        float minZ;
+        float maxZ;
+
+        float cutOffX;
+	    float cutOffY;
+	    float cutOffZ;
+	    float gridStep;
 
         std::vector< voxel > voxels;
 

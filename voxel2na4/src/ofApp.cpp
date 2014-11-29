@@ -35,8 +35,10 @@ void ofApp::setup(){
         }
     }
 
-    parseVoxelFile("/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227.ASE");
-    saveOutNa4("/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227.na4");
+    templateName = "4MEZ";
+    fileName = "/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227.ASE";
+    parseVoxelFile(fileName);
+    // saveOutNa4("/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227.na4");
 
     scale = 3.0f;
     drawAxis = true;
@@ -73,10 +75,17 @@ void ofApp::draw(){
     ofScale(scale,scale,scale);
     ofTranslate(-grid[0]/2, -grid[1]/2, -grid[2]/2);
 
+    // mark the edges of our grid
+    ofSetColor(255,0,0);
+    ofNoFill();
+    ofDrawBox(grid[0]/2,grid[1]/2,grid[2]/2,grid[0]-1, grid[1]-1, grid[2]-1);
 
-    for (int i=0; i<grid[0]; i++) {
-        for (int j=0; j<grid[1]; j++) {
-            for (int k=0; k<grid[2]; k++) {
+    // skip some rows to make drawing faster
+    int skip = 5;
+
+    for (int i=0; i<grid[0]; i+=skip) {
+        for (int j=0; j<grid[1]; j+=skip) {
+            for (int k=0; k<grid[2]; k+=skip) {
 
                 if(space[i][j][k] > 0) {
                     // draw voxel
@@ -99,8 +108,40 @@ void ofApp::draw(){
     ofPopMatrix();
     cam.end();
 
-    ofNoFill();
+
     ofSetColor(0);
+    ofFill();
+
+    stringstream parameters;
+    parameters << "filename\t" << fileName << endl;
+    parameters << endl;
+    parameters << "min max\t\t" << "X\t" << minX << "\t" << maxX << "\t" << endl;
+    parameters << "\t\t" << "Y\t" << minY << "\t" << maxY << "\t" << endl;
+    parameters << "\t\t" << "Z\t" << minZ << "\t" << maxZ << "\t" << endl;
+    parameters << "gridStep\t" << gridStep << endl;
+    
+    parameters << endl;
+    parameters << "template\t" << templateName << endl;
+    parameters << "grid\t\t" << grid[0] << "\t" << grid[1] << "\t" << grid[2] << endl;
+    
+    parameters << endl;
+    parameters << "cutOff\t\t" << cutOffX << "\t" << cutOffY << "\t" << cutOffZ << endl;
+    parameters << "offset\t\t" << offset[0] << "\t" << offset[1] << "\t" << offset[2] << endl;
+    parameters << "scalePrimitive\t" << scalePrimitive[0] << "\t" << scalePrimitive[1] << "\t" << scalePrimitive[2] << endl;
+
+    parameters << endl;
+    parameters << "draw: skip\t" << skip << endl;
+    parameters << "draw: scale\t" << ofToString(scale,2) << endl;
+
+    ofDrawBitmapString(parameters.str(), 20, 20);
+
+
+
+
+
+
+
+
     ofDrawBitmapString(ofToString(ofGetFrameRate(),0) + " FPS", ofGetWidth()-105, ofGetHeight()-30);
 
 }
@@ -123,22 +164,22 @@ void ofApp::parseVoxelFile(string voxelfile){
     int cnt = 0;
     string line;
 
-    float minX = 1000;
-    float maxX = -1000;
-    float minY = 1000;
-    float maxY = -1000;
-    float minZ = 1000;
-    float maxZ = -1000;
+    minX = 1000;
+    maxX = -1000;
+    minY = 1000;
+    maxY = -1000;
+    minZ = 1000;
+    maxZ = -1000;
 
     // take off the minX values so that smallest value starts at 0
 //    float cutOffX = -50.5362;
 //    float cutOffY = -34.6221;
 //    float cutOffZ = 2.2834;
 //    float gridStep = 2.5224;
-    float cutOffX = 0;
-    float cutOffY = 0;
-    float cutOffZ = 0;
-    float gridStep = 1;
+    cutOffX = 0;
+    cutOffY = 0;
+    cutOffZ = 0;
+    gridStep = 1;
 
     while (!file.isLastLine()) {
         line = file.getNextLine();
