@@ -18,5 +18,6 @@
 	<iso_plane_distance>3.6752</iso_plane_distance>
 <front_view>0</front_view>
 <send_sound_info>1</send_sound_info>
-<data_file>/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227.na4</data_file>
+<!-- <data_file>/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227.na4</data_file> -->
+<data_file>lysozyme.na4</data_file>
 </density_map>

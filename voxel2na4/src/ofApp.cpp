@@ -8,15 +8,24 @@ void ofApp::setup(){
     valSolid = 32;
     valEmpty = -32;
 
-    grid[0] = 104;   // 62
-    grid[1] = 162;   // 39
-    grid[2] = 234;   // 31
+    // templateName = "4MEZ";
+    templateName = "1VFY";
+
+    if (templateName == "4MEZ") {
+        grid[0] = 104;   // 62
+        grid[1] = 162;   // 39
+        grid[2] = 234;   // 31
+    } else if (templateName == "1VFY") {
+        grid[0] = 72;   // 62
+        grid[1] = 80;   // 39
+        grid[2] = 98;   // 31
+    }
 
     offset[0] = 1;  // x
-    offset[1] = 20;  // y 
+    offset[1] = 1;  // y 
     offset[2] = 1;  // z
 
-    for ( int i=0; i<3; i++) scalePrimitive[i] = 0.9;
+    for ( int i=0; i<3; i++) scalePrimitive[i] = 1.0;
 
     // first let's clear all of space
     space = new float**[grid[0]];
@@ -35,9 +44,9 @@ void ofApp::setup(){
         }
     }
 
-    templateName = "4MEZ";
 
-    fullFileName = "/home/eva/Documents/deed/molecular_db/teapot/Teapot03_4MEZ_111_141_227.ASE";
+
+    fullFileName = "/home/eva/Documents/deed/molecular_db/text01/Text01_XYZ_56_58_26.ASE";
     int lastIndex = fullFileName.find_last_of("/");
     fileName = fullFileName.substr(lastIndex+1);
     directory = fullFileName.substr(0,lastIndex+1);
@@ -47,7 +56,7 @@ void ofApp::setup(){
 
 
     parseVoxelFile(fullFileName);
-    saveOutNa4(directory + idName + "_reshuffle.na4");
+    saveOutNa4(directory + idName + "_" + templateName + ".na4");
 
     scale = 3.0f;
     drawAxis = true;
@@ -272,11 +281,24 @@ void ofApp::saveOutNa4(string na4file){
     outputFile << ofToString(0, 8, ' ') << ofToString(grid[2]-1, 8, ' ');
     outputFile << "\n";
 
-    outputFile << "SPACEGROUP             1" << "\n";
-    outputFile << "MODE           2" << "\n";
-    outputFile << "CELL        34.333    55.071    77.681    90.000    90.000    90.000" << "\n";
-    outputFile << "RHOLIM      -1.61241         2.74221        0.114427E-03    0.454045    " << "\n";
-    outputFile << "INDXR4     0  19" << "\n";
+
+
+    if (templateName == "4MEZ") {
+        outputFile << "SPACEGROUP             1" << "\n";
+        outputFile << "MODE           2" << "\n";
+        outputFile << "CELL        34.333    55.071    77.681    90.000    90.000    90.000" << "\n";
+        outputFile << "RHOLIM      -1.61241         2.74221        0.114427E-03    0.454045    " << "\n";
+        outputFile << "INDXR4     0  19" << "\n";
+    } else if (templateName == "1VFY") {
+        outputFile << "SPACEGROUP             1" << "\n";
+        outputFile << "MODE           2" << "\n";
+        outputFile << "CELL        24.090    26.570    31.610   111.790    92.700   105.700" << "\n";
+        outputFile << "RHOLIM     -0.960050         33.7906        0.234025E-10    0.603334    " << "\n";
+        outputFile << "INDXR4     0  17" << "\n";
+    }
+
+
+
     outputFile << "END HEADER" << "\n";
     outputFile << "\n";
 
