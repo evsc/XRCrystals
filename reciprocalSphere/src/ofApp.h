@@ -67,6 +67,7 @@ class ofApp : public ofBaseApp{
 
 		void changeSphereResolution(int & sphereResolution);
 		void changeWaveLength(float & waveLength);
+		void expandBubbleNow();
 
 		int visibleNodes;
 
@@ -124,6 +125,14 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> rotateCrystal;
 		ofParameter<float> tiltCrystal;
         ofParameter<bool> sendOSC;
+
+
+        ofParameter<bool> soundTrigger;
+
+        ofxButton expandBubble;
+		ofParameter<float> expansionVel;
+		float expansionRadius;
+		float maxExpansionRadius;
 
 
 };

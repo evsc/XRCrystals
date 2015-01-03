@@ -32,6 +32,7 @@ void ofApp::setup(){
 	spaceDim = ofVec3f(sca.unitCellDimension.x*hklDim.x,sca.unitCellDimension.y*hklDim.y);
 	float maxRadius = max(spaceDim.x, spaceDim.y);
 	maxRadius = max (maxRadius, spaceDim.z);
+	maxExpansionRadius = maxRadius + 1;
 	cout << "biggest dimension = " << maxRadius << endl;
 
 	scale = float(ofGetWidth()) / (maxRadius*2.3);
@@ -109,6 +110,13 @@ void ofApp::draw(){
 		ofDrawSphere(ewaldO.x,ewaldO.y,ewaldO.z,ewaldSphereRadius);
 	}
 
+	// draw expanding sound bubble
+	if (expansionRadius > 0) {
+		ofNoFill();
+		ofSetColor(255,10);
+		ofDrawSphere(0,0,0,expansionRadius);
+	}
+
 	// ofRotateX(rotateHKL.x);
 	// ofRotateY(rotateHKL.y);
 	// ofRotateZ(rotateHKL.z);
@@ -173,31 +181,53 @@ void ofApp::draw(){
                                 // ... both change over time, if crystal is tiled
 
                                 // register dot as currently visible, for sound trigger
+                                bool doubleRadius = false;
+                                if (m==0 && i==0 && expansionRadius > 0) {
+                                	// only sounds come from expansion bubble
+                                	// only do this for original wedge. not all mirror wedges
+                                	// (as they would just carry the same data)
 
-                                // first look if a object with that coordinates is already registered
-                                int coordinates = mirrorno*1000000 + ((*it).h+50)*10000 + ((*it).k+50)*100 + (*it).l+50;
-                                std::map<int,activeDot>::iterator iter = soundElements.find(coordinates);
-                                bool newDot = false;
+                                	ofVec3f hkl = ofVec3f((*it).h,(*it).k,(*it).l);
+									float distance = hkl.length();
+									if (distance >= expansionRadius && distance < expansionRadius+expansionVel) {
+										doubleRadius = true;
+										if(sendOSC) {
+							                ofxOscMessage message;
+							                message.setAddress("/soundPing");
+							                message.addFloatArg((*it).phase);
+							                message.addFloatArg((*it).intensity);
+							                localSender.sendMessage(message);
+							            }
+									}
 
-                                if( iter != soundElements.end() ) {
-                                    // found it, only need to update it
-                                } else {
-                                    // create new
-                                    newDot = true;
-                                    // cout << "new sound to be created \t" << coordinates << endl;
-                                    // these values we only set once
-                                    soundElements[coordinates].h = (*it).h;
-                                    soundElements[coordinates].k = (*it).k;
-                                    soundElements[coordinates].l = (*it).l;
-                                    soundElements[coordinates].mirrorno = mirrorno;
-                                    soundElements[coordinates].longitude = longitude;
-                                    soundElements[coordinates].latitude = latitude;
-                                    soundElements[coordinates].intensity = (*it).intensity;
-                                    soundElements[coordinates].fresh = true;
-                                    soundElements[coordinates].phase = (*it).phase;
-                                }
-                                activeDot* dot = &soundElements.find(coordinates)->second;
-                                dot->updated = true;
+
+
+                                } else if (soundTrigger) {
+	                                // first look if a object with that coordinates is already registered
+	                                int coordinates = mirrorno*1000000 + ((*it).h+50)*10000 + ((*it).k+50)*100 + (*it).l+50;
+	                                std::map<int,activeDot>::iterator iter = soundElements.find(coordinates);
+	                                bool newDot = false;
+
+	                                if( iter != soundElements.end() ) {
+	                                    // found it, only need to update it
+	                                } else {
+	                                    // create new
+	                                    newDot = true;
+	                                    // cout << "new sound to be created \t" << coordinates << endl;
+	                                    // these values we only set once
+	                                    soundElements[coordinates].h = (*it).h;
+	                                    soundElements[coordinates].k = (*it).k;
+	                                    soundElements[coordinates].l = (*it).l;
+	                                    soundElements[coordinates].mirrorno = mirrorno;
+	                                    soundElements[coordinates].longitude = longitude;
+	                                    soundElements[coordinates].latitude = latitude;
+	                                    soundElements[coordinates].intensity = (*it).intensity;
+	                                    soundElements[coordinates].fresh = true;
+	                                    soundElements[coordinates].phase = (*it).phase;
+	                                }
+	                                activeDot* dot = &soundElements.find(coordinates)->second;
+	                                dot->updated = true;
+	                            }
 
 								if (sphereFill) ofFill();
 								else ofNoFill();
@@ -208,10 +238,11 @@ void ofApp::draw(){
 									ofSetColor( c );
 								}
 
+								float m = doubleRadius ? 3.f : 1.f;
 								if (drawMode==0) {
 
 									// draw directly with simple OF function
-									ofDrawSphere(hkl.x,hkl.y,hkl.z, nodeScale*(*it).intensity);
+									ofDrawSphere(hkl.x,hkl.y,hkl.z, nodeScale*(*it).intensity*m);
 
 									if(drawLongLat) {
                                         ofFill();
@@ -226,7 +257,7 @@ void ofApp::draw(){
 									ofPushMatrix();
 									ofTranslate(hkl.x,hkl.y,hkl.z);
 
-									float sc = nodeScale*(*it).intensity;
+									float sc = nodeScale*(*it).intensity*m;
 									ofScale(sc,sc,sc);
 
 									if (drawMode==1) {
@@ -263,6 +294,14 @@ void ofApp::draw(){
 
 
 	// sound related
+
+	if (expansionRadius >= 0) {
+		expansionRadius += expansionVel;
+		if (expansionRadius >= maxExpansionRadius) {
+			expansionRadius = -1;
+		}
+	}
+
 	// start sound for fresh dots
 	// and stop sounds and delete non-active dots
     std::map<int,activeDot>::iterator it2 = soundElements.begin();
@@ -408,9 +447,13 @@ void ofApp::resetSettings() {
 	viewRotation = ofVec3f(0,0,0);
 	rotateHKL = ofVec3f(0,0,0);
 
+	// the expansion bubble, to make sound
+	expansionRadius = -1; 		// -1 means it's not active
+	maxExpansionRadius = 100; 	// don't know max yet
+
 	// style the GUI
 	ofxGuiSetDefaultWidth(400);
-	ofxGuiSetDefaultHeight(28);
+	ofxGuiSetDefaultHeight(22);
 	ofxGuiSetBackgroundColor(ofColor(50));
 	ofxGuiSetHeaderColor(ofColor::red);
 	ofxGuiSetBorderColor(ofColor::black);
@@ -422,6 +465,8 @@ void ofApp::resetSettings() {
 	// GUI listeners
 	sphereResolution.addListener(this,&ofApp::changeSphereResolution);
 	waveLength.addListener(this,&ofApp::changeWaveLength);
+
+	expandBubble.addListener(this,&ofApp::expandBubbleNow);
 
 
 	// GUI setup
@@ -448,6 +493,10 @@ void ofApp::resetSettings() {
 	gui.add(rotateCrystal.set("rotate crystal", 0.005, 0, 0.5));
 	gui.add(tiltCrystal.set("tilt crystal", 0.0, 0, 180));
     gui.add(sendOSC.set("send OSC", false));
+    gui.add(soundTrigger.set("sound trigger", false));
+
+    gui.add(expandBubble.setup("Expand Sound Bubble"));
+	gui.add(expansionVel.set("expansion velocity", 0.1, 0.01, 2));
 }
 
 void ofApp::changeSphereResolution(int & sphereResolution){
@@ -457,6 +506,11 @@ void ofApp::changeSphereResolution(int & sphereResolution){
 void ofApp::changeWaveLength(float & waveLength){
 	ewaldSphereRadius = 0.1/waveLength;
 	ewaldO = ofVec3f(0,0,ewaldSphereRadius);
+}
+
+void ofApp::expandBubbleNow(){
+	expansionRadius = 0;
+	cout << "expandBubbleNow()" << endl;
 }
 
 void ofApp::loadSettings() {

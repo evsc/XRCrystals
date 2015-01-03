@@ -3,19 +3,26 @@
 TODO
 ===========
 
+PD
+- run on ubuntu
+- make own patch version of u_makepoly 
+
+reciprocalSphere
+- option to send all sound-data at once (btn?)
+- screenshots not copying file-structure
+- different spacegroups might require different mirroring of data-wedge?
+
 voxel2na4
 - read in parameters as arguments
 
 electronDensity
-
-
-reciprocalSphere
-- screenshots not copying file-structure
-
+- 
 
 file conversions
 - automate 
 - same file, just different unitcell dimensions/angles?
+
+
 
 
 ERRORS
@@ -50,3 +57,35 @@ ffmpeg -i ../teapot03_ed_02.mp4 -y -vf "setpts=0.5*PTS" ../teapot03_ed_02.gif
 
 crop and scale
 ffmpeg -i teapot_ed_02.gif -y -filter:v "crop=768:300:0:234" -s 768x500 teapot_ed_04.gif
+
+
+
+
+
+
+Sonification Ideas
+===========
+
+options
+- play in SEQUENCY? melody?
+	- without turning / tilting the crystal, which can be arbitrary. sequence could be from origin outwards. an expanding bubble where nodes are played when they intersect. this would make audible: (1) the size of the HKL pattern (2) strong nodes further outwards. all mirrored information is lost, as those points are hit at the same time. HKL coord would define timing of note, phase could define pitch. intensity volume. 
+- ONE CHORD? all diffration nodes at once? 
+
+mapping
+- as data is mirrored around the 0|0|0 origin, the frequency scale should be mapped outwards from the center
+- make harmonic=logarithmic steps btw hkl grid points. h1 = 220Hz, h2 = 440Hz, h3=880Hz, ... though we would run out of audible frequencies quite fast. rather make steps along the harmonic scale? major
+- data points are defined by 
+	- hkl coordinate
+	- intensity
+	- phase	
+- diffraction data of crystals differ in
+	- amount of nodes (further out nodes = higher resolution when scanning?)
+	- spread of nodes in HKL direction (=spacegroup, unit cell dimension?)
+	- intensity based on crystal structure (a few strong nodes vs many weak ones)
+	- phase values
+
+Daniel's notes
+* a way to dynamically map the top and bottom note of the "scale" that is being played
+* try an iteration where the phase information gives the note frequency (0-360 degrees mapped to the freq. scale) instead of the position on the sphere (I feel like the position feels a little more incidental since it depends on the angle of the crystal)
+* an iteration where after the dots appear they remain on screen but no longer play (this might involve rotating the crystal along two axis so that all points in reciprocal space pass through the ewald sphere
+* Play an entire molecule's diffraction pattern all at once (perhaps subtracting the common elements of the "molecule library" beforehand so they sound as "different" as possible)
