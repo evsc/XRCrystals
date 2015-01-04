@@ -1,6 +1,6 @@
 <HKL_diffraction_space>
-	<intensity_filter>0.0225</intensity_filter>
-	<node_display_scaling>0.000164</node_display_scaling>
+	<intensity_filter>260</intensity_filter>
+	<node_display_scaling>5.2e-05</node_display_scaling>
 	<!-- <data_file>lysozyme_main.sca</data_file> -->
 	<data_file>/home/eva/Documents/deed/molecular_db/cube01/Cube01_XYZ_64_65_65_1VFY.sca</data_file>
 	<!-- <data_file>/home/eva/Documents/deed/molecular_db/pyramid01/Pyramid01_XYZ_63_63_62_1VFY.sca</data_file> -->
@@ -27,6 +27,6 @@
 <tilt_crystal>0</tilt_crystal>
 <send_OSC>0</send_OSC>
 
-<expansion_velocity>0.67665</expansion_velocity>
+<expansion_velocity>0.31845</expansion_velocity>
 <sound_trigger>0</sound_trigger>
 </HKL_diffraction_space>
