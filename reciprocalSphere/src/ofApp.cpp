@@ -475,7 +475,7 @@ void ofApp::resetSettings() {
 	gui.add(dataFile.set("data file", "Daniels-lysozyme.sca"));
 	gui.add(zoom.set( "zoom", 1, 0.5, 15 ));
 	gui.add(mirror.set( "mirror", true));
-	gui.add(minIntensity.set( "intensity filter", 500, 0, 1000 ));
+	gui.add(minIntensity.set( "intensity filter", 500, 0, 5000 ));
 	gui.add(nodeScale.set( "node display scaling", 0.000002, 0, 0.0002 ));
 
 	gui.add(drawMaxH.set("draw max H index", 10, 1, 80));
