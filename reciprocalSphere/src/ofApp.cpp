@@ -161,7 +161,7 @@ void ofApp::draw(){
 				if ((*it).intensity > minIntensity*sca.maxIntensity) {
 
 					// HKL drawing filter
-					if ((*it).h <= drawMaxH && (*it).k <= drawMaxK && (*it).l <= drawMaxL) {
+					if (abs((*it).h) <= drawMaxH && abs((*it).k) <= drawMaxK && abs((*it).l) <= drawMaxL) {
 
 						ofVec3f hkl = ofVec3f((*it).h*flipx*uc_h,(*it).k*uc_k,(*it).l*flipz*uc_l);
 						hkl.rotate(mirrorRotZ, ofVec3f(0, 0, 1));
@@ -477,9 +477,9 @@ void ofApp::resetSettings() {
 	gui.add(minIntensity.set( "intensity filter", 0.5, 0, 1 ));
 	gui.add(nodeScale.set( "node display scaling", 0.000002, 0, 0.0002 ));
 
-	gui.add(drawMaxH.set("draw max H index", 10, 1, 50));
-	gui.add(drawMaxK.set("draw max K index", 10, 1, 50));
-	gui.add(drawMaxL.set("draw max L index", 10, 1, 50));
+	gui.add(drawMaxH.set("draw max H index", 10, 1, 80));
+	gui.add(drawMaxK.set("draw max K index", 10, 1, 80));
+	gui.add(drawMaxL.set("draw max L index", 10, 1, 80));
 	gui.add(sphereResolution.set("sphere resolution", 3, 2, 20));
 	gui.add(sphereBrightness.set("sphere brightness", 0.5, 0, 1));
 	gui.add(sphereAlpha.set("sphere alpha", 0.5, 0, 1));

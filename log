@@ -25,6 +25,7 @@ file conversions
 
 
 
+
 ERRORS
 ==========
 
@@ -89,3 +90,13 @@ Daniel's notes
 * try an iteration where the phase information gives the note frequency (0-360 degrees mapped to the freq. scale) instead of the position on the sphere (I feel like the position feels a little more incidental since it depends on the angle of the crystal)
 * an iteration where after the dots appear they remain on screen but no longer play (this might involve rotating the crystal along two axis so that all points in reciprocal space pass through the ewald sphere
 * Play an entire molecule's diffraction pattern all at once (perhaps subtracting the common elements of the "molecule library" beforehand so they sound as "different" as possible)
+
+
+
+
+todo
++ collect all .sca files
+- make sure GUI parameters fit all different hkl patterns
+- how to record screen with audio
+- maximise sounds PD can play
+- intensity = volume or duration or both, or cut-off filter ? 
