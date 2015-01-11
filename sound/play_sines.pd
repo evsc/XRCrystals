@@ -1,8 +1,8 @@
-#N canvas 440 186 596 717 10;
+#N canvas 1278 315 596 717 10;
 #X declare -path .;
 #X obj 17 79 dumpOSC 8888;
 #X obj 17 104 route /soundOn /soundOff;
-#X obj 190 592 output~;
+#X obj 191 595 output~;
 #X floatatom 381 326 5 0 0 0 - - -;
 #X floatatom 17 226 16 0 0 1 dot_id - -;
 #X floatatom 17 253 15 0 0 1 intensity - -;
@@ -16,21 +16,21 @@
 #X floatatom 447 335 5 0 0 0 - - -;
 #X floatatom 426 382 5 0 0 0 - - -;
 #X obj 313 95 declare -path .;
-#X obj 373 548 tone 0 0;
+#X obj 414 633 tone 0 0;
 #X obj 381 405 pack 0 0;
 #X obj 381 277 + 50;
 #X obj 189 154 unpack 0 0;
 #X floatatom 189 206 15 0 0 1 latitude - -;
 #X obj 189 323 pack 0 0;
 #X obj 189 277 + 50;
-#X msg 373 495 2000 50;
-#X msg 427 495 2000 0;
-#X msg 373 518 2100 55;
-#X msg 427 518 2100 0;
+#X msg 414 580 2000 50;
+#X msg 468 580 2000 0;
+#X msg 414 603 2100 55;
+#X msg 468 603 2100 0;
 #X obj 189 299 i;
 #X obj 381 300 i;
 #X text 310 76 tell PD to look for patches in file directory;
-#X text 370 472 just to test some sounds;
+#X text 411 557 just to test some sounds;
 #X text 196 343 turn sound off;
 #X text 289 404 turn sound on;
 #X text 464 355 intensity = volume;
@@ -45,14 +45,21 @@
 1;
 #X obj 495 450 print sound-on;
 #X obj 50 434 gate;
-#X obj 50 414 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X obj 50 414 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
 1;
 #X obj 50 456 print sound-off;
-#X obj 189 485 u_makepoly 15 0 tone;
 #X text 17 -8 make noise from the sound triggers coming from OF/reciprocalSphere.
 gets noisy when too many notes are played at once \, especially with
 low frequencies? issues with the u_makepoly probably \, with the voice-stealing?
 ;
+#X floatatom 398 138 5 0 0 0 - - -;
+#X obj 356 133 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 279 147 pack 333 0;
+#X obj 279 118 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 188 486 u_makepoly 64 1 tone 10 30 100;
+#X obj 357 169 pack 333 1302.39 0 0 0;
 #X connect 0 0 1 0;
 #X connect 0 0 37 1;
 #X connect 1 0 9 0;
@@ -73,13 +80,13 @@ low frequencies? issues with the u_makepoly probably \, with the voice-stealing?
 #X connect 16 0 2 0;
 #X connect 16 1 2 1;
 #X connect 17 0 39 1;
-#X connect 17 0 45 0;
+#X connect 17 0 50 0;
 #X connect 18 0 28 0;
 #X connect 19 0 11 0;
 #X connect 19 1 20 0;
 #X connect 20 0 22 0;
 #X connect 21 0 42 1;
-#X connect 21 0 45 0;
+#X connect 21 0 50 0;
 #X connect 22 0 27 0;
 #X connect 23 0 16 0;
 #X connect 24 0 16 0;
@@ -93,5 +100,11 @@ low frequencies? issues with the u_makepoly probably \, with the voice-stealing?
 #X connect 40 0 39 0;
 #X connect 42 0 44 0;
 #X connect 43 0 42 0;
-#X connect 45 0 2 0;
-#X connect 45 1 2 1;
+#X connect 46 0 48 1;
+#X connect 46 0 51 2;
+#X connect 47 0 51 0;
+#X connect 48 0 19 0;
+#X connect 49 0 48 0;
+#X connect 50 0 2 0;
+#X connect 50 1 2 1;
+#X connect 51 0 9 0;

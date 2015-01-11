@@ -3,29 +3,31 @@
 	<node_display_scaling>5.2e-05</node_display_scaling>
 	<!-- <data_file>lysozyme_main.sca</data_file> -->
 	<!-- <data_file>hfpps.sca</data_file> -->
-	<data_file>/home/eva/Documents/deed/molecular_db/cube01/Cube01_XYZ_64_65_65_1VFY.sca</data_file>
+	<!-- <data_file>/home/eva/Documents/deed/molecular_db/cube01/Cube01_XYZ_64_65_65_1VFY.sca</data_file> -->
 	<!-- <data_file>/home/eva/Documents/deed/molecular_db/pyramid01/Pyramid01_XYZ_63_63_62_1VFY.sca</data_file> -->
 	<!-- <data_file>/home/eva/Documents/deed/molecular_db/scene01/Scene01_3Obj_XYZ_64_68_72_1VFY.sca</data_file> -->
-	<!-- <data_file>/home/eva/Documents/deed/molecular_db/sphere01/Sphere01_XYZ_63_63_63_1VFY.sca</data_file> -->
+	<data_file>/home/eva/Documents/deed/molecular_db/sphere01/Sphere01_XYZ_63_63_63_1VFY.sca</data_file>
 	<!-- <data_file>/home/eva/Documents/deed/molecular_db/text01/Text01_XYZ_56_58_26_1VFY.sca</data_file> -->
-	<zoom>1.1525</zoom>
+	<zoom>4.85</zoom>
 	<draw_max_H_index>50</draw_max_H_index>
 	<draw_max_K_index>50</draw_max_K_index>
 	<draw_max_L_index>50</draw_max_L_index>
-	<mirror>0</mirror>
+	<mirror>1</mirror>
 	<sphere_resolution>10</sphere_resolution>
 	<sphere_brightness>1</sphere_brightness>
 	<fill_sphere>1</fill_sphere>
 <sphere_alpha>1</sphere_alpha>
 <HKL_diffraction_space/>
 <phase_color>1</phase_color>
-	<apply_Ewald_sphere>0</apply_Ewald_sphere>
-	<Ewald_margin>0.0175</Ewald_margin>
-	<xray_wave_length>0.00285</xray_wave_length>
-<rotate_crystal>0</rotate_crystal>
-<tilt_crystal>0</tilt_crystal>
+	<apply_Ewald_sphere>1</apply_Ewald_sphere>
+	<Ewald_margin>0.2525</Ewald_margin>
+	<xray_wave_length>0.012675</xray_wave_length>
+<rotate_crystal>0.46875</rotate_crystal>
+<tilt_crystal>64.8</tilt_crystal>
 <send_OSC>1</send_OSC>
 
 <expansion_velocity>0.2</expansion_velocity>
 <sound_trigger>0</sound_trigger>
+<min_intensity>500</min_intensity>
+	<max_intensity>10375</max_intensity>
 </HKL_diffraction_space>

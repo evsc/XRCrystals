@@ -107,6 +107,7 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> zoom;
 		ofParameter<bool> mirror;
 		ofParameter<float> minIntensity;
+        ofParameter<float> maxIntensity;
 		ofParameter<float> nodeScale;
 		ofParameter<string> dataFile;
 		ofParameter<int> drawMaxH;
@@ -125,7 +126,6 @@ class ofApp : public ofBaseApp{
 		ofParameter<float> rotateCrystal;
 		ofParameter<float> tiltCrystal;
         ofParameter<bool> sendOSC;
-
 
         ofParameter<bool> soundTrigger;
 

@@ -165,7 +165,7 @@ void ofApp::draw(){
 
 
 					// Intensity check
-					if ((*it).intensity > minIntensity) {
+					if ((*it).intensity > minIntensity && (*it).intensity < maxIntensity) {
 					// if ((*it).intensity > minIntensity*sca.maxIntensity) {
 
 						// HKL drawing filter
@@ -487,7 +487,8 @@ void ofApp::resetSettings() {
 	gui.add(dataFile.set("data file", "Daniels-lysozyme.sca"));
 	gui.add(zoom.set( "zoom", 1, 0.5, 15 ));
 	gui.add(mirror.set( "mirror", true));
-	gui.add(minIntensity.set( "intensity filter", 500, 0, 5000 ));
+	gui.add(minIntensity.set( "min intensity", 500, 0, 5000 ));
+	gui.add(maxIntensity.set("max intensity", 1000, 0, 50000));
 	gui.add(nodeScale.set( "node display scaling", 0.000002, 0, 0.0002 ));
 
 	gui.add(drawMaxH.set("draw max H index", 10, 1, 80));
