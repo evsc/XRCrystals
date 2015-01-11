@@ -18,7 +18,7 @@ scaData::scaData() {
 
 	unitCellDimension = ofVec3f(1,1,1);
 	unitCellRotation = ofVec3f(0,0,0);
-	spaceGroup = "p1";
+	spaceGroup = 1;
 }
 
 scaData::~scaData() {
@@ -46,7 +46,7 @@ void scaData::parseFile(string fileName, scaFormat format) {
 			line = file.getNextLine();
 			unitCellDimension = ofVec3f(ofToFloat(line.substr(0,10)), ofToFloat(line.substr(10,10)), ofToFloat(line.substr(20,10)));
 			unitCellRotation = ofVec3f(ofToFloat(line.substr(30,10)), ofToFloat(line.substr(40,10)), ofToFloat(line.substr(50,10)));
-			spaceGroup = line.substr(60,10);
+			spaceGroup = ofToInt(line.substr(61,10));
 
 			cout << "format \t\tSCA_FIRST" << endl;
 			cout << "unit cell" << endl;

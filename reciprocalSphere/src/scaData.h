@@ -61,7 +61,7 @@ public:
 	ofVec3f unitCellDimension;
 	ofVec3f unitCellRotation;
 
-	string spaceGroup;
+	int spaceGroup;
 
 	void parseFile( string fileName, scaFormat format = SCA_MAIN );
 

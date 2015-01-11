@@ -26,6 +26,9 @@ void ofApp::setup(){
 	// LOAD AND PARSE A scalepack file
 	// sca.parseFile(dataFile, SCA_FIRST);
 	sca.parseFile(dataFile);
+	sca.spaceGroup = 1;		// mirrored 1x
+	// sca.spaceGroup = 96;	// mirrored 15x 
+	cout << "spacegroup defined as = " << sca.spaceGroup << endl;
 
 	// FIGURE out how big to draw
 	hklDim = ofVec3f(sca.maxH-sca.minH, sca.maxK-sca.minK, sca.maxL-sca.minL);
@@ -121,6 +124,8 @@ void ofApp::draw(){
 	// ofRotateY(rotateHKL.y);
 	// ofRotateZ(rotateHKL.z);
 
+	ofEnableDepthTest();
+
 	rotateHKL.y += rotateCrystal;
 
 	// let's count the nodes drawn, to compare
@@ -153,128 +158,133 @@ void ofApp::draw(){
 
 			int mirrorno = m*4 + i;
 
-			// draw points
-			for (vector<scaItem>::iterator it = sca.data.begin() ; it != sca.data.end(); ++it) {
+			if ( !sca.spaceGroup==1 || ( (m==0) && (i==0 || i==1) )) {
+
+				// draw points
+				for (vector<scaItem>::iterator it = sca.data.begin() ; it != sca.data.end(); ++it) {
 
 
-				// Intensity check
-				if ((*it).intensity > minIntensity) {
-				// if ((*it).intensity > minIntensity*sca.maxIntensity) {
+					// Intensity check
+					if ((*it).intensity > minIntensity) {
+					// if ((*it).intensity > minIntensity*sca.maxIntensity) {
 
-					// HKL drawing filter
-					if (abs((*it).h) <= drawMaxH && abs((*it).k) <= drawMaxK && abs((*it).l) <= drawMaxL) {
+						// HKL drawing filter
+						if (abs((*it).h) <= drawMaxH && abs((*it).k) <= drawMaxK && abs((*it).l) <= drawMaxL) {
 
-						ofVec3f hkl = ofVec3f((*it).h*flipx*uc_h,(*it).k*uc_k,(*it).l*flipz*uc_l);
-						hkl.rotate(mirrorRotZ, ofVec3f(0, 0, 1));
-						hkl.rotate(rotateHKL.y, ofVec3f(0, 1, 0));
-						hkl.rotate(tiltCrystal, ofVec3f(1, 0, 0));
+							ofVec3f hkl = ofVec3f((*it).h*flipx*uc_h,(*it).k*uc_k,(*it).l*flipz*uc_l);
+							hkl.rotate(mirrorRotZ, ofVec3f(0, 0, 1));
+							hkl.rotate(rotateHKL.y, ofVec3f(0, 1, 0));
+							hkl.rotate(tiltCrystal, ofVec3f(1, 0, 0));
 
-						// avoid doubling of the mirror-plane
-						if ((hkl.x != hkl.y) || (i<2)) {
+							if (sca.spaceGroup==1 && i==1 && hkl.z==0) hkl.x *= -1;
 
-                            // check for intersection with ewald sphere
-							if ( !ewaldSphere || onEwaldSphere(hkl.x,hkl.y,hkl.z, mirrorRotZ) ) {
+							// avoid doubling of the mirror-plane
+							if ( sca.spaceGroup==1 || ( (hkl.x != hkl.y) || (i<2)  )  ) {
 
-                                // cout << "hkl \t" << (*it).h << "\t" << (*it).k << "\t" << (*it).l << endl;
+	                            // check for intersection with ewald sphere
+								if ( !ewaldSphere || onEwaldSphere(hkl.x,hkl.y,hkl.z, mirrorRotZ) ) {
 
-                                float latitude = hkl.y;
-                                float longitude = ((atan2(hkl.x-ewaldO.x, ewaldO.z-hkl.z)) *180 / PI);
-                                // ... both change over time, if crystal is tiled
+	                                // cout << "hkl \t" << (*it).h << "\t" << (*it).k << "\t" << (*it).l << endl;
 
-                                // register dot as currently visible, for sound trigger
-                                bool doubleRadius = false;
-                                if (m==0 && i==0 && expansionRadius > 0) {
-                                	// only sounds come from expansion bubble
-                                	// only do this for original wedge. not all mirror wedges
-                                	// (as they would just carry the same data)
+	                                float latitude = hkl.y;
+	                                float longitude = ((atan2(hkl.x-ewaldO.x, ewaldO.z-hkl.z)) *180 / PI);
+	                                // ... both change over time, if crystal is tiled
 
-                                	ofVec3f hkl = ofVec3f((*it).h,(*it).k,(*it).l);
-									float distance = hkl.length();
-									if (distance >= expansionRadius && distance < expansionRadius+expansionVel) {
-										doubleRadius = true;
-										if(sendOSC) {
-							                ofxOscMessage message;
-							                message.setAddress("/soundPing");
-							                message.addFloatArg((*it).phase);
-							                message.addFloatArg((*it).intensity);
-							                localSender.sendMessage(message);
-							            }
+	                                // register dot as currently visible, for sound trigger
+	                                bool doubleRadius = false;
+	                                if (m==0 && i==0 && expansionRadius > 0) {
+	                                	// only sounds come from expansion bubble
+	                                	// only do this for original wedge. not all mirror wedges
+	                                	// (as they would just carry the same data)
+
+	                                	ofVec3f hkl = ofVec3f((*it).h,(*it).k,(*it).l);
+										float distance = hkl.length();
+										if (distance >= expansionRadius && distance < expansionRadius+expansionVel) {
+											doubleRadius = true;
+											if(sendOSC) {
+								                ofxOscMessage message;
+								                message.setAddress("/soundPing");
+								                message.addFloatArg((*it).phase);
+								                message.addFloatArg((*it).intensity);
+								                localSender.sendMessage(message);
+								            }
+										}
+
+
+
+	                                } else if (soundTrigger) {
+		                                // first look if a object with that coordinates is already registered
+		                                int coordinates = mirrorno*1000000 + ((*it).h+50)*10000 + ((*it).k+50)*100 + (*it).l+50;
+		                                std::map<int,activeDot>::iterator iter = soundElements.find(coordinates);
+		                                bool newDot = false;
+
+		                                if( iter != soundElements.end() ) {
+		                                    // found it, only need to update it
+		                                } else {
+		                                    // create new
+		                                    newDot = true;
+		                                    // cout << "new sound to be created \t" << coordinates << endl;
+		                                    // these values we only set once
+		                                    soundElements[coordinates].h = (*it).h;
+		                                    soundElements[coordinates].k = (*it).k;
+		                                    soundElements[coordinates].l = (*it).l;
+		                                    soundElements[coordinates].mirrorno = mirrorno;
+		                                    soundElements[coordinates].longitude = longitude;
+		                                    soundElements[coordinates].latitude = latitude;
+		                                    soundElements[coordinates].intensity = (*it).intensity;
+		                                    soundElements[coordinates].fresh = true;
+		                                    soundElements[coordinates].phase = (*it).phase;
+		                                }
+		                                activeDot* dot = &soundElements.find(coordinates)->second;
+		                                dot->updated = true;
+		                            }
+
+									if (sphereFill) ofFill();
+									else ofNoFill();
+
+									if (sphereColor) {
+										ofColor c = ofColor(255*sphereBrightness,0,0,255*sphereAlpha);
+										c.setHue( (*it).phase * (255.0/360.0) );
+										ofSetColor( c );
 									}
 
+									float m = doubleRadius ? 3.f : 1.f;
+									if (drawMode==0) {
+
+										// draw directly with simple OF function
+										ofDrawSphere(hkl.x,hkl.y,hkl.z, nodeScale*(*it).intensity*m);
+
+										if(drawLongLat) {
+	                                        ofFill();
+	                                        ofSetColor(ofColor(255));
+	                                        ofDrawBitmapString(ofToString(latitude,0)+"\n"+ofToString(longitude,1),hkl.x,hkl.y,hkl.z);
+										}
+									} else {
 
 
-                                } else if (soundTrigger) {
-	                                // first look if a object with that coordinates is already registered
-	                                int coordinates = mirrorno*1000000 + ((*it).h+50)*10000 + ((*it).k+50)*100 + (*it).l+50;
-	                                std::map<int,activeDot>::iterator iter = soundElements.find(coordinates);
-	                                bool newDot = false;
 
-	                                if( iter != soundElements.end() ) {
-	                                    // found it, only need to update it
-	                                } else {
-	                                    // create new
-	                                    newDot = true;
-	                                    // cout << "new sound to be created \t" << coordinates << endl;
-	                                    // these values we only set once
-	                                    soundElements[coordinates].h = (*it).h;
-	                                    soundElements[coordinates].k = (*it).k;
-	                                    soundElements[coordinates].l = (*it).l;
-	                                    soundElements[coordinates].mirrorno = mirrorno;
-	                                    soundElements[coordinates].longitude = longitude;
-	                                    soundElements[coordinates].latitude = latitude;
-	                                    soundElements[coordinates].intensity = (*it).intensity;
-	                                    soundElements[coordinates].fresh = true;
-	                                    soundElements[coordinates].phase = (*it).phase;
-	                                }
-	                                activeDot* dot = &soundElements.find(coordinates)->second;
-	                                dot->updated = true;
-	                            }
+										// include push/pop translates in every drawing step
+										ofPushMatrix();
+										ofTranslate(hkl.x,hkl.y,hkl.z);
 
-								if (sphereFill) ofFill();
-								else ofNoFill();
+										float sc = nodeScale*(*it).intensity*m;
+										ofScale(sc,sc,sc);
 
-								if (sphereColor) {
-									ofColor c = ofColor(255*sphereBrightness,0,0,255*sphereAlpha);
-									c.setHue( (*it).phase * (255.0/360.0) );
-									ofSetColor( c );
+										if (drawMode==1) {
+											if (sphereFill) foo.drawFaces();
+											else foo.drawWireframe();
+										}
+										else if (drawMode==2) {
+											if (sphereFill) vboSphereMesh.draw(OF_MESH_FILL);
+											else vboSphereMesh.draw(OF_MESH_WIREFRAME);
+										}
+
+										ofPopMatrix();
+
+									}
+
+									visibleNodes++;
 								}
-
-								float m = doubleRadius ? 3.f : 1.f;
-								if (drawMode==0) {
-
-									// draw directly with simple OF function
-									ofDrawSphere(hkl.x,hkl.y,hkl.z, nodeScale*(*it).intensity*m);
-
-									if(drawLongLat) {
-                                        ofFill();
-                                        ofSetColor(ofColor(255));
-                                        ofDrawBitmapString(ofToString(latitude,0)+"\n"+ofToString(longitude,1),hkl.x,hkl.y,hkl.z);
-									}
-								} else {
-
-
-
-									// include push/pop translates in every drawing step
-									ofPushMatrix();
-									ofTranslate(hkl.x,hkl.y,hkl.z);
-
-									float sc = nodeScale*(*it).intensity*m;
-									ofScale(sc,sc,sc);
-
-									if (drawMode==1) {
-										if (sphereFill) foo.drawFaces();
-										else foo.drawWireframe();
-									}
-									else if (drawMode==2) {
-										if (sphereFill) vboSphereMesh.draw(OF_MESH_FILL);
-										else vboSphereMesh.draw(OF_MESH_WIREFRAME);
-									}
-
-									ofPopMatrix();
-
-								}
-
-								visibleNodes++;
 							}
 						}
 					}
@@ -287,6 +297,7 @@ void ofApp::draw(){
 
 		if (!mirror) break;
 	}
+	ofDisableDepthTest();
 
 	ofPopMatrix();
 
