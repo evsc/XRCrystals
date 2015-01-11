@@ -177,6 +177,7 @@ void ofApp::draw(){
 							hkl.rotate(tiltCrystal, ofVec3f(1, 0, 0));
 
 							if (sca.spaceGroup==1 && i==1 && hkl.z==0) hkl.x *= -1;
+							if (sca.spaceGroup==1 && i==1 && hkl.z==0 && hkl.x==0) hkl.y *= -1;
 
 							// avoid doubling of the mirror-plane
 							if ( sca.spaceGroup==1 || ( (hkl.x != hkl.y) || (i<2)  )  ) {

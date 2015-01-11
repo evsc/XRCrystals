@@ -3,8 +3,8 @@
 	<node_display_scaling>5.2e-05</node_display_scaling>
 	<!-- <data_file>lysozyme_main.sca</data_file> -->
 	<!-- <data_file>hfpps.sca</data_file> -->
-	<!-- <data_file>/home/eva/Documents/deed/molecular_db/cube01/Cube01_XYZ_64_65_65_1VFY.sca</data_file> -->
-	<data_file>/home/eva/Documents/deed/molecular_db/pyramid01/Pyramid01_XYZ_63_63_62_1VFY.sca</data_file>
+	<data_file>/home/eva/Documents/deed/molecular_db/cube01/Cube01_XYZ_64_65_65_1VFY.sca</data_file>
+	<!-- <data_file>/home/eva/Documents/deed/molecular_db/pyramid01/Pyramid01_XYZ_63_63_62_1VFY.sca</data_file> -->
 	<!-- <data_file>/home/eva/Documents/deed/molecular_db/scene01/Scene01_3Obj_XYZ_64_68_72_1VFY.sca</data_file> -->
 	<!-- <data_file>/home/eva/Documents/deed/molecular_db/sphere01/Sphere01_XYZ_63_63_63_1VFY.sca</data_file> -->
 	<!-- <data_file>/home/eva/Documents/deed/molecular_db/text01/Text01_XYZ_56_58_26_1VFY.sca</data_file> -->
