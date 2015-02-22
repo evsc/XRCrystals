@@ -1,0 +1,27 @@
+<!DOCTYPE patchbay>
+<patchbay version="0.3.10" name="jackPatchBay">
+ <output-sockets>
+  <socket exclusive="off" client="zynaddsubfx" type="jack-audio" name="ZynaddSubFX">
+   <plug>out_1</plug>
+   <plug>out_2</plug>
+  </socket>
+  <socket exclusive="off" client="Pure Data" type="alsa-midi" name="PureDataMIDI-out">
+   <plug>Pure Data Midi-Out 1</plug>
+  </socket>
+ </output-sockets>
+ <input-sockets>
+  <socket exclusive="off" client="system" type="jack-audio" name="SystemAudio">
+   <plug>playback_1</plug>
+   <plug>playback_2</plug>
+  </socket>
+  <socket exclusive="off" client="ZynAddSubFX" type="alsa-midi" name="ZynAddSubFX">
+   <plug>ZynAddSubFX</plug>
+  </socket>
+ </input-sockets>
+ <slots/>
+ <cables>
+  <cable output="ZynaddSubFX" input="SystemAudio" type="jack-audio"/>
+  <cable output="PureDataMIDI-out" input="ZynAddSubFX" type="alsa-midi"/>
+ </cables>
+</patchbay>
+

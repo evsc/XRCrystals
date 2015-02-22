@@ -4,12 +4,11 @@ TODO
 ===========
 
 PD
-- how to record screen with audio
-- maximise sounds PD can play
 - intensity = volume or duration or both, or cut-off filter ? 
 
 
 reciprocalSphere
+- apply ewald-sphere+audio but draw all others too / mark intersected ones
 - option to send all sound-data at once (btn?)
 - screenshots not copying file-structure
 - different spacegroups might require different mirroring of data-wedge?
@@ -35,6 +34,14 @@ ERRORS
 maptona4
 **** A4REAL ERROR: Illegal character(s) >>      <<.
 >> something is off with the xyz limits
+
+
+
+
+HOW TO SOUND
+===========
+play MIDI with ZynAddSubFX and JACKD (QJackCtl)
+ZynaddSubFX > instruments > Rhodes most suitable so far
 
 
 
@@ -75,6 +82,9 @@ Daniel's notes
 
 ANIM 
 ===========
+
+
+record screen with: SimpleScreenRecorder
 
 1) 
 make video
