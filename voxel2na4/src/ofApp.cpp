@@ -22,10 +22,10 @@ void ofApp::setup(){
     }
 
     offset[0] = 1;  // x
-    offset[1] = 1;  // y 
-    offset[2] = 1;  // z
+    offset[1] = 30;  // y 
+    offset[2] = 30;  // z
 
-    for ( int i=0; i<3; i++) scalePrimitive[i] = 1.0;
+    for ( int i=0; i<3; i++) scalePrimitive[i] = 0.80;
 
     // first let's clear all of space
     space = new float**[grid[0]];
@@ -46,14 +46,15 @@ void ofApp::setup(){
 
 
 
-    fullFileName = "/home/eva/Documents/deed/molecular_db/text01/Text01_XYZ_56_58_26.ASE";
+    // fullFileName = "/home/eva/Documents/deed/molecular_db/text01/Text01_XYZ_56_58_26.ASE";
+    fullFileName = "/home/eva/Documents/deed/molecular_db/text_opensecrets/TEXT_OpenSecrets.csv";
     int lastIndex = fullFileName.find_last_of("/");
     fileName = fullFileName.substr(lastIndex+1);
     directory = fullFileName.substr(0,lastIndex+1);
     
     lastIndex = fileName.find_last_of(".");
     idName = fileName.substr(0,lastIndex);
-
+    fileType = fileName.substr(lastIndex+1);
 
     parseVoxelFile(fullFileName);
     saveOutNa4(directory + idName + "_" + templateName + ".na4");
@@ -99,7 +100,7 @@ void ofApp::draw(){
     ofDrawBox(grid[0]/2,grid[1]/2,grid[2]/2,grid[0]-1, grid[1]-1, grid[2]-1);
 
     // skip some rows to make drawing faster
-    int skip = 5;
+    int skip = 2;
 
     for (int i=0; i<grid[0]; i+=skip) {
         for (int j=0; j<grid[1]; j+=skip) {
@@ -211,10 +212,18 @@ void ofApp::parseVoxelFile(string voxelfile){
         }
 
         if (line.substr(0,12) == "*MESH_VERTEX") {
-            string line2 = line.substr(16);
-
+            string line2 = "";
             vector< string > result;
-            result = ofSplitString(line2, "\t");
+
+            if (fileType == "csv") {
+                line2 = line.substr(12);
+                result = ofSplitString(line2, ",");
+            } else {
+                // ASE
+                line2 = line.substr(16);
+                result = ofSplitString(line2, "\t");
+            }
+            
             // cout << line2 << "\t" << result.size() << endl;
             if (result.size() > 3) {
                 int id = ofToInt(result[0]);

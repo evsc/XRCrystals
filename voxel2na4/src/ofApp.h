@@ -27,6 +27,7 @@ class ofApp : public ofBaseApp{
 
 		string fullFileName;
 		string fileName;
+		string fileType;
 		string idName;
 		string directory;
 		string templateName;
