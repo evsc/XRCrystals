@@ -9,23 +9,28 @@ void ofApp::setup(){
     valEmpty = -32;
 
     // templateName = "4MEZ";
-    templateName = "1VFY";
+    // templateName = "1VFY";
+    templateName = "TH01";
 
     if (templateName == "4MEZ") {
-        grid[0] = 104;   // 62
-        grid[1] = 162;   // 39
-        grid[2] = 234;   // 31
+        grid[0] = 104;
+        grid[1] = 162;
+        grid[2] = 234;
     } else if (templateName == "1VFY") {
-        grid[0] = 72;   // 62
-        grid[1] = 80;   // 39
-        grid[2] = 98;   // 31
+        grid[0] = 72;
+        grid[1] = 80;
+        grid[2] = 98;
+    } else if (templateName == "TH01") {
+        grid[0] = 56;
+        grid[1] = 56;
+        grid[2] = 170;
     }
 
-    offset[0] = 1;  // x
-    offset[1] = 30;  // y 
-    offset[2] = 30;  // z
+    offset[0] = 2;  // x
+    offset[1] = 5;  // y 
+    offset[2] = 20;  // z
 
-    for ( int i=0; i<3; i++) scalePrimitive[i] = 0.80;
+    for ( int i=0; i<3; i++) scalePrimitive[i] = 1.0;
 
     // first let's clear all of space
     space = new float**[grid[0]];
@@ -46,8 +51,7 @@ void ofApp::setup(){
 
 
 
-    // fullFileName = "/home/eva/Documents/deed/molecular_db/text01/Text01_XYZ_56_58_26.ASE";
-    fullFileName = "/home/eva/Documents/deed/molecular_db/text_opensecrets/TEXT_OpenSecrets.csv";
+    fullFileName = "/home/eva/Documents/deed/molecular_db/text_opensecrets/OpenSecrets_TH01_3Z.csv";
     int lastIndex = fullFileName.find_last_of("/");
     fileName = fullFileName.substr(lastIndex+1);
     directory = fullFileName.substr(0,lastIndex+1);
@@ -216,7 +220,7 @@ void ofApp::parseVoxelFile(string voxelfile){
             vector< string > result;
 
             if (fileType == "csv") {
-                line2 = line.substr(12);
+                line2 = line.substr(13);
                 result = ofSplitString(line2, ",");
             } else {
                 // ASE
@@ -304,6 +308,12 @@ void ofApp::saveOutNa4(string na4file){
         outputFile << "CELL        24.090    26.570    31.610   111.790    92.700   105.700" << "\n";
         outputFile << "RHOLIM     -0.960050         33.7906        0.234025E-10    0.603334    " << "\n";
         outputFile << "INDXR4     0  17" << "\n";
+    } else if (templateName == "TH01") {
+        outputFile << "SPACEGROUP             1" << "\n";
+        outputFile << "MODE           2" << "\n";
+        outputFile << "CELL        28.000    28.000    84.000    90.000    90.000   120.000" << "\n";
+        outputFile << "RHOLIM     -0.629168         6.44105       -0.369532E-10    0.378184    " << "\n";
+        outputFile << "INDXR4     0  20" << "\n";
     }
 
 
